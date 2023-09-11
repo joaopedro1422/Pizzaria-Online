@@ -2,6 +2,9 @@ package com.ufcg.psoft.commerce.controller.Estabelecimento;
 
 
 import com.ufcg.psoft.commerce.dto.Estabelecimento.EstabelecimentoV1DTO;
+import com.ufcg.psoft.commerce.model.Cardapio.Cardapio;
+import com.ufcg.psoft.commerce.model.Cliente.Cliente;
+import com.ufcg.psoft.commerce.model.Entregador.Entregador;
 import com.ufcg.psoft.commerce.model.Estabelecimento.Estabelecimento;
 import com.ufcg.psoft.commerce.service.Estabelecimento.EstabelecimentoV1Service;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -103,7 +106,7 @@ public class EstabelecimentoV1Controller {
                     .body(msgErro);
 
         }else{
-
+            estabelecimentov1Service.delete(id);
             response = ResponseEntity
                     .status(HttpStatus.NO_CONTENT)
                     .build();
@@ -112,6 +115,126 @@ public class EstabelecimentoV1Controller {
 
         return response;
 
+
+
+    }
+
+    @RequestMapping(value = "consultaCliente/{codigoAcessoEstabelecimento}/{CodigoAcessoCliente}", method = RequestMethod.GET)
+    public ResponseEntity<?> consultaCliente(@PathVariable("codigoAcessoEstabelecimento") String codigoAcessoEstabelecimento,
+                                             @PathVariable("CodigoAcessoCliente") String codigoAcessoCliente){
+
+
+        Estabelecimento estabelecimento = estabelecimentov1Service.getByCodigoAcesso(codigoAcessoEstabelecimento);
+
+        ResponseEntity<?> response;
+
+        if(estabelecimento != null){
+
+            Cliente cliente = estabelecimento.clientePorCodigoAcesso(codigoAcessoCliente, codigoAcessoEstabelecimento);
+
+            if(cliente != null){
+
+                response = ResponseEntity
+                        .status(HttpStatus.OK)
+                        .body(cliente);
+
+            }else{
+
+                response = ResponseEntity
+                        .status(HttpStatus.NOT_FOUND)
+                        .body("Codigo de acesso de cliente, ou estabelecimento, errado!");
+
+            }
+
+        }else{
+
+
+            response = ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body(msgErro);
+
+        }
+
+        return response;
+
+    }
+
+
+    @RequestMapping(value = "consultaCardapio/{codigoAcessoEstabelecimento}/{codigoAcessoCardapio}", method = RequestMethod.GET)
+    public ResponseEntity<?> consultaCardapio(@PathVariable("codigoAcessoEstabelecimento") String codigoAcessoEstabelecimento,
+                                              @PathVariable("codigoAcessoCardapio") String codigoAcessoCardapio){
+
+        Estabelecimento estabelecimento = estabelecimentov1Service.getByCodigoAcesso(codigoAcessoEstabelecimento);
+        ResponseEntity<?> response;
+
+        if(estabelecimento != null){
+            Cardapio cardapio = estabelecimento.cardapioPorCodigoAcesso(codigoAcessoCardapio, codigoAcessoEstabelecimento);
+
+            if(cardapio != null){
+
+                response = ResponseEntity
+                        .status(HttpStatus.OK)
+                        .body(cardapio);
+
+            }else{
+
+
+                response = ResponseEntity
+                        .status(HttpStatus.NOT_FOUND)
+                        .body("Codigo de cardapio, ou estabelecimento, incorreto!");
+
+
+            }
+
+        }else{
+
+            response = ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body(msgErro);
+
+        }
+
+        return response;
+
+    }
+
+
+    @RequestMapping(value = "consultaEntregador/{codigoAcessoEstabelecimento}/{codigoAcessoEntregador}", method = RequestMethod.GET)
+    public ResponseEntity<?> consultaEntregador(@PathVariable("codigoAcessoEstabelecimento") String codigoAcessoEstabelecimento,
+                                                @PathVariable("codigoAcessoEntregador") String codigoAcessoEntregador){
+
+        Estabelecimento estabelecimento = estabelecimentov1Service.getByCodigoAcesso(codigoAcessoEstabelecimento);
+
+        ResponseEntity<?> response;
+
+        if(estabelecimento != null){
+            Entregador entregador = estabelecimento.entregadorPorCodigoAcesso(codigoAcessoEntregador, codigoAcessoEstabelecimento);
+
+            if(entregador != null){
+
+                response = ResponseEntity
+                        .status(HttpStatus.OK)
+                        .body(entregador);
+
+            }else{
+
+                response = ResponseEntity
+                        .status(HttpStatus.NOT_FOUND)
+                        .body("Codigo de acesso do entregador, ou estabelecimento, incorreto!");
+
+            }
+
+
+
+        }else{
+
+            response = ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body(msgErro);
+
+        }
+
+        return response;
 
 
     }

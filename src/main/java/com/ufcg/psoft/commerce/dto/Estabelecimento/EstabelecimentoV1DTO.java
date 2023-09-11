@@ -28,7 +28,7 @@ public class EstabelecimentoV1DTO {
     private Set<Cardapio> cardapios;
 
     @JsonProperty("entregadores")
-    private Set<Entregador> entreagadores;
+    private Set<Entregador> entregadores;
 
 
 }

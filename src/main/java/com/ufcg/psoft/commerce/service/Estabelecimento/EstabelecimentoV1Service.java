@@ -3,6 +3,7 @@ package com.ufcg.psoft.commerce.service.Estabelecimento;
 import com.ufcg.psoft.commerce.dto.Estabelecimento.EstabelecimentoV1DTO;
 import com.ufcg.psoft.commerce.model.Estabelecimento.Estabelecimento;
 import com.ufcg.psoft.commerce.repository.Estabelecimento.EstabelecimentoV1Repository;
+import com.ufcg.psoft.commerce.util.GerarCodigoAcessoEstabelecimento;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -31,8 +32,13 @@ public class EstabelecimentoV1Service {
     }
 
     public Estabelecimento add(EstabelecimentoV1DTO estabelecimentoV1DTO){
+        Estabelecimento estabelecimento = converteTDOParaEntidade(estabelecimentoV1DTO);
 
-        return estabelecimentoV1Repository.save(converteTDOParaEntidade(estabelecimentoV1DTO));
+        GerarCodigoAcessoEstabelecimento gerador = new GerarCodigoAcessoEstabelecimento(estabelecimentoV1Repository);
+
+        estabelecimento.setCodigoAcesso(gerador.gerar());
+
+        return estabelecimentoV1Repository.save(estabelecimento);
 
     }
 
@@ -84,5 +90,21 @@ public class EstabelecimentoV1Service {
 
 
     }
+
+    public Estabelecimento getByCodigoAcesso(String codigoAcesso){
+
+        Estabelecimento estabelecimento = null;
+
+        if(estabelecimentoV1Repository.existsByCodigoAcesso(codigoAcesso)){
+
+
+            estabelecimento = estabelecimentoV1Repository.findByCodigoAcesso(codigoAcesso).get();
+
+        }
+
+        return estabelecimento;
+
+    }
+
 
 }

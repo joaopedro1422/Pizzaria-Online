@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ufcg.psoft.commerce.model.Cardapio.Cardapio;
 import com.ufcg.psoft.commerce.model.Cliente.Cliente;
 import com.ufcg.psoft.commerce.model.Entregador.Entregador;
+import com.ufcg.psoft.commerce.model.SaborPizza.SaborPizza;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -36,17 +37,18 @@ public class Estabelecimento {
 
     @JsonProperty("cardapios")
     @Column(name = "cardapio")
-    @OneToMany
+    @OneToMany(cascade=CascadeType.PERSIST)
     private Set<Cardapio> cardapios;
 
     @JsonProperty("clientes")
     @Column(name = "cliente")
-    @OneToMany
+    @OneToMany(cascade=CascadeType.PERSIST)
     private Set<Cliente> clientes;
 
-    @OneToMany
+
     @JsonProperty("entregadores")
     @Column(name = "entregador")
+    @OneToMany(cascade=CascadeType.PERSIST)
     private Set<Entregador> entregadores;
 
 
@@ -148,6 +150,65 @@ public class Estabelecimento {
 
     }
 
+    public Entregador entregadorPorCodigoAcesso(String codigoAcessoEntregador, String codigoAcessoEstabelecimento){
+        Entregador entregadorEncontrado = null;
 
+        if(codigoAcessoEstabelecimento.equals(this.codigoAcesso)){
+
+
+            for (Entregador entregador : this.entregadores){
+
+                if(entregador.getCodigoAcesso().equals(codigoAcessoEntregador)){
+
+                    entregadorEncontrado = entregador;
+                    break;
+
+                }
+
+            }
+
+        }
+
+        return entregadorEncontrado;
+
+    }
+
+    public Entregador associarEntregador(String codigoAcessoEntregador, String codigoAcessoEstabelecimento){
+        Entregador entregador = null;
+
+        if(codigoAcessoEstabelecimento.equals(this.codigoAcesso)){
+
+            //Implementar
+
+        }
+
+        return entregador;
+
+    }
+
+
+    public void aprovarEntregador(String codigoAcessoEstabelecimento, String codigoAcessoEntregador,
+                                  boolean aprovado){
+
+        if (codigoAcessoEstabelecimento.equals(this.codigoAcesso)){
+
+            //Implementar
+
+        }
+
+    }
+
+    public SaborPizza CriarSaborPizza(String codigoEstabelecimento){
+        SaborPizza saborPizza = null;
+
+        if(codigoEstabelecimento.equals(this.codigoAcesso)){
+
+            //Implementar
+
+        }
+
+        return saborPizza;
+
+    }
 
 }
