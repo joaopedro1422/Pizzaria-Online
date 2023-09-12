@@ -1,6 +1,7 @@
 package com.ufcg.psoft.commerce.model.Cliente;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.ufcg.psoft.commerce.model.SaborPizza.SaborPizza;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -67,4 +68,5 @@ public class Cliente {
     public Cliente(String nome, String endereco, String codigoAcesso) {
 
     }
+
 }
