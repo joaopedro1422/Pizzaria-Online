@@ -4,7 +4,9 @@ import com.ufcg.psoft.commerce.dto.ClienteDTO.ClienteDTO;
 import com.ufcg.psoft.commerce.dto.Estabelecimento.EstabelecimentoV1DTO;
 import com.ufcg.psoft.commerce.dto.PizzaDTO.SaborPostPutDTO;
 import com.ufcg.psoft.commerce.model.Estabelecimento.Estabelecimento;
+import com.ufcg.psoft.commerce.model.SaborPizza.SaborPizza;
 import com.ufcg.psoft.commerce.service.Estabelecimento.EstabelecimentoV1Service;
+import com.ufcg.psoft.commerce.service.Pizza.SaborService;
 import com.ufcg.psoft.commerce.service.Pizza.SaborV1Service;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,13 +24,32 @@ public class PizzaV1Controller {
     @Autowired
     EstabelecimentoV1Service estabelecimentoV1Service;
     
-    @PostMapping(value = "/saboresPizza/{codigoEstabelecimento}")
-    public ResponseEntity<?> criarSaborPizza (@PathVariable("codigoEstabelecimento")String codigoEstabelecimento,@Valid @RequestBody SaborPostPutDTO sabor){
-        SaborPostPutDTO saborPizza = saborV1Service.criarSabor(sabor);
+    @PostMapping(value = "/saboresPizza/{codigoAcessoEstabelecimento}")
+    public ResponseEntity<?> criarSaborPizza (@PathVariable("codigoAcessoEstabelecimento")String codigoAcessoEstabelecimento,@Valid @RequestBody SaborPostPutDTO sabor){
+        // fazer validacao se sabor ja existe,estabelecimento nao existe,codigo de acesso invalido
+         sabor = saborV1Service.criarSabor(sabor);
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(saborPizza);
+                .body(sabor);
     }
+
+    @PutMapping(value = "/saboresPizza/{codigoAcessoEstabelecimento}/{saborPizzaId}")
+    public ResponseEntity<?> atualizarSaborPizza(@Valid @PathVariable("codigoAcessoEstabelecimento")String codigoAcessoEstabelecimento,@Valid @PathVariable("saborPizzaId") long saborPizzaId,@Valid @RequestBody SaborPostPutDTO sabor){
+        // fazer validacao do codigo de acesso,sabor,estabelecimento nao encontrado
+            saborV1Service.atualizarSaborPizza(saborPizzaId,sabor);
+            return ResponseEntity.status(HttpStatus.OK).build();
+
+    }
+
+    @GetMapping(value = "/saboresPizza/{codigoAcessoEstabelecimento}/{saborPizzaId}")
+    public ResponseEntity<?> consultarSaboresPizza(@Valid @PathVariable("codigoAcessoEstabelecimento")String codigoAcessoEstabelecimento,@Valid @PathVariable("saborPizzaId") long saborPizzaId){
+        SaborPostPutDTO sabor = saborV1Service.consultarSaborPizza(saborPizzaId);
+        return new ResponseEntity<SaborPostPutDTO>(sabor,HttpStatus.OK);
+        // fazer validacao
+    }
+
+
+
 
 }
