@@ -73,16 +73,8 @@ public class SaborPizza {
         return idPizza;
     }
 
-    public void setIdPizza(Long idPizza) {
-        this.idPizza = idPizza;
-    }
-
     public String getSaborDaPizza() {
         return saborDaPizza;
-    }
-
-    public void setSaborDaPizza(String saborDaPizza) {
-        this.saborDaPizza = saborDaPizza;
     }
 
     public double getValorMedia() {
@@ -99,6 +91,18 @@ public class SaborPizza {
 
     public void setValorGrande(double valorGrande) {
         this.valorGrande = valorGrande;
+    }
+
+    public void setTipoDeSabor(TipoDeSabor tipoDeSabor) {
+        this.tipoDeSabor = tipoDeSabor;
+    }
+
+    public void setSaborDaPizza(String saborPizza) {
+        this.saborDaPizza = saborDaPizza;
+    }
+
+    public void setDisponibilidade(DisponibilidadeSabor disponibilidadeSabor) {
+        this.disponibilidadeSabor = disponibilidadeSabor;
     }
     /*public void notifyObservers() {
         for(Cliente c : observers) {

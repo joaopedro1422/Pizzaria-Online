@@ -4,15 +4,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ufcg.psoft.commerce.enums.DisponibilidadeSabor;
 import com.ufcg.psoft.commerce.enums.TipoDeSabor;
 import jakarta.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+
 public class SaborPostPutDTO {
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
@@ -37,14 +35,6 @@ public class SaborPostPutDTO {
         return this.idPizza;
     }
 
-    public String getSaborPizza() {
-        return this.saborDaPizza;
-    }
-
-    public TipoDeSabor getTipoDeSabor() {
-        return this.tipoDeSabor;
-    }
-
     public double getValorMedia() {
         return this.valorMedia;
     }
@@ -53,5 +43,28 @@ public class SaborPostPutDTO {
         return this.valorGrande;
     }
 
-    public DisponibilidadeSabor getDisponibilidadeSabor() {return this.disponibilidadeSabor;}
+
+    public DisponibilidadeSabor getDisponibilidadeSabor() {
+        return disponibilidadeSabor;
+    }
+
+    public TipoDeSabor getTipoDeSabor() {
+        return tipoDeSabor;
+    }
+
+    public String getSaborPizza() {
+        return this.saborDaPizza;
+    }
+
+    public void setSaborDaPizza(String saborDaPizza) {
+        this.saborDaPizza = saborDaPizza;
+    }
+
+    public void setDisponibilidadeSabor(DisponibilidadeSabor disponibilidadeSabor) {
+        this.disponibilidadeSabor = disponibilidadeSabor;
+    }
+
+    public void setTipoDeSabor(TipoDeSabor tipoDeSabor) {
+        this.tipoDeSabor = tipoDeSabor;
+    }
 }
