@@ -9,6 +9,10 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
+
 @Service
 public class ClienteV1Service implements ClienteService {
 
@@ -68,4 +72,32 @@ public class ClienteV1Service implements ClienteService {
         }
 
 
-    }
+//    @Override
+//    public List<ClienteDTO> getClientes(String codigoAcesso) throws EstabelecimentoNotFoundException, EstabelecimentoCodigoAcessoException {
+//        estabelecimentoService.validaCodigoAcessoEstabelecimento(codigoAcesso);
+//        Stream<Cliente> clientes = StreamSupport.stream(clienteRepository.findAll().spliterator(), false);
+//        return clientes.map(cliente -> modelMapper.map(cliente, ClienteDTO.class)).toList();
+//    }
+//
+//    @Override
+//    public void subscribeToPizza( Long idCliente, Long idSaborPizza,String codigoAcesso) throws SaborPizzaNaoEncontradoException, ClienteNaoEncontradoException, ClienteCodigoAcessoIncorretoException, SaborPizzaEstaDisponivel, SaborPizzaClienteCadastrado {
+//
+//        validarCodigoAcesso(idCliente, codigoAcesso);
+//
+//        SaborPizza pizza = pizzaService.consultarSaborPizzaById(idSaborPizza);
+//        Cliente cliente = getClienteById(idCliente);
+//
+//        if(!pizza.isDisponivel()){
+//            if(!cliente.isSubscribed(pizza)) {
+//                cliente.subscribeTo(pizza);
+//                clienteRepository.save(cliente);
+//                pizzaService.salvarSaborPizzaCadastrado(pizza);
+//            }else{
+//                throw new SaborPizzaClienteCadastrado();
+//            }
+//        } else {
+//            throw new SaborPizzaEstaDisponivel();
+//        }
+//    }
+
+}

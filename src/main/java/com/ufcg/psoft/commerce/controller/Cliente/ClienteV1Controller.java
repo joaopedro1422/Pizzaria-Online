@@ -5,9 +5,11 @@ import com.ufcg.psoft.commerce.exception.Cliente.ClienteCodigoAcessoIncorretoExc
 import com.ufcg.psoft.commerce.exception.Cliente.ClienteNaoEncontradoException;
 import com.ufcg.psoft.commerce.service.Cliente.ClienteV1Service;
 import com.ufcg.psoft.commerce.util.ErroCliente;
+import com.ufcg.psoft.commerce.util.ErroValidacao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
@@ -58,6 +60,12 @@ public class ClienteV1Controller {
         } catch (ClienteNaoEncontradoException e) {
             return ErroCliente.erroClienteNaoEncontrado(clienteId);
         }
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    ResponseEntity<?> handleValidationExceptions(MethodArgumentNotValidException ex) {
+        return ErroValidacao.erroFalhaValidacao(ex.getFieldErrors());
     }
 
 }

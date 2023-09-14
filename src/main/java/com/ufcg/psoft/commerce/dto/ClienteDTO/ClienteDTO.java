@@ -1,5 +1,6 @@
 package com.ufcg.psoft.commerce.dto.ClienteDTO;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ufcg.psoft.commerce.dto.validators.Atualizar;
 import com.ufcg.psoft.commerce.dto.validators.Criar;
@@ -47,6 +48,28 @@ public class ClienteDTO {
     criando ou atualizando um objeto que possui um campo nome, você precisaria garantir que o campo nome
     não esteja em branco para que a validação seja bem-sucedida. Caso contrário, a mensagem de erro
     "O nome não pode estar em branco" será retornada.*/
+
+    public ClienteDTO(String nome, String endereco, String codigoAcesso) {
+        this.nome = nome;
+        this.endereco = endereco;
+        this.codigoAcesso = codigoAcesso;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public String getNome() {
+        return nome;
+    }
+
+    public String getEndereco() {
+        return endereco;
+    }
+    @JsonIgnore
+    public String getCodigoAcesso() {
+        return codigoAcesso;
+    }
 
 }
 
