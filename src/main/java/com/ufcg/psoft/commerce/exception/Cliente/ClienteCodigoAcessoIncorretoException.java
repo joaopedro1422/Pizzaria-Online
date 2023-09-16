@@ -1,5 +1,11 @@
 package com.ufcg.psoft.commerce.exception.Cliente;
 
-public class ClienteCodigoAcessoIncorretoException extends Exception {
+import com.ufcg.psoft.commerce.exception.CommerceException;
 
+public class ClienteCodigoAcessoIncorretoException extends CommerceException {
+
+    public ClienteCodigoAcessoIncorretoException() {
+
+        super("Codigo Incorreto");
+    }
 }

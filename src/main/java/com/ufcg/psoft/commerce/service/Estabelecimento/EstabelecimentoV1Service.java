@@ -1,6 +1,8 @@
 package com.ufcg.psoft.commerce.service.Estabelecimento;
 
 import com.ufcg.psoft.commerce.dto.Estabelecimento.EstabelecimentoV1DTO;
+import com.ufcg.psoft.commerce.exception.Estabelecimento.CodigoAcessoEstabelecimentoException;
+import com.ufcg.psoft.commerce.exception.Estabelecimento.EstabelecimentoNaoEncontradoException;
 import com.ufcg.psoft.commerce.model.Estabelecimento.Estabelecimento;
 import com.ufcg.psoft.commerce.repository.Estabelecimento.EstabelecimentoV1Repository;
 import com.ufcg.psoft.commerce.util.GerarCodigoAcessoEstabelecimento;
@@ -106,5 +108,28 @@ public class EstabelecimentoV1Service {
 
     }
 
+    public void validaCodigoAcessoEstabelecimento(String codigoAcesso) throws CodigoAcessoEstabelecimentoException, EstabelecimentoNaoEncontradoException {
+        Estabelecimento estabelecimento = findEstabelecimento();
+
+        if (!estabelecimento.getCodigoAcesso().equals(codigoAcesso)) {
+            throw new CodigoAcessoEstabelecimentoException();
+        }
+    }
+
+    // Método para verificar se o código de acesso do estabelecimento existe
+    private boolean verificaCodigoAcesso(String codigoAcesso) throws EstabelecimentoNaoEncontradoException {
+        Estabelecimento estabelecimento = findEstabelecimento();
+        return estabelecimento.getCodigoAcesso().equals(codigoAcesso);
+    }
+
+    // Método para encontrar o estabelecimento
+    public Estabelecimento findEstabelecimento() throws EstabelecimentoNaoEncontradoException {
+        List<Estabelecimento> estabelecimentoList = estabelecimentoV1Repository.findAll();
+        if (estabelecimentoList.isEmpty()) {
+            throw new EstabelecimentoNaoEncontradoException();
+        }
+
+        return estabelecimentoList.get(0);
+    }
 
 }

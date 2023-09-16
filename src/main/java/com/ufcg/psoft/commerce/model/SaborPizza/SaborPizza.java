@@ -15,7 +15,6 @@ import java.util.List;
 
 @Data
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
 @Entity(name = "saboresPizza")
 public class SaborPizza {
@@ -67,7 +66,11 @@ public class SaborPizza {
         return observers;
     }
     @OneToMany
-    private List<Cliente> observers = new ArrayList<Cliente>();
+    private List<Cliente> observers;
+
+    {
+        observers = new ArrayList<Cliente>();
+    }
 
     public Long getIdPizza() {
         return idPizza;

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ufcg.psoft.commerce.dto.validators.Atualizar;
 import com.ufcg.psoft.commerce.dto.validators.Criar;
+import jakarta.persistence.Transient;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,9 +20,10 @@ public class ClienteDTO {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private long id;
 
-    @JsonProperty(value = "codigoAcesso", access = JsonProperty.Access.WRITE_ONLY)
+    @JsonProperty("codigoAcesso")
     @NotBlank(message = "O código de acesso não pode estar vazio", groups = Criar.class)
     private String codigoAcesso;
+
 
     /*Isso é útil em situações em que você deseja fornecer um campo em um objeto JSON ao
     enviar dados para um servidor, mas não deseja que esse campo seja preenchido automaticamente
