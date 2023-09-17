@@ -29,6 +29,7 @@ public class SaborPostPutDTO {
     private double valorGrande;
 
     private DisponibilidadeSabor disponibilidadeSabor;
+    @NotBlank(message = "O tipo da pizza não pode estar em branco")
     private TipoDeSabor tipoDeSabor;
 
     public Long getIdPizza() {

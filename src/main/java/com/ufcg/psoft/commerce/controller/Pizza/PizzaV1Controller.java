@@ -28,8 +28,13 @@ public class PizzaV1Controller {
     EstabelecimentoV1Service estabelecimentoV1Service;
     
     @PostMapping(value = "/saboresPizza/{codigoAcessoEstabelecimento}")
-    public ResponseEntity<?> criarSaborPizza (@PathVariable("codigoAcessoEstabelecimento")String codigoAcessoEstabelecimento,@Valid @RequestBody SaborPostPutDTO sabor) throws SaborPizzaNaoEncontradoException, SaborPizzaExistenteException {
-       try{
+    public ResponseEntity<?> criarSaborPizza (
+            @PathVariable @RequestParam ("codigoAcessoEstabelecimento")String codigoAcessoEstabelecimento,
+            @Valid @RequestParam @PathVariable ("idEstabelecimento")long idEstabelecimento,
+            @Valid @RequestBody SaborPostPutDTO sabor)
+            throws SaborPizzaNaoEncontradoException, SaborPizzaExistenteException {
+
+        try{
            estabelecimentoV1Service.validaCodigoAcessoEstabelecimento(codigoAcessoEstabelecimento);
            SaborPostPutDTO saborPizza = saborV1Service.criarSabor(sabor);
            return new ResponseEntity<>(saborPizza,HttpStatus.OK);
@@ -41,7 +46,12 @@ public class PizzaV1Controller {
     }
 
     @PutMapping(value = "/saboresPizza/{codigoAcessoEstabelecimento}/{idPizza}")
-    public ResponseEntity<?> atualizarSaborPizza(@Valid @PathVariable("codigoAcessoEstabelecimento")String codigoAcessoEstabelecimento,@Valid @PathVariable("idPizza") long idPizza,@Valid @RequestBody SaborPostPutDTO sabor) throws SaborPizzaNaoEncontradoException {
+    public ResponseEntity<?> atualizarSaborPizza(
+            @Valid @RequestParam @PathVariable ("idEstabelecimento")long idEstabelecimento,
+            @Valid @PathVariable("codigoAcessoEstabelecimento")String codigoAcessoEstabelecimento,
+            @Valid @PathVariable("idPizza") long idPizza,
+            @Valid @RequestBody SaborPostPutDTO sabor)
+            throws SaborPizzaNaoEncontradoException {
         try{
             estabelecimentoV1Service.validaCodigoAcessoEstabelecimento(codigoAcessoEstabelecimento);
             saborV1Service.atualizarSaborPizza(idPizza,sabor);
@@ -54,7 +64,11 @@ public class PizzaV1Controller {
     }
 
     @GetMapping(value = "/saboresPizza/{codigoAcessoEstabelecimento}/{idPizza}")
-    public ResponseEntity<?> consultarSaboresPizza(@Valid @PathVariable("codigoAcessoEstabelecimento")String codigoAcessoEstabelecimento,@Valid @PathVariable("idPizza") long idPizza) throws SaborPizzaNaoEncontradoException {
+    public ResponseEntity<?> consultarSaboresPizza(
+            @Valid @RequestParam @PathVariable ("idEstabelecimento")long idEstabelecimento,
+            @Valid @PathVariable("codigoAcessoEstabelecimento")String codigoAcessoEstabelecimento,
+            @Valid @PathVariable("idPizza") long idPizza)
+            throws SaborPizzaNaoEncontradoException {
 
         try{
             estabelecimentoV1Service.validaCodigoAcessoEstabelecimento(codigoAcessoEstabelecimento);
@@ -95,7 +109,11 @@ public class PizzaV1Controller {
     }
 
     @DeleteMapping(value = "/saboresPizza/{codigoAcessoEstabelecimento}/{idPizza}")
-    public ResponseEntity<?> deletarSaborPizza(@Valid @PathVariable("codigoAcessoEstabelecimento")String codigoAcessoEstabelecimento,@Valid @PathVariable("idPizza") long idPizza) throws SaborPizzaNaoEncontradoException {
+    public ResponseEntity<?> deletarSaborPizza(
+            @Valid @RequestParam @PathVariable ("idEstabelecimento")long idEstabelecimento,
+            @Valid @RequestParam @PathVariable("codigoAcessoEstabelecimento")String codigoAcessoEstabelecimento,
+            @Valid @RequestParam @PathVariable("idPizza") long idPizza)
+            throws SaborPizzaNaoEncontradoException {
         try{
             estabelecimentoV1Service.validaCodigoAcessoEstabelecimento(codigoAcessoEstabelecimento);
             saborV1Service.deletarSaborPizza(idPizza);
