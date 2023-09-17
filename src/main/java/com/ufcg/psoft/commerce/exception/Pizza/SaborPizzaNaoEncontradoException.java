@@ -1,6 +1,8 @@
 package com.ufcg.psoft.commerce.exception.Pizza;
 
-public class SaborPizzaNaoEncontradoException extends Exception{
+import com.ufcg.psoft.commerce.exception.CommerceException;
+
+public class SaborPizzaNaoEncontradoException extends CommerceException {
 
     private long idPizza;
 

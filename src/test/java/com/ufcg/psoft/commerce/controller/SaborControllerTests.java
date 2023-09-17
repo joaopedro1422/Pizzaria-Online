@@ -3,6 +3,13 @@
 //import com.fasterxml.jackson.core.type.TypeReference;
 //import com.fasterxml.jackson.databind.ObjectMapper;
 //import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+//import com.ufcg.psoft.commerce.dto.PizzaDTO.SaborPostPutDTO;
+//import com.ufcg.psoft.commerce.enums.DisponibilidadeSabor;
+//import com.ufcg.psoft.commerce.enums.TipoDeSabor;
+//import com.ufcg.psoft.commerce.model.Estabelecimento.Estabelecimento;
+//import com.ufcg.psoft.commerce.model.SaborPizza.SaborPizza;
+//import com.ufcg.psoft.commerce.repository.Estabelecimento.EstabelecimentoV1Repository;
+//import com.ufcg.psoft.commerce.repository.Pizza.SaborRepository;
 //import org.junit.jupiter.api.*;
 //import org.springframework.beans.factory.annotation.Autowired;
 //import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -30,29 +37,29 @@
 //    @Autowired
 //    SaborRepository saborRepository;
 //    @Autowired
-//    EstabelecimentoRepository estabelecimentoRepository;
+//    EstabelecimentoV1Repository estabelecimentoRepository;
 //
 //    ObjectMapper objectMapper = new ObjectMapper();
-//    Sabor sabor;
+//    SaborPizza sabor;
 //    Estabelecimento estabelecimento;
-//    SaborPostPutRequestDTO saborPostPutRequestDTO;
+//    SaborPostPutDTO saborPostPutRequestDTO;
 //
 //    @BeforeEach
 //    void setup() {
 //        objectMapper.registerModule(new JavaTimeModule());
-//        sabor = saborRepository.save(Sabor.builder()
-//                .nome("Calabresa")
-//                .tipo("salgado")
-//                .precoM(10.0)
-//                .precoG(15.0)
-//                .disponivel(true)
+//        sabor = saborRepository.save(SaborPizza.builder()
+//                .saborDaPizza("Calabresa")
+//                .tipoDeSabor(TipoDeSabor.SALGADO)
+//                .valorMedia(10.0)
+//                .valorGrande(15.0)
+//                .disponibilidadeSabor(DisponibilidadeSabor.DISPONIVEL)
 //                .build());
-//        saborPostPutRequestDTO = SaborPostPutRequestDTO.builder()
-//                .nome(sabor.getNome())
-//                .tipo(sabor.getTipo())
-//                .precoM(sabor.getPrecoM())
-//                .precoG(sabor.getPrecoG())
-//                .disponivel(sabor.isDisponivel())
+//        saborPostPutRequestDTO = SaborPostPutDTO.builder()
+//                .saborDaPizza(sabor.getSaborDaPizza())
+//                .tipoDeSabor(sabor.getTipoDeSabor())
+//                .valorMedia(sabor.getValorMedia())
+//                .valorGrande(sabor.getValorGrande())
+//                .disponibilidadeSabor(sabor.getDisponibilidadeSabor())
 //                .build();
 //        estabelecimento = estabelecimentoRepository.save(Estabelecimento.builder()
 //                .codigoAcesso("654321")
@@ -74,39 +81,40 @@
 //        void quandoBuscamosPorTodosSaboresSalvos() throws Exception {
 //            // Arrange
 //            // Vamos ter 3 sabores no banco
-//            Sabor sabor1 = Sabor.builder()
-//                    .nome("Chocolate")
-//                    .tipo("doce")
-//                    .precoM(10.0)
-//                    .precoG(15.0)
-//                    .disponivel(true)
+//            SaborPizza sabor1 = SaborPizza.builder()
+//                    .saborDaPizza("Chocolate")
+//                    .tipoDeSabor(TipoDeSabor.DOCE)
+//                    .valorMedia(10.0)
+//                    .valorGrande(15.0)
+//                    .disponibilidadeSabor(DisponibilidadeSabor.DISPONIVEL)
 //                    .build();
-//            Sabor sabor2 = Sabor.builder()
-//                    .nome("Frango")
-//                    .tipo("salgado")
-//                    .precoM(10.0)
-//                    .precoG(15.0)
-//                    .disponivel(true)
+//            SaborPizza sabor2 = SaborPizza.builder()
+//                    .saborDaPizza("Frango")
+//                    .tipoDeSabor(TipoDeSabor.SALGADO)
+//                    .valorMedia(10.0)
+//                    .valorGrande(15.0)
+//                    .disponibilidadeSabor(DisponibilidadeSabor.DISPONIVEL)
 //                    .build();
 //            saborRepository.saveAll(Arrays.asList(sabor1, sabor2));
 //
 //            // Act
 //            String responseJsonString = driver.perform(get(URI_SABORES)
 //                            .contentType(MediaType.APPLICATION_JSON)
-//                            .param("estabelecimentoId", estabelecimento.getId().toString())
+//                            //.param("estabelecimentoId", estabelecimento.getId().toString())
 //                            .param("estabelecimentoCodigoAcesso", estabelecimento.getCodigoAcesso())
 //                            .content(objectMapper.writeValueAsString(saborPostPutRequestDTO)))
 //                    .andExpect(status().isOk()) // Codigo 200
 //                    .andDo(print())
 //                    .andReturn().getResponse().getContentAsString();
 //
-//            List<SaborResponseDTO> resultado = objectMapper.readValue(responseJsonString, new TypeReference<>() {});
+//            List<SaborPostPutDTO> resultado = objectMapper.readValue(responseJsonString, new TypeReference<>() {});
 //
 //            // Assert
 //            assertAll(
 //                    () -> assertEquals(3, resultado.size())
 //            );
 //        }
+
 //
 //        @Test
 //        @DisplayName("Quando buscamos um sabor salvo pelo id")

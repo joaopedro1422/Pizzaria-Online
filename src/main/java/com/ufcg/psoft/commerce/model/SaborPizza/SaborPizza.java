@@ -15,6 +15,7 @@ import java.util.List;
 
 @Data
 @Builder
+@NoArgsConstructor
 @AllArgsConstructor
 @Entity(name = "saboresPizza")
 public class SaborPizza {
@@ -36,7 +37,6 @@ public class SaborPizza {
     private DisponibilidadeSabor disponibilidadeSabor;
     private TipoDeSabor tipoDeSabor;
 
-    public SaborPizza() {}
 
     public SaborPizza(String saborDaPizza, TipoDeSabor tipoDeSabor, double valorMedia, double valorGrande, DisponibilidadeSabor disponibilidadeSabor) {
         this.saborDaPizza = saborDaPizza;
@@ -62,15 +62,17 @@ public class SaborPizza {
             this.notifyObservers();
         }
     }*/
-    public List<Cliente> getObservers() {
-        return observers;
-    }
+
     @OneToMany
     private List<Cliente> observers;
 
     {
         observers = new ArrayList<Cliente>();
     }
+    public List<Cliente> getObservers() {
+        return observers;
+    }
+
 
     public Long getIdPizza() {
         return idPizza;

@@ -1,5 +1,7 @@
 package com.ufcg.psoft.commerce.exception.Pizza;
 
-public class SaborPizzaExistenteException extends Exception {
+import com.ufcg.psoft.commerce.exception.CommerceException;
+
+public class SaborPizzaExistenteException extends CommerceException {
 
 }
