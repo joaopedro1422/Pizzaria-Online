@@ -12,10 +12,16 @@ import java.util.List;
 
 public interface ClienteService {
     Cliente adicionarCliente(ClienteDTO cliente);
-    ClienteDTO getCliente(Long id) throws ClienteNaoEncontradoException;
+
+    public Cliente atualizarCliente(Long id, ClienteDTO cliente);
+
+    public void removerCliente(Long id);
+
+    Cliente getCliente(Long id);
+
+    List<Cliente> getClientes();
+
     boolean validarCodigoAcesso(Long id, String codigoAcesso) throws ClienteCodigoAcessoIncorretoException, ClienteNaoEncontradoException;
-    void removerCliente(Long id, String codigoAcesso) throws ClienteNaoEncontradoException, ClienteCodigoAcessoIncorretoException;
-    void atualizarCliente(Long id, ClienteDTO cliente, String codigoAcesso) throws ClienteCodigoAcessoIncorretoException, ClienteNaoEncontradoException;
-    List<ClienteDTO> getClientes(String codigoAcesso) throws EstabelecimentoNaoEncontradoException, CodigoAcessoEstabelecimentoException;
+
 
 }

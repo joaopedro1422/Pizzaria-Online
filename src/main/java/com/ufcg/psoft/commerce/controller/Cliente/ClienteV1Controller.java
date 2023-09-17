@@ -1,16 +1,12 @@
 package com.ufcg.psoft.commerce.controller.Cliente;
 
 import com.ufcg.psoft.commerce.dto.ClienteDTO.ClienteDTO;
-import com.ufcg.psoft.commerce.exception.Cliente.ClienteCodigoAcessoIncorretoException;
 import com.ufcg.psoft.commerce.exception.Cliente.ClienteNaoEncontradoException;
-import com.ufcg.psoft.commerce.service.Cliente.ClienteV1Service;
-import com.ufcg.psoft.commerce.util.ErroCliente;
-import com.ufcg.psoft.commerce.util.ErroValidacao;
+import com.ufcg.psoft.commerce.service.Cliente.ClienteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
@@ -20,7 +16,7 @@ import jakarta.validation.Valid;
 public class ClienteV1Controller {
 
     @Autowired
-    ClienteV1Service clienteV1Service;
+    ClienteService clienteService;
 
     @PostMapping
     ResponseEntity<?> criarCliente(
@@ -28,47 +24,52 @@ public class ClienteV1Controller {
     ){
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(clienteV1Service.adicionarCliente(clienteDTO));
+                .body(clienteService.adicionarCliente(clienteDTO));
     }
-//    @PutMapping("/{clienteId}/{codigoAcesso}")
-//    ResponseEntity<?> atualizarCliente(@PathVariable Long clienteId,
-//                                       @PathVariable String codigoAcesso,
-//                                       @Valid @RequestBody ClienteDTO cliente) {
-//        try {
-//            clienteV1Service.atualizarCliente(clienteId, cliente, codigoAcesso);
-//            return ResponseEntity.status(HttpStatus.OK).build();
-//        } catch (ClienteCodigoAcessoIncorretoException e) {
-//            return ErroCliente.erroCodigoAcessoIncorreto();
-//        } catch (ClienteNaoEncontradoException e) {
-//            return criarCliente(cliente);
-//        }
-//    }
-
-    @GetMapping("/{idCliente}")
-    ResponseEntity<?> getCliente(@PathVariable long idCliente) {
-        try {
-            return ResponseEntity.status(HttpStatus.OK).body(clienteV1Service.getCliente(idCliente));
-        } catch (ClienteNaoEncontradoException e) {
-            return ErroCliente.erroClienteNaoEncontrado(idCliente);
-        }
+    @PutMapping("/{id}")
+    ResponseEntity<?> atualizarCliente(
+            @PathVariable("id") Long id,
+            @RequestBody @Valid ClienteDTO clienteDTO
+    ){
+        return  ResponseEntity
+                .status(HttpStatus.OK)
+                .body(clienteService.atualizarCliente(id, clienteDTO));
     }
 
-    @DeleteMapping("/{clienteId}/{codigoAcesso}")
-    ResponseEntity<?> removerCliente(@PathVariable Long clienteId, @PathVariable String codigoAcesso) {
-        try {
-            clienteV1Service.removerCliente(clienteId, codigoAcesso);
-            return ResponseEntity.status(HttpStatus.OK).build();
-        } catch (ClienteCodigoAcessoIncorretoException e) {
-            return ErroCliente.erroCodigoAcessoIncorreto();
-        } catch (ClienteNaoEncontradoException e) {
-            return ErroCliente.erroClienteNaoEncontrado(clienteId);
-        }
+    @DeleteMapping("/{id}")
+    ResponseEntity<?> excluirCliente(
+            @PathVariable("id") Long id
+    ){
+        clienteService.removerCliente(id);
+            return ResponseEntity
+                    .status(HttpStatus.NO_CONTENT)
+                    .build();
+
     }
 
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    ResponseEntity<?> handleValidationExceptions(MethodArgumentNotValidException ex) {
-        return ErroValidacao.erroFalhaValidacao(ex.getFieldErrors());
+    @GetMapping("/{id}")
+    ResponseEntity<?> buscarClientePorId(
+            @PathVariable("id") Long id
+    ){
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(clienteService.getCliente(id));
+
+    }
+
+    @GetMapping
+    ResponseEntity<?> listarClientes(
+    ){
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(clienteService.getClientes());
+    }
+
+    @ExceptionHandler(ClienteNaoEncontradoException.class)
+    ResponseEntity<?> handleClienteNaoEncontradoException(ClienteNaoEncontradoException ex) {
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(ex.getMessage());
     }
 
 }

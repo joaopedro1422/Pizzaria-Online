@@ -14,87 +14,99 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 @Service
 public class ClienteV1Service implements ClienteService {
 
-        @Autowired
-        private ClienteRepository clienteRepository;
+    @Autowired
+    private  ClienteRepository clienteRepository;
 
-        @Autowired
-        private ModelMapper modelMapper;
+    @Autowired
+    private ModelMapper modelMapper;
 
-        @Autowired
-        private EstabelecimentoV1Service estabelecimentoService;
+    @Autowired
+    private EstabelecimentoV1Service estabelecimentoService;
 
     @Override
     public Cliente adicionarCliente(ClienteDTO clienteDTO) {
-        if (clienteDTO.getCodigoAcesso() == null || clienteDTO.getCodigoAcesso().isEmpty()) {
+        String codigoAcesso = clienteDTO.getCodigoAcesso();
+
+        if (codigoAcesso == null || codigoAcesso.isEmpty() || !isValidCodigoAcesso(codigoAcesso)) {
             throw new ClienteCodigoAcessoInvalidoException();
         } else {
             return clienteRepository.save(
                     Cliente.builder()
                             .nome(clienteDTO.getNome())
                             .endereco(clienteDTO.getEndereco())
-                            .codigoAcesso(clienteDTO.getCodigoAcesso())
+                            .codigoAcesso(codigoAcesso)
                             .build()
             );
-
         }
     }
 
-        public ClienteDTO getCliente(Long id) throws ClienteNaoEncontradoException {
-            Cliente cliente = getClienteById(id);
-            return modelMapper.map(cliente, ClienteDTO.class);
-        }
+    @Override
+    public Cliente atualizarCliente(Long id, ClienteDTO clienteDTO) {
+        Optional<Cliente> clienteOptional = clienteRepository.findById(id);
 
-        @Override
-        public boolean validarCodigoAcesso(Long id, String codigoAcesso) throws ClienteCodigoAcessoIncorretoException, ClienteNaoEncontradoException {
-            Cliente cliente = getClienteById(id);
-            if (!cliente.getCodigoAcesso().equals(codigoAcesso)) {
+        if (clienteOptional.isPresent()) {
+            String codigoAcesso = clienteDTO.getCodigoAcesso();
+            if (codigoAcesso != null && !codigoAcesso.isEmpty() && !isValidCodigoAcesso(codigoAcesso)) {
                 throw new ClienteCodigoAcessoIncorretoException();
             }
-            return true;
+
+            Cliente cliente = clienteOptional.get();
+            cliente.setNome(clienteDTO.getNome());
+            cliente.setEndereco(clienteDTO.getEndereco());
+
+            return clienteRepository.save(cliente);
+        } else {
+            throw new ClienteNaoEncontradoException();
         }
+    }
 
-        private Cliente getClienteById(Long id) throws ClienteNaoEncontradoException {
-            return clienteRepository.findById(id).orElseThrow(ClienteNaoEncontradoException::new);
+    @Override
+    public void removerCliente(Long id) {
+        if (!clienteRepository.existsById(id)) {
+            throw new ClienteNaoEncontradoException();
         }
+        // Não há necessidade de validar o código de acesso para remover o cliente.
+        clienteRepository.deleteById(id);
+    }
 
-        @Override
-        public void removerCliente(Long id, String codigoAcesso) throws ClienteNaoEncontradoException, ClienteCodigoAcessoIncorretoException {
-//            ClienteDTO cliente = getCliente(id);
-//            validarCodigoAcesso(cliente.getId(), codigoAcesso);
-//
-//            clienteRepository.deleteById(cliente.getId());
+    @Override
+    public Cliente getCliente(Long id) {
+        Optional<Cliente> clienteOptional = clienteRepository.findById(id);
+        if (clienteOptional.isPresent()) {
+            return clienteOptional.get();
+        } else {
+            throw new ClienteNaoEncontradoException();
         }
+    }
 
-        @Override
-        public void atualizarCliente(Long id, ClienteDTO clienteDTO, String codigoAcesso){
-//                throws ClienteCodigoAcessoIncorretoException, ClienteNaoEncontradoException {
-//
-//            ClienteDTO cliente = getCliente(id);
-//            validarCodigoAcesso(id, codigoAcesso);
-//            Cliente atualizacao = getClienteById(cliente.getId());
-//
-//            atualizacao.setEndereco(clienteDTO.getEndereco());
-//            if (clienteDTO.getCodigoAcesso() != null) {
-//                atualizacao.setCodigoAcesso(clienteDTO.getCodigoAcesso());
-//            }
-//            atualizacao.setNome(clienteDTO.getNome());
-//            clienteRepository.save(atualizacao);
+    @Override
+    public List<Cliente> getClientes() {
+        return clienteRepository.findAll();
+    }
+
+    @Override
+    public boolean validarCodigoAcesso(Long id, String codigoAcesso) throws ClienteCodigoAcessoIncorretoException, ClienteNaoEncontradoException {
+        Cliente cliente = getClienteById(id);
+        if (!cliente.getCodigoAcesso().equals(codigoAcesso)) {
+            throw new ClienteCodigoAcessoIncorretoException();
         }
+        return true;
+    }
 
+    private Cliente getClienteById(Long id) throws ClienteNaoEncontradoException {
+        return clienteRepository.findById(id).orElseThrow(ClienteNaoEncontradoException::new);
+    }
 
-        @Override
-        public List<ClienteDTO> getClientes(String codigoAcesso) throws EstabelecimentoNaoEncontradoException, CodigoAcessoEstabelecimentoException {
-            estabelecimentoService.validaCodigoAcessoEstabelecimento(codigoAcesso);
-            Stream<Cliente> clientes = StreamSupport.stream(clienteRepository.findAll().spliterator(), false);
-            return clientes.map(cliente -> modelMapper.map(cliente, ClienteDTO.class)).toList();
-        }
-
+    private boolean isValidCodigoAcesso(String codigoAcesso) {
+        return codigoAcesso.matches("[0-9]+") && codigoAcesso.length() == 6;
+    }
 
 
 }
