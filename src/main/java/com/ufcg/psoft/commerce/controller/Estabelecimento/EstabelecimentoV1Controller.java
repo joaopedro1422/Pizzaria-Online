@@ -1,7 +1,7 @@
 package com.ufcg.psoft.commerce.controller.Estabelecimento;
 
 
-import com.ufcg.psoft.commerce.dto.Estabelecimento.EstabelecimentoV1DTO;
+import com.ufcg.psoft.commerce.dto.Estabelecimento.EstabelecimentoPostPutRequestDTO;
 import com.ufcg.psoft.commerce.model.Cardapio.Cardapio;
 import com.ufcg.psoft.commerce.model.Cliente.Cliente;
 import com.ufcg.psoft.commerce.model.Entregador.Entregador;
@@ -12,10 +12,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.beans.factory.annotation.Autowired;
 
 @RestController
-@RequestMapping(value = "/estabelecimento/v1/",  produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/estabelecimentos",  produces = MediaType.APPLICATION_JSON_VALUE)
 public class EstabelecimentoV1Controller {
 
     @Autowired
@@ -24,9 +23,9 @@ public class EstabelecimentoV1Controller {
     final String msgErro = "Nenhum estabelecimento encontrado com esse id";
 
     @PostMapping
-    public ResponseEntity<?> post (@RequestBody EstabelecimentoV1DTO estabelecimentoV1DTO){
+    public ResponseEntity<?> post (@RequestBody EstabelecimentoPostPutRequestDTO estabelecimentoPostPutRequestDTO){
 
-        Estabelecimento estabelecimento = estabelecimentov1Service.add(estabelecimentoV1DTO);
+        Estabelecimento estabelecimento = estabelecimentov1Service.add(estabelecimentoPostPutRequestDTO);
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -68,8 +67,8 @@ public class EstabelecimentoV1Controller {
     }
 
     @PutMapping("{id}")
-    public ResponseEntity<?> put (@PathVariable("id") long id, @RequestBody EstabelecimentoV1DTO estabelecimentoV1DTO){
-        Estabelecimento estabelecimento = estabelecimentov1Service.put(id, estabelecimentoV1DTO);
+    public ResponseEntity<?> put (@PathVariable("id") long id, @RequestBody EstabelecimentoPostPutRequestDTO estabelecimentoPostPutRequestDTO){
+        Estabelecimento estabelecimento = estabelecimentov1Service.put(id, estabelecimentoPostPutRequestDTO);
         ResponseEntity<?> response;
 
         if(estabelecimento == null){
@@ -148,45 +147,6 @@ public class EstabelecimentoV1Controller {
 
         }else{
 
-
-            response = ResponseEntity
-                    .status(HttpStatus.NOT_FOUND)
-                    .body(msgErro);
-
-        }
-
-        return response;
-
-    }
-
-
-    @RequestMapping(value = "consultaCardapio/{codigoAcessoEstabelecimento}/{codigoAcessoCardapio}", method = RequestMethod.GET)
-    public ResponseEntity<?> consultaCardapio(@PathVariable("codigoAcessoEstabelecimento") String codigoAcessoEstabelecimento,
-                                              @PathVariable("codigoAcessoCardapio") String codigoAcessoCardapio){
-
-        Estabelecimento estabelecimento = estabelecimentov1Service.getByCodigoAcesso(codigoAcessoEstabelecimento);
-        ResponseEntity<?> response;
-
-        if(estabelecimento != null){
-            Cardapio cardapio = estabelecimento.cardapioPorCodigoAcesso(codigoAcessoCardapio, codigoAcessoEstabelecimento);
-
-            if(cardapio != null){
-
-                response = ResponseEntity
-                        .status(HttpStatus.OK)
-                        .body(cardapio);
-
-            }else{
-
-
-                response = ResponseEntity
-                        .status(HttpStatus.NOT_FOUND)
-                        .body("Codigo de cardapio, ou estabelecimento, incorreto!");
-
-
-            }
-
-        }else{
 
             response = ResponseEntity
                     .status(HttpStatus.NOT_FOUND)

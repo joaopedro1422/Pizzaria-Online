@@ -11,12 +11,16 @@ import lombok.NoArgsConstructor;
 
 import java.util.Set;
 
-
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class EstabelecimentoV1DTO {
+public class EstabelecimentoResponseDTO {
+    @JsonProperty("id")
+    private Long id;
+
+    @JsonProperty("codigoAcesso")
+    private String codigoAcesso;
 
     @JsonProperty("nome")
     private String nome;

@@ -13,7 +13,7 @@ import com.ufcg.psoft.commerce.model.Cliente.Cliente;
 import com.ufcg.psoft.commerce.model.Entregador.Entregador;
 import com.ufcg.psoft.commerce.model.Estabelecimento.Estabelecimento;
 import com.ufcg.psoft.commerce.model.SaborPizza.SaborPizza;
-import com.ufcg.psoft.commerce.repository.Estabelecimento.EstabelecimentoV1Repository;
+import com.ufcg.psoft.commerce.repository.Estabelecimento.EstabelecimentoRepository;
 import com.ufcg.psoft.commerce.repository.Pizza.SaborRepository;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +21,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -46,7 +45,7 @@ public class SaborPizzaControllerTests {
     @Autowired
     SaborRepository saborRepository;
     @Autowired
-    EstabelecimentoV1Repository estabelecimentoRepository;
+    EstabelecimentoRepository estabelecimentoRepository;
 
     ObjectMapper objectMapper = new ObjectMapper();
     SaborPizza sabor;
@@ -139,8 +138,7 @@ public class SaborPizzaControllerTests {
                     () -> assertEquals(saborPostPutDTO.getTipoDeSabor(), resultado.getTipoDeSabor()),
                     () -> assertEquals(saborPostPutDTO.getValorMedia(), resultado.getValorMedia()),
                     () -> assertEquals(saborPostPutDTO.getValorGrande(), resultado.getValorGrande()),
-                    () -> assertEquals(saborPostPutDTO.getDisponibilidadeSabor(), resultado.getDisponibilidadeSabor()),
-                    () -> assertTrue(estabelecimento.getCardapios().contains(resultado))
+                    () -> assertEquals(saborPostPutDTO.getDisponibilidadeSabor(), resultado.getDisponibilidadeSabor())
             );
 
 

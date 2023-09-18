@@ -26,6 +26,9 @@ public class SaborPizza {
     @Column(name = "pk_id_sabor")
     private Long idPizza;
 
+    @JsonProperty("nome")
+    private String nome;
+
     @JsonProperty("saborDaPizza")
     @Column(nullable = false, name = "desc_saborDaPizza")
     private String saborDaPizza;

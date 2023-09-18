@@ -1,16 +1,15 @@
 package com.ufcg.psoft.commerce.util;
 
-import com.ufcg.psoft.commerce.repository.Estabelecimento.EstabelecimentoV1Repository;
-import com.ufcg.psoft.commerce.service.Estabelecimento.EstabelecimentoV1Service;
+import com.ufcg.psoft.commerce.repository.Estabelecimento.EstabelecimentoRepository;
 
 import java.util.Random;
 
 public class GerarCodigoAcessoEstabelecimento {
-    private EstabelecimentoV1Repository estabelecimentoV1Service;
+    private EstabelecimentoRepository estabelecimentoV1Service;
 
-    public GerarCodigoAcessoEstabelecimento(EstabelecimentoV1Repository estabelecimentoV1Repository){
+    public GerarCodigoAcessoEstabelecimento(EstabelecimentoRepository estabelecimentoRepository){
 
-        this.estabelecimentoV1Service = estabelecimentoV1Repository;
+        this.estabelecimentoV1Service = estabelecimentoRepository;
 
     }
 

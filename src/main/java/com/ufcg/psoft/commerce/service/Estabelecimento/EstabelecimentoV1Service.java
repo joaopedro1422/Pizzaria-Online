@@ -1,10 +1,10 @@
 package com.ufcg.psoft.commerce.service.Estabelecimento;
 
-import com.ufcg.psoft.commerce.dto.Estabelecimento.EstabelecimentoV1DTO;
+import com.ufcg.psoft.commerce.dto.Estabelecimento.EstabelecimentoPostPutRequestDTO;
 import com.ufcg.psoft.commerce.exception.Estabelecimento.CodigoAcessoEstabelecimentoException;
 import com.ufcg.psoft.commerce.exception.Estabelecimento.EstabelecimentoNaoEncontradoException;
 import com.ufcg.psoft.commerce.model.Estabelecimento.Estabelecimento;
-import com.ufcg.psoft.commerce.repository.Estabelecimento.EstabelecimentoV1Repository;
+import com.ufcg.psoft.commerce.repository.Estabelecimento.EstabelecimentoRepository;
 import com.ufcg.psoft.commerce.util.GerarCodigoAcessoEstabelecimento;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,13 +12,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Set;
 
 @Service
 public class EstabelecimentoV1Service {
 
     @Autowired
-    private EstabelecimentoV1Repository estabelecimentoV1Repository;
+    private EstabelecimentoRepository estabelecimentoRepository;
 
     @Bean
     private ModelMapper mapeadorEstabelecimento(){
@@ -27,20 +26,20 @@ public class EstabelecimentoV1Service {
 
     }
 
-    private Estabelecimento converteTDOParaEntidade(EstabelecimentoV1DTO estabelecimentoV1DTO){
+    private Estabelecimento converteTDOParaEntidade(EstabelecimentoPostPutRequestDTO estabelecimentoPostPutRequestDTO){
 
-        return mapeadorEstabelecimento().map(estabelecimentoV1DTO, Estabelecimento.class);
+        return mapeadorEstabelecimento().map(estabelecimentoPostPutRequestDTO, Estabelecimento.class);
 
     }
 
-    public Estabelecimento add(EstabelecimentoV1DTO estabelecimentoV1DTO){
-        Estabelecimento estabelecimento = converteTDOParaEntidade(estabelecimentoV1DTO);
+    public Estabelecimento add(EstabelecimentoPostPutRequestDTO estabelecimentoPostPutRequestDTO){
+        Estabelecimento estabelecimento = converteTDOParaEntidade(estabelecimentoPostPutRequestDTO);
 
-        GerarCodigoAcessoEstabelecimento gerador = new GerarCodigoAcessoEstabelecimento(estabelecimentoV1Repository);
+        GerarCodigoAcessoEstabelecimento gerador = new GerarCodigoAcessoEstabelecimento(estabelecimentoRepository);
 
         estabelecimento.setCodigoAcesso(gerador.gerar());
 
-        return estabelecimentoV1Repository.save(estabelecimento);
+        return estabelecimentoRepository.save(estabelecimento);
 
     }
 
@@ -48,9 +47,9 @@ public class EstabelecimentoV1Service {
 
         Estabelecimento estabelecimento = null;
 
-        if(estabelecimentoV1Repository.existsById(id)){
+        if(estabelecimentoRepository.existsById(id)){
 
-            estabelecimento = estabelecimentoV1Repository.findById(id).get();
+            estabelecimento = estabelecimentoRepository.findById(id).get();
 
 
         }
@@ -62,19 +61,19 @@ public class EstabelecimentoV1Service {
 
     public List<Estabelecimento> getAll(){
 
-        return estabelecimentoV1Repository.findAll();
+        return estabelecimentoRepository.findAll();
     }
 
-    public Estabelecimento put (long id, EstabelecimentoV1DTO estabelecimentoV1DTO){
+    public Estabelecimento put (long id, EstabelecimentoPostPutRequestDTO estabelecimentoPostPutRequestDTO){
         Estabelecimento estabelecimento = null;
 
-        if(estabelecimentoV1Repository.existsById(id)){
+        if(estabelecimentoRepository.existsById(id)){
 
-            estabelecimento = converteTDOParaEntidade(estabelecimentoV1DTO);
+            estabelecimento = converteTDOParaEntidade(estabelecimentoPostPutRequestDTO);
 
             estabelecimento.setId(id);
 
-            estabelecimentoV1Repository.saveAndFlush(estabelecimento);
+            estabelecimentoRepository.saveAndFlush(estabelecimento);
 
         }
 
@@ -84,9 +83,9 @@ public class EstabelecimentoV1Service {
     }
 
     public void delete (long id){
-        if (estabelecimentoV1Repository.existsById(id)){
+        if (estabelecimentoRepository.existsById(id)){
 
-            estabelecimentoV1Repository.deleteById(id);
+            estabelecimentoRepository.deleteById(id);
 
         }
 
@@ -97,10 +96,10 @@ public class EstabelecimentoV1Service {
 
         Estabelecimento estabelecimento = null;
 
-        if(estabelecimentoV1Repository.existsByCodigoAcesso(codigoAcesso)){
+        if(estabelecimentoRepository.existsByCodigoAcesso(codigoAcesso)){
 
 
-            estabelecimento = estabelecimentoV1Repository.findByCodigoAcesso(codigoAcesso).get();
+            estabelecimento = estabelecimentoRepository.findByCodigoAcesso(codigoAcesso).get();
 
         }
 
@@ -124,7 +123,7 @@ public class EstabelecimentoV1Service {
 
     // Método para encontrar o estabelecimento
     public Estabelecimento findEstabelecimento() throws EstabelecimentoNaoEncontradoException {
-        List<Estabelecimento> estabelecimentoList = estabelecimentoV1Repository.findAll();
+        List<Estabelecimento> estabelecimentoList = estabelecimentoRepository.findAll();
         if (estabelecimentoList.isEmpty()) {
             throw new EstabelecimentoNaoEncontradoException();
         }

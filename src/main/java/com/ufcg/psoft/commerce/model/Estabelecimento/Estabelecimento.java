@@ -25,7 +25,7 @@ public class Estabelecimento {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @JsonProperty("id")
     @Column(name = "estabelecimento_id")
-    private long id;
+    private Long id;
 
     @JsonProperty("codigoAcesso")
     @Column(name = "codigo_acesso")
@@ -35,10 +35,10 @@ public class Estabelecimento {
     @Column(name = "nome_estabelecimento")
     private String nome;
 
-    @JsonProperty("cardapios")
-    @Column(name = "cardapio")
+    @JsonProperty("saboresPizza")
+    @Column(name = "sabores_pizza")
     @OneToMany(cascade=CascadeType.PERSIST)
-    private Set<Cardapio> cardapios;
+    private Set<SaborPizza> saboresPizza;
 
     @JsonProperty("clientes")
     @Column(name = "cliente")
@@ -63,12 +63,12 @@ public class Estabelecimento {
         this.nome = nome;
     }
 
-    public Set<Cardapio> getCardapios() {
-        return cardapios;
+    public Set<SaborPizza> getSaboresPizza() {
+        return saboresPizza;
     }
 
-    public void setCardapios(Set<Cardapio> cardapios) {
-        this.cardapios = cardapios;
+    public void setSaboresPizza(Set<SaborPizza> saboresPizza) {
+        this.saboresPizza = saboresPizza;
     }
 
     public Set<Cliente> getClientes() {
@@ -86,11 +86,11 @@ public class Estabelecimento {
     public void setEntregadores(Set<Entregador> entregadores) {
         this.entregadores = entregadores;
     }
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -128,27 +128,6 @@ public class Estabelecimento {
 
     }
 
-    public Cardapio cardapioPorCodigoAcesso(String codigoAcessoCardapio, String codigoAcessoEstabelecimento){
-        Cardapio cardapio = null;
-
-        if(this.codigoAcesso.equals(codigoAcessoEstabelecimento)){
-
-            for (Cardapio c : cardapios) {
-
-                if(c.getCodigoAcesso().equals(codigoAcessoCardapio)){
-
-                    cardapio = c;
-                    break;
-
-                }
-
-            }
-
-        }
-
-        return cardapio;
-
-    }
 
     public Entregador entregadorPorCodigoAcesso(String codigoAcessoEntregador, String codigoAcessoEstabelecimento){
         Entregador entregadorEncontrado = null;
