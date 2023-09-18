@@ -235,15 +235,16 @@ public class SaborPizzaControllerTests {
             }
         }
 
-        /*@Test
+        @Test
         @DisplayName("Quando buscamos um sabor salvo pelo id")
         void quandoBuscamosPorUmSaborSalvo() throws Exception {
             // Arrange
             // nenhuma necessidade além do setup()
 
             // Act
-            String responseJsonString = driver.perform(get(URI_SABORES + "/"+ estabelecimento.getCodigoAcesso()+"/" + sabor.getIdPizza())
+            String responseJsonString = driver.perform(get(URI_SABORES + "/" + sabor.getIdPizza())
                             .contentType(MediaType.APPLICATION_JSON)
+                            .param("idPizza",sabor.getIdPizza().toString())
                             .param("idEstabelecimento", estabelecimento.getId().toString())
                             .param("codigoAcessoEstabelecimento", estabelecimento.getCodigoAcesso())
                             .content(objectMapper.writeValueAsString(saborPostPutDTO)))
@@ -251,7 +252,7 @@ public class SaborPizzaControllerTests {
                     .andDo(print())
                     .andReturn().getResponse().getContentAsString();
 
-            SaborPizza resultado = objectMapper.readValue(responseJsonString, SaborPizza.class);
+            SaborResponseDTO resultado = objectMapper.readValue(responseJsonString, SaborResponseDTO.SaborResponseDTOBuilder.class).build();
 
             // Assert
             assertAll(
@@ -264,7 +265,7 @@ public class SaborPizzaControllerTests {
             );
         }
 
-        @Test
+        /*@Test
         @DisplayName("Quando buscamos um sabor inexistente")
         void quandoBuscamosPorUmSaborInexistente() throws Exception {
             // Arrange

@@ -58,7 +58,7 @@ public class PizzaV1Controller {
                 .body(saborService.buscarTodosSaboresPizza(idEstabelecimento,codigoAcessoEstabelecimento));
     }
 
-    @GetMapping(value = "/{idPizza}")
+    @GetMapping(value = "/{codigoAcessoEstabelecimento}/{idPizza}")
     public ResponseEntity<?> buscarSaborId(
             @Valid @RequestParam  ("idEstabelecimento")Long idEstabelecimento,
             @Valid @RequestParam ("codigoAcessoEstabelecimento")String codigoAcessoEstabelecimento,
