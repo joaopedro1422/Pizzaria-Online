@@ -26,7 +26,10 @@ public class SaborResponseDTO {
     @JsonProperty("valorGrande")
     private double valorGrande;
 
+    @JsonProperty("disponibilidadeSabor")
     private DisponibilidadeSabor disponibilidadeSabor;
+
+    @JsonProperty("tipoDeSabor")
     private TipoDeSabor tipoDeSabor;
 
 }
