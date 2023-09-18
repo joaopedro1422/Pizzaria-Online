@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ufcg.psoft.commerce.enums.DisponibilidadeSabor;
 import com.ufcg.psoft.commerce.enums.TipoDeSabor;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 @Data
@@ -21,37 +22,16 @@ public class SaborPostPutDTO {
     private String saborDaPizza;
 
     @JsonProperty("valorMedia")
-    @NotBlank(message = "O valor não pode estar em branco")
+    @NotNull(message = "O valor não pode estar nulo")
     private double valorMedia;
 
     @JsonProperty("valorGrande")
-    @NotBlank(message = "O valor não pode estar em branco")
+    @NotNull(message = "O valor não pode estar nulo")
     private double valorGrande;
 
     private DisponibilidadeSabor disponibilidadeSabor;
-    @NotBlank(message = "O tipo da pizza não pode estar em branco")
+
     private TipoDeSabor tipoDeSabor;
-
-    public Long getIdPizza() {
-        return this.idPizza;
-    }
-
-    public double getValorMedia() {
-        return this.valorMedia;
-    }
-
-    public double getValorGrande() {
-        return this.valorGrande;
-    }
-
-
-    public DisponibilidadeSabor getDisponibilidadeSabor() {
-        return disponibilidadeSabor;
-    }
-
-    public TipoDeSabor getTipoDeSabor() {
-        return tipoDeSabor;
-    }
 
     public String getSaborPizza() {
         return this.saborDaPizza;

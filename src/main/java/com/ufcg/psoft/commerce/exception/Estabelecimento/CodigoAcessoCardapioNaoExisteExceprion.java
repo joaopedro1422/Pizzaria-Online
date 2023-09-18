@@ -1,2 +1,3 @@
-package com.ufcg.psoft.commerce.exception.Estabelecimento;public class CodigoAcessoCardapioNaoExisteExceprion {
+package com.ufcg.psoft.commerce.exception.Estabelecimento;
+public class CodigoAcessoCardapioNaoExisteExceprion {
 }

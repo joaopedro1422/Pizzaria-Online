@@ -1,7 +1,10 @@
 package com.ufcg.psoft.commerce.service.Pizza;
 
 import com.ufcg.psoft.commerce.dto.PizzaDTO.SaborPostPutDTO;
+import com.ufcg.psoft.commerce.dto.PizzaDTO.SaborResponseDTO;
 import com.ufcg.psoft.commerce.enums.TipoDeSabor;
+import com.ufcg.psoft.commerce.exception.Estabelecimento.CodigoAcessoEstabelecimentoException;
+import com.ufcg.psoft.commerce.exception.Estabelecimento.EstabelecimentoNaoEncontradoException;
 import com.ufcg.psoft.commerce.exception.Pizza.SaborPizzaExistenteException;
 import com.ufcg.psoft.commerce.exception.Pizza.SaborPizzaNaoEncontradoException;
 import com.ufcg.psoft.commerce.model.SaborPizza.SaborPizza;
@@ -9,20 +12,16 @@ import com.ufcg.psoft.commerce.model.SaborPizza.SaborPizza;
 import java.util.List;
 
 public interface SaborService {
-    SaborPostPutDTO criarSabor(SaborPostPutDTO sabor) throws SaborPizzaNaoEncontradoException, SaborPizzaExistenteException;
+    SaborResponseDTO criarSabor(Long idEstabelecimento, String codigoAcessoEstabelecimento, SaborPostPutDTO sabor) throws SaborPizzaNaoEncontradoException, SaborPizzaExistenteException, EstabelecimentoNaoEncontradoException, CodigoAcessoEstabelecimentoException;
 
-    SaborPostPutDTO atualizarSaborPizza(long idPizza, SaborPostPutDTO sabor) throws SaborPizzaNaoEncontradoException; // fazer o throws
+    SaborResponseDTO atualizarSaborPizza(Long idEstabelecimento, String codigoAcessoEstabelecimento,long idPizza, SaborPostPutDTO sabor) throws SaborPizzaNaoEncontradoException, EstabelecimentoNaoEncontradoException, CodigoAcessoEstabelecimentoException; // fazer o throws
 
-    SaborPostPutDTO consultarSaborPizza(long idPizza) throws SaborPizzaNaoEncontradoException;
+    List<SaborPostPutDTO> listarTodosSaboresPizza(Long idEstabelecimento, String codigoAcessoEstabelecimento) throws CodigoAcessoEstabelecimentoException, EstabelecimentoNaoEncontradoException;
 
-    SaborPizza consultarSaborPizzaById(Long idPizza) throws SaborPizzaNaoEncontradoException;
+    List<SaborPostPutDTO> listarSaboresPizza(Long idEstabelecimento, String codigoAcessoEstabelecimento, TipoDeSabor tipoDeSabor) throws CodigoAcessoEstabelecimentoException, EstabelecimentoNaoEncontradoException;
+
+    void deletarSaborPizza(Long idEstabelecimento, String codigoAcessoEstabelecimento,long idPizza) throws SaborPizzaNaoEncontradoException, CodigoAcessoEstabelecimentoException, EstabelecimentoNaoEncontradoException;
+
 
     void salvarSaborPizzaCadastrado(SaborPizza saborPizza) throws SaborPizzaNaoEncontradoException;
-
-    List<SaborPostPutDTO> listarSaboresPizza();
-
-    List<SaborPostPutDTO> listarSaboresPizza(TipoDeSabor tipoDeSabor);
-
-    void deletarSaborPizza(long idPizza) throws SaborPizzaNaoEncontradoException;
-
 }

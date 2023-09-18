@@ -1,9 +1,11 @@
 package com.ufcg.psoft.commerce.model.SaborPizza;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ufcg.psoft.commerce.enums.DisponibilidadeSabor;
 import com.ufcg.psoft.commerce.enums.TipoDeSabor;
 import com.ufcg.psoft.commerce.model.Cliente.Cliente;
+import com.ufcg.psoft.commerce.model.Estabelecimento.Estabelecimento;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -26,15 +28,16 @@ public class SaborPizza {
     @Column(name = "pk_id_sabor")
     private Long idPizza;
 
-    @JsonProperty("nome")
-    private String nome;
-
     @JsonProperty("saborDaPizza")
     @Column(nullable = false, name = "desc_saborDaPizza")
     private String saborDaPizza;
 
+    @JsonProperty("valorMedia")
+    @Column(name = "double_valor_media", nullable = false)
     private double valorMedia;
 
+    @JsonProperty("valorGrande")
+    @Column(name = "double_valor_grande", nullable = false)
     private double valorGrande;
 
     private DisponibilidadeSabor disponibilidadeSabor;
@@ -53,49 +56,28 @@ public class SaborPizza {
         return this.disponibilidadeSabor.toString().equals("DISPONIVEL");
     }
 
-    public TipoDeSabor getTipoDeSabor() {
-        return this.tipoDeSabor;
-    }
 
-    public DisponibilidadeSabor getDisponibilidadeSabor() {return this.disponibilidadeSabor;}
 
-    /*public void setDisponibilidade(DisponibilidadeSabor disponibilidadeSabor) {
-        this.disponibilidadeSabor = disponibilidadeSabor;
-        if(disponibilidadeSabor== DisponibilidadeSabor.DISPONIVEL){
-            this.notifyObservers();
-        }
-    }*/
+
+
 
     @OneToMany
     private List<Cliente> observers;
 
     {
-        observers = new ArrayList<Cliente>();
-    }
-    public List<Cliente> getObservers() {
-        return observers;
+        observers = new ArrayList<>();
     }
 
 
-    public Long getIdPizza() {
-        return idPizza;
-    }
-
-    public String getSaborDaPizza() {
-        return saborDaPizza;
-    }
-
-    public double getValorMedia() {
-        return valorMedia;
-    }
+    @JsonIgnore
+    @ManyToOne
+    @JoinColumn(name = "estabelecimento_pk_id")
+    private Estabelecimento estabelecimento;
 
     public void setValorMedia(double valorMedia) {
         this.valorMedia = valorMedia;
     }
 
-    public double getValorGrande() {
-        return valorGrande;
-    }
 
     public void setValorGrande(double valorGrande) {
         this.valorGrande = valorGrande;
@@ -112,10 +94,6 @@ public class SaborPizza {
     public void setDisponibilidade(DisponibilidadeSabor disponibilidadeSabor) {
         this.disponibilidadeSabor = disponibilidadeSabor;
     }
-    /*public void notifyObservers() {
-        for(Cliente c : observers) {
-            c.update(this);
-        }
-    }*/
+
 
 }

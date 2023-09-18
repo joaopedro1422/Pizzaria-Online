@@ -189,5 +189,7 @@ public class Estabelecimento {
         return saborPizza;
 
     }
+    @OneToMany(mappedBy = "estabelecimento", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private Set<SaborPizza> cardapio;
 
 }

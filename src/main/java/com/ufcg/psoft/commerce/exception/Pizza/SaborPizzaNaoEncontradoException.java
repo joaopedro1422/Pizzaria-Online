@@ -10,6 +10,10 @@ public class SaborPizzaNaoEncontradoException extends CommerceException {
         this.idPizza = idPizza;
     }
 
+    public SaborPizzaNaoEncontradoException() {
+
+    }
+
     public long getIdPizza() {
         return idPizza;
     }

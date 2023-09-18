@@ -5,7 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.ufcg.psoft.commerce.dto.Estabelecimento.EstabelecimentoPostPutRequestDTO;
 import com.ufcg.psoft.commerce.dto.Estabelecimento.EstabelecimentoResponseDTO;
-import com.ufcg.psoft.commerce.dto.PizzaDTO.SaborPizzaResponseDTO;
+import com.ufcg.psoft.commerce.dto.PizzaDTO.SaborResponseDTO;
+import com.ufcg.psoft.commerce.enums.TipoDeSabor;
 import com.ufcg.psoft.commerce.exception.CustomErrorType;
 import com.ufcg.psoft.commerce.model.Estabelecimento.Estabelecimento;
 import com.ufcg.psoft.commerce.model.SaborPizza.SaborPizza;
@@ -192,30 +193,30 @@ public class EstabelecimentoControllerTests {
         void quandoBuscarCardapioEstabelecimento() throws Exception {
             // Arrange
             SaborPizza SaborPizza1 = SaborPizza.builder()
-                    .nome("Calabresa")
+                    .saborDaPizza("Calabresa")
                     .valorMedia(25.0)
                     .valorGrande(35.0)
-                    .saborDaPizza("salgado")
+                    .tipoDeSabor(TipoDeSabor.SALGADO)
                     .build();
 
             SaborPizza SaborPizza2 = SaborPizza.builder()
-                    .nome("Mussarela")
+                    .saborDaPizza("Mussarela")
                     .valorMedia(20.0)
                     .valorGrande(30.0)
-                    .saborDaPizza("salgado")
+                    .tipoDeSabor(TipoDeSabor.SALGADO)
                     .build();
             SaborPizza SaborPizza3 = SaborPizza.builder()
-                    .nome("Chocolate")
+                    .saborDaPizza("Chocolate")
                     .valorMedia(25.0)
                     .valorGrande(35.0)
-                    .saborDaPizza("doce")
+                    .tipoDeSabor(TipoDeSabor.DOCE)
                     .build();
 
             SaborPizza SaborPizza4 = SaborPizza.builder()
-                    .nome("Morango")
+                    .saborDaPizza("Morango")
                     .valorMedia(20.0)
                     .valorGrande(30.0)
-                    .saborDaPizza("doce")
+                    .tipoDeSabor(TipoDeSabor.DOCE)
                     .build();
             Estabelecimento estabelecimento1 = Estabelecimento.builder()
                     .codigoAcesso("123456")
@@ -231,7 +232,7 @@ public class EstabelecimentoControllerTests {
                     .andDo(print())
                     .andReturn().getResponse().getContentAsString();
 
-            List<SaborPizzaResponseDTO> resultado = objectMapper.readValue(responseJsonString, new TypeReference<>() {
+            List<SaborResponseDTO> resultado = objectMapper.readValue(responseJsonString, new TypeReference<>() {
             });
 
             // Assert
@@ -267,30 +268,30 @@ public class EstabelecimentoControllerTests {
         void quandoBuscarCardapioEstabelecimentoPorsaborDaPizza() throws Exception {
             // Arrange
             SaborPizza SaborPizza1 = SaborPizza.builder()
-                    .nome("Calabresa")
+                    .saborDaPizza("Calabresa")
                     .valorMedia(25.0)
                     .valorGrande(35.0)
-                    .saborDaPizza("salgado")
+                    .tipoDeSabor(TipoDeSabor.SALGADO)
                     .build();
 
             SaborPizza SaborPizza2 = SaborPizza.builder()
-                    .nome("Mussarela")
+                    .saborDaPizza("Mussarela")
                     .valorMedia(20.0)
                     .valorGrande(30.0)
-                    .saborDaPizza("salgado")
+                    .tipoDeSabor(TipoDeSabor.SALGADO)
                     .build();
             SaborPizza SaborPizza3 = SaborPizza.builder()
-                    .nome("Chocolate")
+                    .saborDaPizza("Chocolate")
                     .valorMedia(25.0)
                     .valorGrande(35.0)
-                    .saborDaPizza("doce")
+                    .tipoDeSabor(TipoDeSabor.DOCE)
                     .build();
 
             SaborPizza SaborPizza4 = SaborPizza.builder()
-                    .nome("Morango")
+                    .saborDaPizza("Morango")
                     .valorMedia(20.0)
                     .valorGrande(30.0)
-                    .saborDaPizza("doce")
+                    .tipoDeSabor(TipoDeSabor.DOCE)
                     .build();
             Estabelecimento estabelecimento1 = Estabelecimento.builder()
                     .codigoAcesso("123456")
@@ -299,15 +300,15 @@ public class EstabelecimentoControllerTests {
             estabelecimentoRepository.save(estabelecimento1);
 
             // Act
-            String responseJsonString = driver.perform(get(URI_ESTABELECIMENTOS + "/" + estabelecimento1.getId() + "/SaborPizzaes" + "/saborDaPizza")
+            String responseJsonString = driver.perform(get(URI_ESTABELECIMENTOS + "/" + estabelecimento1.getId() + "/SaborPizzaes" + "/tipoPizza")
                             .contentType(MediaType.APPLICATION_JSON)
-                            .param("saborDaPizza", "salgado")
+                            .param(String.valueOf(TipoDeSabor.SALGADO))
                             .content(objectMapper.writeValueAsString(estabelecimentoPostRequestDTO)))
                     .andExpect(status().isOk()) // Codigo 200
                     .andDo(print())
                     .andReturn().getResponse().getContentAsString();
 
-            List<SaborPizzaResponseDTO> resultado = objectMapper.readValue(responseJsonString, new TypeReference<>() {
+            List<SaborResponseDTO> resultado = objectMapper.readValue(responseJsonString, new TypeReference<>() {
             });
 
             // Assert
@@ -321,30 +322,30 @@ public class EstabelecimentoControllerTests {
         void quandoBuscarCardapioEstabelecimentoPorsaborDaPizzaDoce() throws Exception {
             // Arrange
             SaborPizza SaborPizza1 = SaborPizza.builder()
-                    .nome("Calabresa")
+                    .saborDaPizza("Calabresa")
                     .valorMedia(25.0)
                     .valorGrande(35.0)
-                    .saborDaPizza("salgado")
+                    .tipoDeSabor(TipoDeSabor.SALGADO)
                     .build();
 
             SaborPizza SaborPizza2 = SaborPizza.builder()
-                    .nome("Mussarela")
+                    .saborDaPizza("Mussarela")
                     .valorMedia(20.0)
                     .valorGrande(30.0)
-                    .saborDaPizza("salgado")
+                    .tipoDeSabor(TipoDeSabor.SALGADO)
                     .build();
             SaborPizza SaborPizza3 = SaborPizza.builder()
-                    .nome("Chocolate")
+                    .saborDaPizza("Chocolate")
                     .valorMedia(25.0)
                     .valorGrande(35.0)
-                    .saborDaPizza("doce")
+                    .tipoDeSabor(TipoDeSabor.DOCE)
                     .build();
 
             SaborPizza SaborPizza4 = SaborPizza.builder()
-                    .nome("Morango")
+                    .saborDaPizza("Morango")
                     .valorMedia(20.0)
                     .valorGrande(30.0)
-                    .saborDaPizza("doce")
+                    .tipoDeSabor(TipoDeSabor.DOCE)
                     .build();
             Estabelecimento estabelecimento1 = Estabelecimento.builder()
                     .codigoAcesso("123456")
@@ -353,15 +354,15 @@ public class EstabelecimentoControllerTests {
             estabelecimentoRepository.save(estabelecimento1);
 
             // Act
-            String responseJsonString = driver.perform(get(URI_ESTABELECIMENTOS + "/" + estabelecimento1.getId() + "/SaborPizzaes" + "/saborDaPizza")
+            String responseJsonString = driver.perform(get(URI_ESTABELECIMENTOS + "/" + estabelecimento1.getId() + "/SaborPizzaes" + "/tipoDeSabor")
                             .contentType(MediaType.APPLICATION_JSON)
-                            .param("saborDaPizza", "doce")
+                            .param(String.valueOf(TipoDeSabor.DOCE))
                             .content(objectMapper.writeValueAsString(estabelecimentoPostRequestDTO)))
                     .andExpect(status().isOk()) // Codigo 200
                     .andDo(print())
                     .andReturn().getResponse().getContentAsString();
 
-            List<SaborPizzaResponseDTO> resultado = objectMapper.readValue(responseJsonString, new TypeReference<>() {
+            List<SaborResponseDTO> resultado = objectMapper.readValue(responseJsonString, new TypeReference<>() {
             });
 
             // Assert
