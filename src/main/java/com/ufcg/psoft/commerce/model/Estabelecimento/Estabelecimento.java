@@ -86,17 +86,13 @@ public class Estabelecimento {
     public void setEntregadores(Set<Entregador> entregadores) {
         this.entregadores = entregadores;
     }
-    public Long getId() {
-        return id;
-    }
+
 
     public void setId(Long id) {
         this.id = id;
     }
 
-    public String getCodigoAcesso() {
-        return codigoAcesso;
-    }
+
 
     public void setCodigoAcesso(String codigoAcesso) {
         this.codigoAcesso = codigoAcesso;
@@ -177,18 +173,7 @@ public class Estabelecimento {
 
     }
 
-    public SaborPizza CriarSaborPizza(String codigoEstabelecimento){
-        SaborPizza saborPizza = null;
 
-        if(codigoEstabelecimento.equals(this.codigoAcesso)){
-
-            //Implementar
-
-        }
-
-        return saborPizza;
-
-    }
     @OneToMany(mappedBy = "estabelecimento", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<SaborPizza> cardapio;
 

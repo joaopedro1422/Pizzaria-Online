@@ -15,6 +15,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -73,62 +74,76 @@ public class SaborV1Service implements SaborService {
     }
 
     @Override
-    public List<SaborPostPutDTO> listarTodosSaboresPizza(Long idEstabelecimento, String codigoAcessoEstabelecimento) throws CodigoAcessoEstabelecimentoException, EstabelecimentoNaoEncontradoException {
+    public List<SaborResponseDTO> buscarTodosSaboresPizza(Long idEstabelecimento, String codigoAcessoEstabelecimento) throws CodigoAcessoEstabelecimentoException, EstabelecimentoNaoEncontradoException {
         if(!estabelecimentoRepository.findById(idEstabelecimento).get().getCodigoAcesso().equals(codigoAcessoEstabelecimento)){
             throw new CodigoAcessoEstabelecimentoException();
         }
         if(!estabelecimentoRepository.findById(idEstabelecimento).isPresent()){
             throw new EstabelecimentoNaoEncontradoException();
         }
-        return saborRepository.findAll()
-                .stream()
-                .map(saborPizza -> modelMapper.map(saborPizza,SaborPostPutDTO.class))
-                .collect(Collectors.toList());
+        List<SaborPizza> todosSabores = saborRepository.findAll();
+        List<SaborResponseDTO> saboresResponse = new ArrayList<SaborResponseDTO>();
+
+        for(int j = 0;j<todosSabores.size();j++){
+            if(todosSabores.get(j).getEstabelecimento().getId().equals(idEstabelecimento)){
+                saboresResponse.add(
+                        SaborResponseDTO.builder()
+                                .idPizza(todosSabores.get(j).getIdPizza())
+                                .saborDaPizza(todosSabores.get(j).getSaborDaPizza())
+                                .tipoDeSabor(todosSabores.get(j).getTipoDeSabor())
+                                .valorMedia(todosSabores.get(j).getValorMedia())
+                                .valorGrande(todosSabores.get(j).getValorGrande())
+                                .disponibilidadeSabor(todosSabores.get(j).getDisponibilidadeSabor())
+                                .build()
+                );
+            }
+        }
+        return saboresResponse;
     }
 
-    @Override
-    public List<SaborPostPutDTO> listarSaboresPizza(Long idEstabelecimento, String codigoAcessoEstabelecimento,TipoDeSabor tipoDeSabor) throws CodigoAcessoEstabelecimentoException, EstabelecimentoNaoEncontradoException {
-        if(!estabelecimentoRepository.findById(idEstabelecimento).get().getCodigoAcesso().equals(codigoAcessoEstabelecimento)){
-            throw new CodigoAcessoEstabelecimentoException();
-        }
-        if(!estabelecimentoRepository.findById(idEstabelecimento).isPresent()){
-            throw new EstabelecimentoNaoEncontradoException();
-        }
-        return saborRepository.findAll()
-                .stream()
-                .filter(saborPizza -> saborPizza.getTipoDeSabor() == tipoDeSabor)
-                .map(saborPizza -> modelMapper.map(saborPizza, SaborPostPutDTO.class))
-                .collect(Collectors.toList());
-    }
 
     @Override
     public void deletarSaborPizza(Long idEstabelecimento, String codigoAcessoEstabelecimento,long idPizza) throws SaborPizzaNaoEncontradoException, CodigoAcessoEstabelecimentoException, EstabelecimentoNaoEncontradoException {
-        if(!estabelecimentoRepository.findById(idEstabelecimento).get().getCodigoAcesso().equals(codigoAcessoEstabelecimento)){
-            throw new CodigoAcessoEstabelecimentoException();
-        }
-        if(!estabelecimentoRepository.findById(idEstabelecimento).isPresent()){
+
+        Optional<Estabelecimento> estabelecimentoOptinial = estabelecimentoRepository.findById(idEstabelecimento);
+        if(!estabelecimentoOptinial.isPresent()){
             throw new EstabelecimentoNaoEncontradoException();
+        }
+        Estabelecimento estabelecimento = estabelecimentoOptinial.get();
+        if(!estabelecimento.getCodigoAcesso().equals(codigoAcessoEstabelecimento)){
+            throw new CodigoAcessoEstabelecimentoException();
         }
         if(saborRepository.findById(idPizza).isPresent()){
             saborRepository.deleteById(idPizza);
         } else{
             throw new SaborPizzaNaoEncontradoException();
         }
-
-
-
     }
 
+    @Override
+    public SaborResponseDTO buscarId(Long idEstabelecimento, String codigoAcessoEstabelecimento, long idPizza) throws EstabelecimentoNaoEncontradoException {
+        Optional<Estabelecimento> estabelecimentoOptinial = estabelecimentoRepository.findById(idEstabelecimento);
+        if(!estabelecimentoOptinial.isPresent()){
+            throw new EstabelecimentoNaoEncontradoException();
+        }
+        Estabelecimento estabelecimento = estabelecimentoOptinial.get();
+        if(!estabelecimento.getCodigoAcesso().equals(codigoAcessoEstabelecimento)){
+            throw new IllegalArgumentException();
+        }
+        if(saborRepository.findById(idPizza).isPresent()){
+            SaborPizza saborPizza = saborRepository.findById(idPizza).get();
+            return SaborResponseDTO.builder()
+                    .idPizza(saborPizza.getIdPizza())
+                    .saborDaPizza(saborPizza.getSaborDaPizza())
+                    .tipoDeSabor(saborPizza.getTipoDeSabor())
+                    .valorMedia(saborPizza.getValorMedia())
+                    .valorGrande(saborPizza.getValorGrande())
+                    .disponibilidadeSabor(saborPizza.getDisponibilidadeSabor())
+                    .build();
+        } else{
+            throw new SaborPizzaNaoEncontradoException();
+        }
 
-    // metodos auxiliares
-
-
-   @Override
-    public void salvarSaborPizzaCadastrado(SaborPizza saborPizza) {
-        saborRepository.save(saborPizza);
     }
-
-
-
 
 }

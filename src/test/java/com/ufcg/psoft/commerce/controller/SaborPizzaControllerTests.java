@@ -152,7 +152,7 @@ public class SaborPizzaControllerTests {
             // Arrange
 
             // Act
-            String responseJsonString = driver.perform(delete(URI_SABORES+ "/" + sabor.getIdPizza())
+            String responseJsonString = driver.perform(delete(URI_SABORES+ "/" + "99999")
                             .contentType(MediaType.APPLICATION_JSON)
                             .param("idPizza", "999999")
                             .param("idEstabelecimento", estabelecimento.getId().toString())
@@ -226,7 +226,7 @@ public class SaborPizzaControllerTests {
                     .andDo(print())
                     .andReturn().getResponse().getContentAsString();
 
-            List<SaborPostPutDTO> resultado = objectMapper.readValue(responseJsonString, new TypeReference<>() {});
+            List<SaborResponseDTO> resultado = objectMapper.readValue(responseJsonString, new TypeReference<>() {});
 
             // Assert
             assertAll(

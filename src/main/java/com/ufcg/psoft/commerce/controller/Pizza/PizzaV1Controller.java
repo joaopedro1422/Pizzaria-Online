@@ -28,7 +28,7 @@ public class PizzaV1Controller {
     @PostMapping
     public ResponseEntity<?> criarSaborPizza (
             @Valid @RequestParam ("codigoAcessoEstabelecimento")String codigoAcessoEstabelecimento,
-            @Valid @RequestParam  ("idEstabelecimento")long idEstabelecimento,
+            @Valid @RequestParam  ("idEstabelecimento")Long idEstabelecimento,
             @Valid @RequestBody SaborPostPutDTO sabor) throws EstabelecimentoNaoEncontradoException, CodigoAcessoEstabelecimentoException {
 
            return ResponseEntity
@@ -39,9 +39,9 @@ public class PizzaV1Controller {
 
     @PutMapping(value = "/{idPizza}")
     public ResponseEntity<?> atualizarSaborPizza(
-            @Valid @RequestParam  ("idEstabelecimento")long idEstabelecimento,
+            @Valid @RequestParam  ("idEstabelecimento")Long idEstabelecimento,
             @Valid @RequestParam("codigoAcessoEstabelecimento")String codigoAcessoEstabelecimento,
-            @Valid @PathVariable("idPizza") long idPizza,
+            @Valid @PathVariable("idPizza") Long idPizza,
             @Valid @RequestBody SaborPostPutDTO sabor) throws EstabelecimentoNaoEncontradoException, CodigoAcessoEstabelecimentoException {
                 return ResponseEntity
                         .status(HttpStatus.OK)
@@ -50,38 +50,30 @@ public class PizzaV1Controller {
 
 
     @GetMapping
-    public ResponseEntity<?> listarTodosOsSabores(
-            @Valid @RequestParam  ("idEstabelecimento")long idEstabelecimento,
+    public ResponseEntity<?> buscarTodosOsSabores(
+            @Valid @RequestParam  ("idEstabelecimento")Long idEstabelecimento,
             @Valid @RequestParam("codigoAcessoEstabelecimento")String codigoAcessoEstabelecimento) throws EstabelecimentoNaoEncontradoException, CodigoAcessoEstabelecimentoException {
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(saborService.listarTodosSaboresPizza(idEstabelecimento,codigoAcessoEstabelecimento));
+                .body(saborService.buscarTodosSaboresPizza(idEstabelecimento,codigoAcessoEstabelecimento));
     }
 
-    @GetMapping(value = "/saboresPizza/salgados")
-    public ResponseEntity<?> consultarCardapioSaboresSalgados(
-            @Valid @RequestParam  ("idEstabelecimento")long idEstabelecimento,
-            @Valid @RequestParam("codigoAcessoEstabelecimento")String codigoAcessoEstabelecimento) throws EstabelecimentoNaoEncontradoException, CodigoAcessoEstabelecimentoException {
+    @GetMapping(value = "/{idPizza}")
+    public ResponseEntity<?> buscarSaborId(
+            @Valid @RequestParam  ("idEstabelecimento")Long idEstabelecimento,
+            @Valid @RequestParam ("codigoAcessoEstabelecimento")String codigoAcessoEstabelecimento,
+            @Valid @PathVariable("idPizza") Long idPizza
+    ) throws EstabelecimentoNaoEncontradoException {
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(saborService.listarSaboresPizza(idEstabelecimento,codigoAcessoEstabelecimento,TipoDeSabor.SALGADO));
-    }
-
-    @GetMapping(value = "/saboresPizza/doces")
-    public ResponseEntity<?> consultarCardapioSaboresDoces(
-            @Valid @RequestParam  ("idEstabelecimento")long idEstabelecimento,
-            @Valid @RequestParam("codigoAcessoEstabelecimento")String codigoAcessoEstabelecimento
-    ) throws EstabelecimentoNaoEncontradoException, CodigoAcessoEstabelecimentoException {
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(saborService.listarSaboresPizza(idEstabelecimento,codigoAcessoEstabelecimento,TipoDeSabor.DOCE));
+                .body(saborService.buscarId(idEstabelecimento,codigoAcessoEstabelecimento,idPizza));
     }
 
     @DeleteMapping(value = "/{idPizza}")
     public ResponseEntity<?> deletarSaborPizza(
-            @Valid @RequestParam  ("idEstabelecimento")long idEstabelecimento,
+            @Valid @RequestParam  ("idEstabelecimento")Long idEstabelecimento,
             @Valid @RequestParam ("codigoAcessoEstabelecimento")String codigoAcessoEstabelecimento,
-            @Valid @PathVariable("idPizza") long idPizza)
+            @Valid @PathVariable("idPizza") Long idPizza)
             throws SaborPizzaNaoEncontradoException, EstabelecimentoNaoEncontradoException, CodigoAcessoEstabelecimentoException {
         saborService.deletarSaborPizza(idEstabelecimento,codigoAcessoEstabelecimento,idPizza);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);

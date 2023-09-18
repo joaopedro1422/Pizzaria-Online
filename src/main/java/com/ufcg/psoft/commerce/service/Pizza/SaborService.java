@@ -16,12 +16,10 @@ public interface SaborService {
 
     SaborResponseDTO atualizarSaborPizza(Long idEstabelecimento, String codigoAcessoEstabelecimento,long idPizza, SaborPostPutDTO sabor) throws SaborPizzaNaoEncontradoException, EstabelecimentoNaoEncontradoException, CodigoAcessoEstabelecimentoException; // fazer o throws
 
-    List<SaborPostPutDTO> listarTodosSaboresPizza(Long idEstabelecimento, String codigoAcessoEstabelecimento) throws CodigoAcessoEstabelecimentoException, EstabelecimentoNaoEncontradoException;
+    List<SaborResponseDTO> buscarTodosSaboresPizza(Long idEstabelecimento, String codigoAcessoEstabelecimento) throws CodigoAcessoEstabelecimentoException, EstabelecimentoNaoEncontradoException;
 
-    List<SaborPostPutDTO> listarSaboresPizza(Long idEstabelecimento, String codigoAcessoEstabelecimento, TipoDeSabor tipoDeSabor) throws CodigoAcessoEstabelecimentoException, EstabelecimentoNaoEncontradoException;
 
     void deletarSaborPizza(Long idEstabelecimento, String codigoAcessoEstabelecimento,long idPizza) throws SaborPizzaNaoEncontradoException, CodigoAcessoEstabelecimentoException, EstabelecimentoNaoEncontradoException;
 
-
-    void salvarSaborPizzaCadastrado(SaborPizza saborPizza) throws SaborPizzaNaoEncontradoException;
+    SaborResponseDTO buscarId(Long idEstabelecimento, String codigoAcessoEstabelecimento, long idPizza) throws EstabelecimentoNaoEncontradoException;
 }
