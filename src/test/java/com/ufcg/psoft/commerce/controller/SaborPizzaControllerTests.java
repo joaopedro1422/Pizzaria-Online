@@ -667,7 +667,7 @@ public class SaborPizzaControllerTests {
         @DisplayName("Quando alteramos a disponibilidade de um sabor para true")
         void quandoAlteramosDisponibilidadeSaborTrue() throws Exception {
             // Arrange
-            sabor.setDisponibilidade(DisponibilidadeSabor.INDISPONIVEL);
+            sabor.setDisponibilidadeSabor(DisponibilidadeSabor.INDISPONIVEL);
             saborRepository.save(sabor);
             // Act
             String responseJsonString = driver.perform(put(URI_SABORES + "/" + sabor.getIdPizza() + "/" + true)
