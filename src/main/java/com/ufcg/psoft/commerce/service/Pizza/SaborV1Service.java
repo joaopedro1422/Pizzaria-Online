@@ -39,7 +39,7 @@ public class SaborV1Service implements SaborService {
         }
         Estabelecimento estabelecimento = estabelecimentoOptinial.get();
         if(!estabelecimento.getCodigoAcesso().equals(codigoAcessoEstabelecimento)){
-            throw new IllegalArgumentException();
+            throw new CodigoAcessoEstabelecimentoException();
         }
 
         SaborPizza saborPizza = new SaborPizza(sabor.getSaborPizza(),sabor.getTipoDeSabor(),sabor.getValorMedia(),sabor.getValorGrande(),sabor.getDisponibilidadeSabor());
@@ -50,7 +50,7 @@ public class SaborV1Service implements SaborService {
     @Override
     public SaborResponseDTO atualizarSaborPizza(Long idEstabelecimento, String codigoAcessoEstabelecimento,long idPizza, SaborPostPutDTO sabor) throws SaborPizzaNaoEncontradoException, EstabelecimentoNaoEncontradoException, CodigoAcessoEstabelecimentoException {
         if(!estabelecimentoRepository.findById(idEstabelecimento).get().getCodigoAcesso().equals(codigoAcessoEstabelecimento)){
-            throw new IllegalArgumentException();
+            throw new CodigoAcessoEstabelecimentoException();
         }
         if(!estabelecimentoRepository.findById(idEstabelecimento).isPresent()){
             throw new EstabelecimentoNaoEncontradoException();
@@ -128,7 +128,7 @@ public class SaborV1Service implements SaborService {
         }
         Estabelecimento estabelecimento = estabelecimentoOptinial.get();
         if(!estabelecimento.getCodigoAcesso().equals(codigoAcessoEstabelecimento)){
-            throw new IllegalArgumentException();
+            throw new CodigoAcessoEstabelecimentoException();
         }
         if(saborRepository.findById(idPizza).isPresent()){
             SaborPizza saborPizza = saborRepository.findById(idPizza).get();

@@ -1,7 +1,6 @@
 package com.ufcg.psoft.commerce.controller.Pizza;
 
 import com.ufcg.psoft.commerce.dto.PizzaDTO.SaborPostPutDTO;
-import com.ufcg.psoft.commerce.enums.TipoDeSabor;
 import com.ufcg.psoft.commerce.exception.Estabelecimento.CodigoAcessoEstabelecimentoException;
 import com.ufcg.psoft.commerce.exception.Estabelecimento.EstabelecimentoNaoEncontradoException;
 import com.ufcg.psoft.commerce.exception.Pizza.SaborPizzaNaoEncontradoException;
