@@ -43,22 +43,9 @@ public class SaborPizza {
     private DisponibilidadeSabor disponibilidadeSabor;
     private TipoDeSabor tipoDeSabor;
 
-
-    public SaborPizza(String saborDaPizza, TipoDeSabor tipoDeSabor, double valorMedia, double valorGrande, DisponibilidadeSabor disponibilidadeSabor) {
-        this.saborDaPizza = saborDaPizza;
-        this.tipoDeSabor = tipoDeSabor;
-        this.valorMedia = valorMedia;
-        this.valorGrande = valorGrande;
-        this.disponibilidadeSabor = disponibilidadeSabor;
-    }
-
     public boolean isDisponivel(){
         return this.disponibilidadeSabor.toString().equals("DISPONIVEL");
     }
-
-
-
-
 
 
     @OneToMany
@@ -68,30 +55,16 @@ public class SaborPizza {
         observers = new ArrayList<>();
     }
 
-
     @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "estabelecimento_pk_id")
     private Estabelecimento estabelecimento;
 
-    public void setValorMedia(double valorMedia) {
-        this.valorMedia = valorMedia;
-    }
-
-
-    public void setValorGrande(double valorGrande) {
-        this.valorGrande = valorGrande;
-    }
-
-    public void setTipoDeSabor(TipoDeSabor tipoDeSabor) {
-        this.tipoDeSabor = tipoDeSabor;
-    }
-
-    public void setSaborDaPizza(String saborPizza) {
+    public SaborPizza(String saborDaPizza, TipoDeSabor tipoDeSabor, double valorMedia, double valorGrande, DisponibilidadeSabor disponibilidadeSabor) {
         this.saborDaPizza = saborDaPizza;
-    }
-
-    public void setDisponibilidade(DisponibilidadeSabor disponibilidadeSabor) {
+        this.tipoDeSabor = tipoDeSabor;
+        this.valorMedia = valorMedia;
+        this.valorGrande = valorGrande;
         this.disponibilidadeSabor = disponibilidadeSabor;
     }
 

@@ -1,5 +1,8 @@
 package com.ufcg.psoft.commerce.exception.Estabelecimento;
-public class CodigoAcessoEstabelecimentoException extends Exception{
+
+import com.ufcg.psoft.commerce.exception.CommerceException;
+
+public class CodigoAcessoEstabelecimentoException extends CommerceException{
 
     public CodigoAcessoEstabelecimentoException() {
         super("Codigo de acesso invalido!");

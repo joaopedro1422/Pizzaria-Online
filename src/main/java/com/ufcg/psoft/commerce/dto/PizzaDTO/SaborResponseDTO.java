@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class SaborResponseDTO {
 
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    @JsonProperty(value = "idPizza")
     private Long idPizza;
 
     @JsonProperty("saborDaPizza")
