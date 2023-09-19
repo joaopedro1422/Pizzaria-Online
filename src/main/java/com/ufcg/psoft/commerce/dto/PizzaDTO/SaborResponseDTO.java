@@ -1,8 +1,8 @@
 package com.ufcg.psoft.commerce.dto.PizzaDTO;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.ufcg.psoft.commerce.enums.DisponibilidadeSabor;
 import com.ufcg.psoft.commerce.enums.TipoDeSabor;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class SaborResponseDTO {
 
-    @JsonProperty(value = "idPizza")
+    @JsonProperty("idPizza")
     private Long idPizza;
 
     @JsonProperty("saborDaPizza")
@@ -27,7 +27,7 @@ public class SaborResponseDTO {
     private double valorGrande;
 
     @JsonProperty("disponibilidadeSabor")
-    private DisponibilidadeSabor disponibilidadeSabor;
+    private Boolean disponibilidadeSabor;
 
     @JsonProperty("tipoDeSabor")
     private TipoDeSabor tipoDeSabor;

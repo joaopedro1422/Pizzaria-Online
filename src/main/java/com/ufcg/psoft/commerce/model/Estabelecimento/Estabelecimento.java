@@ -18,7 +18,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "Logradouro")
+@Table(name = "Estabelecimento")
 public class Estabelecimento {
 
     @Id
@@ -35,68 +35,16 @@ public class Estabelecimento {
     @Column(name = "nome_estabelecimento")
     private String nome;
 
-    @JsonProperty("saboresPizza")
-    @Column(name = "sabores_pizza")
-    @OneToMany(cascade=CascadeType.PERSIST)
-    private Set<SaborPizza> saboresPizza;
+    @OneToMany(mappedBy = "estabelecimento", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private Set<SaborPizza> cardapio;
 
-    @JsonProperty("clientes")
-    @Column(name = "cliente")
     @OneToMany(cascade=CascadeType.PERSIST)
     private Set<Cliente> clientes;
 
 
-    @JsonProperty("entregadores")
-    @Column(name = "entregador")
     @OneToMany(cascade=CascadeType.PERSIST)
     private Set<Entregador> entregadores;
 
-
-    //Getters e Setters
-
-
-    public String getNome() {
-        return nome;
-    }
-
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
-
-    public Set<SaborPizza> getSaboresPizza() {
-        return saboresPizza;
-    }
-
-    public void setSaboresPizza(Set<SaborPizza> saboresPizza) {
-        this.saboresPizza = saboresPizza;
-    }
-
-    public Set<Cliente> getClientes() {
-        return clientes;
-    }
-
-    public void setClientes(Set<Cliente> clientes) {
-        this.clientes = clientes;
-    }
-
-    public Set<Entregador> getEntregadores() {
-        return entregadores;
-    }
-
-    public void setEntregadores(Set<Entregador> entregadores) {
-        this.entregadores = entregadores;
-    }
-
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-
-
-    public void setCodigoAcesso(String codigoAcesso) {
-        this.codigoAcesso = codigoAcesso;
-    }
 
     //Funcoes de Estabelecimento, toda operação feita em estabelecimento tem que ser forneciado o codigo de acesso
     //do estabelecimento
@@ -172,7 +120,6 @@ public class Estabelecimento {
         }
 
     }
-
 
 
 }

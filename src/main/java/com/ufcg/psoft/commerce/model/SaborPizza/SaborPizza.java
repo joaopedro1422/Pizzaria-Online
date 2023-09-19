@@ -2,14 +2,15 @@ package com.ufcg.psoft.commerce.model.SaborPizza;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.ufcg.psoft.commerce.enums.DisponibilidadeSabor;
 import com.ufcg.psoft.commerce.enums.TipoDeSabor;
 import com.ufcg.psoft.commerce.model.Cliente.Cliente;
 import com.ufcg.psoft.commerce.model.Estabelecimento.Estabelecimento;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
@@ -20,6 +21,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity(name = "saboresPizza")
+@EqualsAndHashCode(of = {"saborDaPizza", "tipoDeSabor"})
 public class SaborPizza {
 
     @JsonProperty("idPizza")
@@ -38,35 +40,18 @@ public class SaborPizza {
 
     @JsonProperty("valorGrande")
     @Column(name = "double_valor_grande", nullable = false)
+    @Positive(message = "PrecoG deve ser maior que zero")
     private double valorGrande;
 
-    private DisponibilidadeSabor disponibilidadeSabor;
+    private Boolean disponibilidadeSabor;
     private TipoDeSabor tipoDeSabor;
-
-    public boolean isDisponivel(){
-        return this.disponibilidadeSabor.toString().equals("DISPONIVEL");
-    }
-
-
-    @OneToMany
-    private List<Cliente> observers;
-
-    {
-        observers = new ArrayList<>();
-    }
 
     @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "estabelecimento_pk_id")
     private Estabelecimento estabelecimento;
 
-    public SaborPizza(String saborDaPizza, TipoDeSabor tipoDeSabor, double valorMedia, double valorGrande, DisponibilidadeSabor disponibilidadeSabor) {
-        this.saborDaPizza = saborDaPizza;
-        this.tipoDeSabor = tipoDeSabor;
-        this.valorMedia = valorMedia;
-        this.valorGrande = valorGrande;
-        this.disponibilidadeSabor = disponibilidadeSabor;
-    }
-
+    @OneToMany
+    private List<Cliente> observers;
 
 }
