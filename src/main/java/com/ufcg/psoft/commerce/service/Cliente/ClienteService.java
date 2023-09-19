@@ -1,0 +1,27 @@
+package com.ufcg.psoft.commerce.service.Cliente;
+
+
+import com.ufcg.psoft.commerce.dto.ClienteDTO.ClienteDTO;
+import com.ufcg.psoft.commerce.exception.Cliente.ClienteCodigoAcessoIncorretoException;
+import com.ufcg.psoft.commerce.exception.Cliente.ClienteNaoEncontradoException;
+import com.ufcg.psoft.commerce.exception.Estabelecimento.CodigoAcessoEstabelecimentoException;
+import com.ufcg.psoft.commerce.exception.Estabelecimento.EstabelecimentoNaoEncontradoException;
+import com.ufcg.psoft.commerce.model.Cliente.Cliente;
+
+import java.util.List;
+
+public interface ClienteService {
+    Cliente adicionarCliente(ClienteDTO cliente);
+
+    public Cliente atualizarCliente(Long id, ClienteDTO cliente);
+
+    public void removerCliente(Long id);
+
+    Cliente getCliente(Long id);
+
+    List<Cliente> getClientes();
+
+    boolean validarCodigoAcesso(Long id, String codigoAcesso) throws ClienteCodigoAcessoIncorretoException, ClienteNaoEncontradoException;
+
+
+}
