@@ -77,7 +77,7 @@ public class EntregadorV1Service implements EntregadorService{
         Optional<Entregador> entregadorOptional = entregadorRepository.findById(id);
         Entregador entregador= entregadorOptional.get();
         entregador.setAprovado(true);
-
+//
         return entregador;
     }
 
