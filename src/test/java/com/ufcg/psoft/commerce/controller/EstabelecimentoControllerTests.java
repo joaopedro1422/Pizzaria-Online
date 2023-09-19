@@ -86,7 +86,7 @@ public class EstabelecimentoControllerTests {
                     .andReturn().getResponse().getContentAsString();
 
             EstabelecimentoResponseDTO resultado = objectMapper.readValue(responseJsonString, EstabelecimentoResponseDTO.EstabelecimentoResponseDTOBuilder.class).build();
-
+            System.out.println(resultado.getCodigoAcesso());
             // Assert
             assertAll(
                     () -> assertNotNull(resultado.getId()),
@@ -300,9 +300,9 @@ public class EstabelecimentoControllerTests {
             estabelecimentoRepository.save(estabelecimento1);
 
             // Act
-            String responseJsonString = driver.perform(get(URI_ESTABELECIMENTOS + "/" + estabelecimento1.getId() + "/SaborPizzaes" + "/tipoPizza")
+            String responseJsonString = driver.perform(get(URI_ESTABELECIMENTOS + "/" + estabelecimento1.getId() + "/SaborPizzaes" + "/tipoDeSabor")
                             .contentType(MediaType.APPLICATION_JSON)
-                            .param(String.valueOf(TipoDeSabor.SALGADO))
+                            .param("SaborPizza",String.valueOf(TipoDeSabor.SALGADO))
                             .content(objectMapper.writeValueAsString(estabelecimentoPostRequestDTO)))
                     .andExpect(status().isOk()) // Codigo 200
                     .andDo(print())
@@ -352,11 +352,10 @@ public class EstabelecimentoControllerTests {
                     .saboresPizza(Set.of(SaborPizza1, SaborPizza2, SaborPizza3, SaborPizza4))
                     .build();
             estabelecimentoRepository.save(estabelecimento1);
-
             // Act
             String responseJsonString = driver.perform(get(URI_ESTABELECIMENTOS + "/" + estabelecimento1.getId() + "/SaborPizzaes" + "/tipoDeSabor")
                             .contentType(MediaType.APPLICATION_JSON)
-                            .param(String.valueOf(TipoDeSabor.DOCE))
+                            .param("SaborPizza", String.valueOf(TipoDeSabor.DOCE))
                             .content(objectMapper.writeValueAsString(estabelecimentoPostRequestDTO)))
                     .andExpect(status().isOk()) // Codigo 200
                     .andDo(print())

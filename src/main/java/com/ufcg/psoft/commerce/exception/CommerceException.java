@@ -8,4 +8,11 @@ public class CommerceException extends RuntimeException {
     public CommerceException(String message) {
         super(message);
     }
+
+    public CommerceException(String mensage, String erro){
+
+        super(mensage, new Throwable(erro));
+
+
+    }
 }

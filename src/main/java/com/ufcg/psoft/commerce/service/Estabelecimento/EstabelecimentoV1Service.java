@@ -1,9 +1,14 @@
 package com.ufcg.psoft.commerce.service.Estabelecimento;
 
 import com.ufcg.psoft.commerce.dto.Estabelecimento.EstabelecimentoPostPutRequestDTO;
+import com.ufcg.psoft.commerce.dto.PizzaDTO.SaborResponseDTO;
+import com.ufcg.psoft.commerce.enums.TipoDeSabor;
+import com.ufcg.psoft.commerce.exception.Cliente.ClienteCodigoAcessoInvalidoException;
 import com.ufcg.psoft.commerce.exception.Estabelecimento.CodigoAcessoEstabelecimentoException;
+import com.ufcg.psoft.commerce.exception.Estabelecimento.CodigoAcessoInvalidoException;
 import com.ufcg.psoft.commerce.exception.Estabelecimento.EstabelecimentoNaoEncontradoException;
 import com.ufcg.psoft.commerce.model.Estabelecimento.Estabelecimento;
+import com.ufcg.psoft.commerce.model.SaborPizza.SaborPizza;
 import com.ufcg.psoft.commerce.repository.Estabelecimento.EstabelecimentoRepository;
 import com.ufcg.psoft.commerce.util.GerarCodigoAcessoEstabelecimento;
 import org.modelmapper.ModelMapper;
@@ -11,7 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.util.*;
 
 @Service
 public class EstabelecimentoV1Service {
@@ -35,9 +40,6 @@ public class EstabelecimentoV1Service {
     public Estabelecimento add(EstabelecimentoPostPutRequestDTO estabelecimentoPostPutRequestDTO){
         Estabelecimento estabelecimento = converteTDOParaEntidade(estabelecimentoPostPutRequestDTO);
 
-        GerarCodigoAcessoEstabelecimento gerador = new GerarCodigoAcessoEstabelecimento(estabelecimentoRepository);
-
-        estabelecimento.setCodigoAcesso(gerador.gerar());
 
         return estabelecimentoRepository.save(estabelecimento);
 
@@ -52,7 +54,7 @@ public class EstabelecimentoV1Service {
             estabelecimento = estabelecimentoRepository.findById(id).get();
 
 
-        }
+        }else throw new EstabelecimentoNaoEncontradoException();
 
         return estabelecimento;
 
@@ -64,8 +66,11 @@ public class EstabelecimentoV1Service {
         return estabelecimentoRepository.findAll();
     }
 
-    public Estabelecimento put (long id, EstabelecimentoPostPutRequestDTO estabelecimentoPostPutRequestDTO){
+    public Estabelecimento put (long id, EstabelecimentoPostPutRequestDTO estabelecimentoPostPutRequestDTO) throws EstabelecimentoNaoEncontradoException, CodigoAcessoEstabelecimentoException {
         Estabelecimento estabelecimento = null;
+
+        if(estabelecimentoPostPutRequestDTO.getCodigoAcesso().length() != 6) throw new CodigoAcessoInvalidoException();
+
 
         if(estabelecimentoRepository.existsById(id)){
 
@@ -75,7 +80,7 @@ public class EstabelecimentoV1Service {
 
             estabelecimentoRepository.saveAndFlush(estabelecimento);
 
-        }
+        }else throw new EstabelecimentoNaoEncontradoException();
 
 
         return estabelecimento;
@@ -92,7 +97,7 @@ public class EstabelecimentoV1Service {
 
     }
 
-    public Estabelecimento getByCodigoAcesso(String codigoAcesso){
+    public Estabelecimento getByCodigoAcesso(String codigoAcesso) throws EstabelecimentoNaoEncontradoException {
 
         Estabelecimento estabelecimento = null;
 
@@ -101,7 +106,7 @@ public class EstabelecimentoV1Service {
 
             estabelecimento = estabelecimentoRepository.findByCodigoAcesso(codigoAcesso).get();
 
-        }
+        }else throw new EstabelecimentoNaoEncontradoException();
 
         return estabelecimento;
 
@@ -129,6 +134,61 @@ public class EstabelecimentoV1Service {
         }
 
         return estabelecimentoList.get(0);
+    }
+
+    public SaborResponseDTO saborResponseDTOMapeador(SaborPizza saborPizza){
+
+        return mapeadorEstabelecimento().map(saborPizza, SaborResponseDTO.class);
+
+    }
+
+    public Set<SaborResponseDTO> recuperarSabores(long id, EstabelecimentoPostPutRequestDTO postPutRequestDTO) throws EstabelecimentoNaoEncontradoException {
+
+        Set<SaborResponseDTO> resultado = new HashSet<>();
+
+        if(estabelecimentoRepository.existsById(id)){
+
+
+            Estabelecimento estabelecimento = estabelecimentoRepository.findById(id).get();
+
+            Iterator<SaborPizza> iterator = estabelecimento.getSaboresPizza().iterator();
+
+            while (iterator.hasNext()){
+
+                resultado.add(saborResponseDTOMapeador(iterator.next()));
+
+            }
+
+
+        }else throw new EstabelecimentoNaoEncontradoException();
+
+
+        return resultado;
+    }
+
+    public Set<SaborResponseDTO> recuperarSaboresPorTipo(long id,
+                                                   EstabelecimentoPostPutRequestDTO estabelecimentoPostPutRequestDTO,
+                                                   TipoDeSabor tipo) throws EstabelecimentoNaoEncontradoException {
+
+        Set<SaborResponseDTO> resultado = new HashSet<SaborResponseDTO>();
+
+        if(estabelecimentoRepository.existsById(id)){
+            Estabelecimento estabelecimento = estabelecimentoRepository.findById(id).get();
+
+            for(SaborPizza saborPizza : estabelecimento.getSaboresPizza()){
+
+                if(String.valueOf(saborPizza.getTipoDeSabor()).equals(String.valueOf(tipo))){
+
+                    resultado.add(saborResponseDTOMapeador(saborPizza));
+
+                }
+
+            }
+
+
+        }else throw new EstabelecimentoNaoEncontradoException();
+
+        return resultado;
     }
 
 }

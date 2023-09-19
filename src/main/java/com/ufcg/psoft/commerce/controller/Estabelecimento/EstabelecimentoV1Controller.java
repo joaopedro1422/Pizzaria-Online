@@ -2,16 +2,25 @@ package com.ufcg.psoft.commerce.controller.Estabelecimento;
 
 
 import com.ufcg.psoft.commerce.dto.Estabelecimento.EstabelecimentoPostPutRequestDTO;
+import com.ufcg.psoft.commerce.dto.PizzaDTO.SaborResponseDTO;
+import com.ufcg.psoft.commerce.enums.TipoDeSabor;
+import com.ufcg.psoft.commerce.exception.Estabelecimento.CodigoAcessoEstabelecimentoException;
+import com.ufcg.psoft.commerce.exception.Estabelecimento.CodigoAcessoInvalidoException;
+import com.ufcg.psoft.commerce.exception.Estabelecimento.EstabelecimentoNaoEncontradoException;
 import com.ufcg.psoft.commerce.model.Cardapio.Cardapio;
 import com.ufcg.psoft.commerce.model.Cliente.Cliente;
 import com.ufcg.psoft.commerce.model.Entregador.Entregador;
 import com.ufcg.psoft.commerce.model.Estabelecimento.Estabelecimento;
 import com.ufcg.psoft.commerce.service.Estabelecimento.EstabelecimentoV1Service;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping(value = "/estabelecimentos",  produces = MediaType.APPLICATION_JSON_VALUE)
@@ -34,22 +43,24 @@ public class EstabelecimentoV1Controller {
 
     @GetMapping("{id}")
     public ResponseEntity<?> getOne(@PathVariable("id") long id){
-        Estabelecimento estabelecimento = estabelecimentov1Service.getOne(id);
+
         ResponseEntity<?> response;
 
-        if(estabelecimento == null){
-
-            response = ResponseEntity
-                    .status(HttpStatus.NOT_FOUND)
-                    .body(msgErro);
-
-        }else{
-
+        try{
+            Estabelecimento estabelecimento = estabelecimentov1Service.getOne(id);
             response = ResponseEntity
                     .status(HttpStatus.OK)
                     .body(estabelecimento);
 
+        }catch (EstabelecimentoNaoEncontradoException estabelecimento){
+
+
+            response = ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body(msgErro);
         }
+
+
 
         return response;
 
@@ -66,30 +77,34 @@ public class EstabelecimentoV1Controller {
 
     }
 
-    @PutMapping("{id}")
-    public ResponseEntity<?> put (@PathVariable("id") long id, @RequestBody EstabelecimentoPostPutRequestDTO estabelecimentoPostPutRequestDTO){
-        Estabelecimento estabelecimento = estabelecimentov1Service.put(id, estabelecimentoPostPutRequestDTO);
+    @PutMapping("/{id}")
+    public ResponseEntity<?> put (@PathVariable("id") long id, @RequestBody EstabelecimentoPostPutRequestDTO estabelecimentoPostPutRequestDTO) throws EstabelecimentoNaoEncontradoException{
+
         ResponseEntity<?> response;
 
-        if(estabelecimento == null){
-
-            response = ResponseEntity
-                    .status(HttpStatus.NOT_FOUND)
-                    .body(msgErro);
-
-
-        }else{
+        try {
+            Estabelecimento estabelecimento = estabelecimentov1Service.put(id, estabelecimentoPostPutRequestDTO);
 
             response = ResponseEntity
                     .status(HttpStatus.OK)
                     .body(estabelecimento);
 
+        }catch (EstabelecimentoNaoEncontradoException estabelecimentoNaoEncontradoException){
+
+            response = ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body(msgErro);
+
+        }catch (CodigoAcessoEstabelecimentoException e){
+
+            response = ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body("Codigo de acesso inválido!");
+
         }
 
+
         return response;
-
-
-
     }
 
     @DeleteMapping("{id}")
@@ -101,7 +116,7 @@ public class EstabelecimentoV1Controller {
         if(estabelecimento == null){
 
             response = ResponseEntity
-                    .status(HttpStatus.NOT_FOUND)
+                    .status(HttpStatus.BAD_REQUEST)
                     .body(msgErro);
 
         }else{
@@ -120,7 +135,7 @@ public class EstabelecimentoV1Controller {
 
     @RequestMapping(value = "consultaCliente/{codigoAcessoEstabelecimento}/{CodigoAcessoCliente}", method = RequestMethod.GET)
     public ResponseEntity<?> consultaCliente(@PathVariable("codigoAcessoEstabelecimento") String codigoAcessoEstabelecimento,
-                                             @PathVariable("CodigoAcessoCliente") String codigoAcessoCliente){
+                                             @PathVariable("CodigoAcessoCliente") String codigoAcessoCliente) throws EstabelecimentoNaoEncontradoException {
 
 
         Estabelecimento estabelecimento = estabelecimentov1Service.getByCodigoAcesso(codigoAcessoEstabelecimento);
@@ -149,7 +164,7 @@ public class EstabelecimentoV1Controller {
 
 
             response = ResponseEntity
-                    .status(HttpStatus.NOT_FOUND)
+                    .status(HttpStatus.BAD_REQUEST)
                     .body(msgErro);
 
         }
@@ -161,7 +176,7 @@ public class EstabelecimentoV1Controller {
 
     @RequestMapping(value = "consultaEntregador/{codigoAcessoEstabelecimento}/{codigoAcessoEntregador}", method = RequestMethod.GET)
     public ResponseEntity<?> consultaEntregador(@PathVariable("codigoAcessoEstabelecimento") String codigoAcessoEstabelecimento,
-                                                @PathVariable("codigoAcessoEntregador") String codigoAcessoEntregador){
+                                                @PathVariable("codigoAcessoEntregador") String codigoAcessoEntregador) throws EstabelecimentoNaoEncontradoException {
 
         Estabelecimento estabelecimento = estabelecimentov1Service.getByCodigoAcesso(codigoAcessoEstabelecimento);
 
@@ -189,7 +204,7 @@ public class EstabelecimentoV1Controller {
         }else{
 
             response = ResponseEntity
-                    .status(HttpStatus.NOT_FOUND)
+                    .status(HttpStatus.BAD_REQUEST)
                     .body(msgErro);
 
         }
@@ -198,5 +213,61 @@ public class EstabelecimentoV1Controller {
 
 
     }
+
+
+    @RequestMapping(value = "/{id}/SaborPizzaes", method = RequestMethod.GET)
+    public ResponseEntity<?> recuperarSabores(@PathVariable("id") long id, @RequestBody EstabelecimentoPostPutRequestDTO estabelecimentoPostPutRequestDTO){
+
+        ResponseEntity<?> response;
+
+        try {
+
+            Set<SaborResponseDTO> sabor = estabelecimentov1Service.recuperarSabores(id, estabelecimentoPostPutRequestDTO);
+
+            response = ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(sabor);
+
+        }catch (EstabelecimentoNaoEncontradoException estabelecimentoNaoEncontradoException){
+
+            response = ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(msgErro);
+
+        }
+
+        return response;
+
+    }
+
+    @RequestMapping(value = "/{id}/SaborPizzaes/tipoDeSabor", method = RequestMethod.GET)
+    public ResponseEntity<?> recuperarSaboresPorTipo(@PathVariable("id") long id,
+                                                     @RequestBody EstabelecimentoPostPutRequestDTO estabelecimentoPostPutRequestDTO,
+                                                     @RequestParam("SaborPizza") TipoDeSabor tipoPizza){
+
+        ResponseEntity<?> response;
+        try {
+
+            Set<SaborResponseDTO> sabor = estabelecimentov1Service.recuperarSaboresPorTipo(id,
+                    estabelecimentoPostPutRequestDTO,
+                    tipoPizza);
+
+            response = ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(sabor);
+
+        }catch (EstabelecimentoNaoEncontradoException estabelecimentoNaoEncontradoException){
+
+            response = ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(msgErro);
+
+        }
+
+        return response;
+
+    }
+
+
 
 }

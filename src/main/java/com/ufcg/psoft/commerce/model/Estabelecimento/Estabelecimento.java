@@ -174,7 +174,5 @@ public class Estabelecimento {
     }
 
 
-    @OneToMany(mappedBy = "estabelecimento", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private Set<SaborPizza> cardapio;
 
 }

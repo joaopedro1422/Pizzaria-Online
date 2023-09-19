@@ -63,7 +63,7 @@ public class SaborPizzaControllerTests {
         objectMapper.registerModule(new JavaTimeModule());
         estabelecimento = estabelecimentoRepository.save(Estabelecimento.builder()
                 .nome("bia")
-                .cardapio(cardapio)
+                .saboresPizza(cardapio)
                 .entregadores(entregadores)
                 .codigoAcesso("65431")
                 .build());
