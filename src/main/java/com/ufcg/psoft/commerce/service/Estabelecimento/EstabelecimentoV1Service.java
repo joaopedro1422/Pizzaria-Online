@@ -41,6 +41,13 @@ public class EstabelecimentoV1Service {
         Estabelecimento estabelecimento = converteTDOParaEntidade(estabelecimentoPostPutRequestDTO);
 
 
+        if(estabelecimento.getCodigoAcesso().length() != 6){
+
+            throw new CodigoAcessoInvalidoException();
+
+        }
+
+
         return estabelecimentoRepository.save(estabelecimento);
 
     }

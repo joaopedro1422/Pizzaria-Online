@@ -25,7 +25,11 @@ public class CustomErrorType {
     public CustomErrorType(CommerceException e) {
         this.timestamp = LocalDateTime.now();
         this.message = e.getMessage();
-        this.errors = new ArrayList<>();
+
+        List<String> aux = new ArrayList<>();
+        aux.add(e.getCause().getMessage()); //Era pra funcionar mais por algum motivo errors não é povoada de jeito nenhum
+
+        this.errors = aux;
     }
 
 }

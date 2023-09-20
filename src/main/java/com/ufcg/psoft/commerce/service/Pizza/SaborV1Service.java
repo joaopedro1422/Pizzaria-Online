@@ -121,7 +121,7 @@ public class SaborV1Service implements SaborService {
 
         List<SaborResponseDTO> retorno = new ArrayList<>();
 
-        for (SaborPizza sabor : estabelecimento.getCardapio()) {
+        for (SaborPizza sabor : estabelecimento.getSaboresPizza()) {
             retorno.add(modelMapper.map(sabor, SaborResponseDTO.class));
         }
 

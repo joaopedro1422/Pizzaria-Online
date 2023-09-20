@@ -5,10 +5,10 @@ import com.ufcg.psoft.commerce.dto.EntregadorDTO.EntregadorPostPutDTO;
 import com.ufcg.psoft.commerce.model.Cliente.Cliente;
 import com.ufcg.psoft.commerce.model.Entregador.Entregador;
 import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Repository
 public interface EntregadorService {
 
     Entregador adicionarEntregador(EntregadorPostPutDTO entregador);

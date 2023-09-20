@@ -12,7 +12,6 @@ public class CodigoAcessoInvalidoException extends CommerceException{
 
 
         super("Erros de validacao encontrados", "Codigo de acesso deve ter exatamente 6 digitos numericos");
-
     }
 
 }

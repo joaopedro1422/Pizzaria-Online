@@ -35,8 +35,8 @@ public class Estabelecimento {
     @Column(name = "nome_estabelecimento")
     private String nome;
 
-    @OneToMany(mappedBy = "estabelecimento", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private Set<SaborPizza> cardapio;
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private Set<SaborPizza> saboresPizza;
 
     @OneToMany(cascade=CascadeType.PERSIST)
     private Set<Cliente> clientes;

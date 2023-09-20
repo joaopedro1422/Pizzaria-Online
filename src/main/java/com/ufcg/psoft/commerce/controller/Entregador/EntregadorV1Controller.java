@@ -1,7 +1,8 @@
 package com.ufcg.psoft.commerce.controller.Entregador;
-
+/*
 import com.ufcg.psoft.commerce.dto.EntregadorDTO.EntregadorPostPutDTO;
 import com.ufcg.psoft.commerce.service.Entregador.EntregadorService;
+import com.ufcg.psoft.commerce.service.Entregador.EntregadorV1Service;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 public class EntregadorV1Controller {
 
     @Autowired
-    EntregadorService entregadorService;
+    EntregadorV1Service entregadorService;
 
     @PostMapping
     ResponseEntity<?> criarEntregador(
@@ -65,3 +66,4 @@ public class EntregadorV1Controller {
 
 
 }
+*/

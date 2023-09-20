@@ -34,11 +34,21 @@ public class EstabelecimentoV1Controller {
     @PostMapping
     public ResponseEntity<?> post (@RequestBody EstabelecimentoPostPutRequestDTO estabelecimentoPostPutRequestDTO){
 
-        Estabelecimento estabelecimento = estabelecimentov1Service.add(estabelecimentoPostPutRequestDTO);
+        ResponseEntity<?> response;
 
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(estabelecimento);
+        try {
+            Estabelecimento estabelecimento = estabelecimentov1Service.add(estabelecimentoPostPutRequestDTO);
+            response = ResponseEntity
+                    .status(HttpStatus.CREATED)
+                    .body(estabelecimento);
+        }catch (CodigoAcessoInvalidoException codigoAcessoInvalidoException){
+
+            throw new CodigoAcessoInvalidoException();
+
+        }
+
+        return response;
+
     }
 
     @GetMapping("{id}")
@@ -56,7 +66,7 @@ public class EstabelecimentoV1Controller {
 
 
             response = ResponseEntity
-                    .status(HttpStatus.NOT_FOUND)
+                    .status(HttpStatus.BAD_REQUEST)
                     .body(msgErro);
         }
 
@@ -230,10 +240,7 @@ public class EstabelecimentoV1Controller {
 
         }catch (EstabelecimentoNaoEncontradoException estabelecimentoNaoEncontradoException){
 
-            response = ResponseEntity
-                    .status(HttpStatus.BAD_REQUEST)
-                    .body(msgErro);
-
+            throw new EstabelecimentoNaoEncontradoException();
         }
 
         return response;
