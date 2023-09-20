@@ -1,7 +1,7 @@
 package com.ufcg.psoft.commerce.service.Entregador;
 
 import com.ufcg.psoft.commerce.dto.ClienteDTO.ClienteDTO;
-import com.ufcg.psoft.commerce.dto.EntregadorDTO.EntregadorPostPutDTO;
+import com.ufcg.psoft.commerce.dto.Entregador.EntregadorPostPutRequestDTO;
 import com.ufcg.psoft.commerce.model.Cliente.Cliente;
 import com.ufcg.psoft.commerce.model.Entregador.Entregador;
 import org.springframework.stereotype.Repository;
@@ -11,7 +11,7 @@ import java.util.List;
 
 public interface EntregadorService {
 
-    Entregador adicionarEntregador(EntregadorPostPutDTO entregador);
+    Entregador adicionarEntregador(EntregadorPostPutRequestDTO entregador);
 
     Entregador getEntregador(Long id);
 
@@ -19,6 +19,6 @@ public interface EntregadorService {
 
     public Entregador updateStatus(Long id);
 
-    public Entregador updateEntregador(Long id, EntregadorPostPutDTO entregador);
+    public Entregador updateEntregador(Long id, EntregadorPostPutRequestDTO entregador);
 }
 

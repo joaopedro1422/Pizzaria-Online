@@ -1,21 +1,20 @@
-package com.ufcg.psoft.commerce.dto.EntregadorDTO;
+package com.ufcg.psoft.commerce.dto.Entregador;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.ufcg.psoft.commerce.enums.TipoVeiculo;
-import com.ufcg.psoft.commerce.model.Cardapio.Cardapio;
-import com.ufcg.psoft.commerce.model.Cliente.Cliente;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Set;
-
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class EntregadorPostPutDTO {
+public class EntregadorResponseDTO {
+
+    @JsonProperty("id")
+    private Long id;
 
     @JsonProperty("codigoAcesso")
     private String codigoAcesso;
@@ -27,11 +26,14 @@ public class EntregadorPostPutDTO {
     private String placaVeiculo;
 
     @JsonProperty("tipoVeiculo")
-    private TipoVeiculo tipoVeiculo;
+    private String tipoVeiculo;
 
     @JsonProperty("corVeiculo")
     private String corVeiculo;
 
     @JsonProperty("aprovado")
     private boolean aprovado;
+
+    @JsonProperty("isDisponibilidade")
+    public boolean isDisponibilidade;
 }

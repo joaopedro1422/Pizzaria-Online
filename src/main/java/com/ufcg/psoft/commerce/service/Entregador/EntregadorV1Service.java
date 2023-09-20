@@ -1,14 +1,20 @@
 package com.ufcg.psoft.commerce.service.Entregador;
 
-import com.ufcg.psoft.commerce.dto.EntregadorDTO.EntregadorPostPutDTO;
+import com.ufcg.psoft.commerce.dto.Entregador.EntregadorPostPutRequestDTO;
+import com.ufcg.psoft.commerce.dto.Entregador.EntregadorPostPutRequestDTO;
+import com.ufcg.psoft.commerce.dto.Estabelecimento.EstabelecimentoPostPutRequestDTO;
 import com.ufcg.psoft.commerce.exception.Cliente.ClienteCodigoAcessoIncorretoException;
 import com.ufcg.psoft.commerce.exception.Cliente.ClienteNaoEncontradoException;
 import com.ufcg.psoft.commerce.exception.Entregador.CodigoAcessoEntregadorException;
 import com.ufcg.psoft.commerce.exception.Entregador.EntregadorNaoEncontradoException;
+import com.ufcg.psoft.commerce.exception.Estabelecimento.CodigoAcessoInvalidoException;
 import com.ufcg.psoft.commerce.model.Cliente.Cliente;
 import com.ufcg.psoft.commerce.model.Entregador.Entregador;
+import com.ufcg.psoft.commerce.model.Estabelecimento.Estabelecimento;
 import com.ufcg.psoft.commerce.repository.Entregador.EntregadorRepository;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,22 +27,26 @@ public class EntregadorV1Service implements EntregadorService{
     private EntregadorRepository entregadorRepository;
 
 
+    @Bean
+    private ModelMapper mapeadorEntregador(){
+
+        return new ModelMapper();
+    }
+
+    private Entregador converteTDOParaEntidade(EntregadorPostPutRequestDTO entregadorPostPutRequestDTO){
+
+        return mapeadorEntregador().map(entregadorPostPutRequestDTO, Entregador.class);
+
+    }
     @Override
-    public Entregador adicionarEntregador(EntregadorPostPutDTO entregadorPostPutDTO){
-        String codigoAcesso = entregadorPostPutDTO.getCodigoAcesso();
-        if(codigoAcesso==null || codigoAcesso.isEmpty()|| !isValidCodigoAcesso(codigoAcesso)){
-            throw new CodigoAcessoEntregadorException();
+    public Entregador adicionarEntregador(EntregadorPostPutRequestDTO entregadorPostPutDTO){
+
+        Entregador entregador = converteTDOParaEntidade(entregadorPostPutDTO);
+        if(entregador.getCodigoAcesso().length() != 6){
+
+            throw new CodigoAcessoInvalidoException();
         }
-        else{
-            return entregadorRepository.save(Entregador.builder()
-                    .nome(entregadorPostPutDTO.getNome())
-                    .placaVeiculo(entregadorPostPutDTO.getPlacaVeiculo())
-                    .tipoVeiculo(entregadorPostPutDTO.getTipoVeiculo())
-                    .corVeiculo(entregadorPostPutDTO.getCorVeiculo())
-                    .codigoAcesso(entregadorPostPutDTO.getCodigoAcesso())
-                    .aprovado(entregadorPostPutDTO.isAprovado())
-                    .build());
-        }
+        return entregadorRepository.save(entregador);
     }
 
     @Override
@@ -55,7 +65,7 @@ public class EntregadorV1Service implements EntregadorService{
     }
 
     @Override
-    public Entregador updateEntregador(Long id, EntregadorPostPutDTO entregadorPostPutDTO){
+    public Entregador updateEntregador(Long id, EntregadorPostPutRequestDTO entregadorPostPutDTO){
         Optional<Entregador> entregadorOptional = entregadorRepository.findById(id);
 
         if(entregadorOptional.isPresent()){

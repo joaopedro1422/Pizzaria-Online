@@ -1,6 +1,7 @@
 package com.ufcg.psoft.commerce.controller.Entregador;
-/*
-import com.ufcg.psoft.commerce.dto.EntregadorDTO.EntregadorPostPutDTO;
+
+import com.ufcg.psoft.commerce.dto.Entregador.EntregadorPostPutRequestDTO;
+import com.ufcg.psoft.commerce.dto.Entregador.EntregadorPostPutRequestDTO;
 import com.ufcg.psoft.commerce.service.Entregador.EntregadorService;
 import com.ufcg.psoft.commerce.service.Entregador.EntregadorV1Service;
 import jakarta.validation.Valid;
@@ -19,7 +20,7 @@ public class EntregadorV1Controller {
 
     @PostMapping
     ResponseEntity<?> criarEntregador(
-            @RequestBody @Valid EntregadorPostPutDTO entregadorPostPutDTO
+            @RequestBody @Valid EntregadorPostPutRequestDTO entregadorPostPutDTO
     ){
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -46,18 +47,18 @@ public class EntregadorV1Controller {
     @PutMapping("/{id}")
     ResponseEntity<?> atualizarEntregador(
             @PathVariable("id") Long id,
-            @RequestBody @Valid EntregadorPostPutDTO entregadorPostPutDTO
+            @RequestBody @Valid EntregadorPostPutRequestDTO entregadorPostPutDTO
     ){
         return  ResponseEntity
                 .status(HttpStatus.OK)
                 .body(entregadorService.updateEntregador(id, entregadorPostPutDTO));
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/{id}/update")
     ResponseEntity<?> updateStatus(
             @Valid @RequestParam("codigoAcessoEstabelecimento")String codigoAcessoEstabelecimento,
             @Valid @PathVariable("id") Long id,
-            @Valid @RequestBody EntregadorPostPutDTO entregadorPostPutDTO
+            @Valid @RequestBody EntregadorPostPutRequestDTO entregadorPostPutDTO
     ){
         return  ResponseEntity
                 .status(HttpStatus.OK)
@@ -66,4 +67,3 @@ public class EntregadorV1Controller {
 
 
 }
-*/
