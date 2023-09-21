@@ -3,8 +3,9 @@ package com.ufcg.psoft.commerce.service.Pizza;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
+
+import com.ufcg.psoft.commerce.exception.Pizza.DisponibilidadeSaborException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,8 +18,6 @@ import com.ufcg.psoft.commerce.exception.Pizza.SaborPizzaExistenteException;
 import com.ufcg.psoft.commerce.exception.Pizza.SaborPizzaNaoEncontradoException;
 import com.ufcg.psoft.commerce.model.Estabelecimento.Estabelecimento;
 import com.ufcg.psoft.commerce.model.SaborPizza.SaborPizza;
-
-
 import com.ufcg.psoft.commerce.repository.Estabelecimento.EstabelecimentoRepository;
 import com.ufcg.psoft.commerce.repository.Pizza.SaborRepository;
 
@@ -26,7 +25,6 @@ import com.ufcg.psoft.commerce.repository.Pizza.SaborRepository;
 public class SaborV1Service implements SaborService {
     @Autowired
     private SaborRepository saborRepository;
-
 
     @Autowired
     private EstabelecimentoRepository estabelecimentoRepository;
@@ -37,17 +35,7 @@ public class SaborV1Service implements SaborService {
     @Override
     public SaborResponseDTO criarSabor(Long idEstabelecimento, String codigoAcessoEstabelecimento,SaborPostPutDTO saborDTO) throws SaborPizzaNaoEncontradoException, SaborPizzaExistenteException, EstabelecimentoNaoEncontradoException, CodigoAcessoEstabelecimentoException {
 
-        Optional<Estabelecimento> estabelecimentoOptinial = estabelecimentoRepository.findById(idEstabelecimento);
-
-        if(!estabelecimentoOptinial.isPresent()){
-            throw new EstabelecimentoNaoEncontradoException();
-        }
-
-        Estabelecimento estabelecimento = estabelecimentoOptinial.get();
-
-        if(!estabelecimento.getCodigoAcesso().equals(codigoAcessoEstabelecimento)){
-            throw new CodigoAcessoEstabelecimentoException();
-        }
+        Estabelecimento estabelecimento = obterEstabelecimento(idEstabelecimento, codigoAcessoEstabelecimento);
 
         SaborPizza saborPizza = SaborPizza.builder()
                 .saborDaPizza(saborDTO.getSaborDaPizza())
@@ -62,20 +50,12 @@ public class SaborV1Service implements SaborService {
         return modelMapper.map(saborPizza, SaborResponseDTO.class);
     }
 
+
+
     @Override
     public SaborResponseDTO atualizarSaborPizza(Long idEstabelecimento, String codigoAcessoEstabelecimento,long idPizza, SaborPostPutDTO saborDTO) throws SaborPizzaNaoEncontradoException, EstabelecimentoNaoEncontradoException, CodigoAcessoEstabelecimentoException {
 
-        Optional<Estabelecimento> estabelecimentoOptinial = estabelecimentoRepository.findById(idEstabelecimento);
-
-        if(!estabelecimentoOptinial.isPresent()){
-            throw new EstabelecimentoNaoEncontradoException();
-        }
-
-        Estabelecimento estabelecimento = estabelecimentoOptinial.get();
-
-        if(!estabelecimento.getCodigoAcesso().equals(codigoAcessoEstabelecimento)){
-            throw new CodigoAcessoEstabelecimentoException();
-        }
+        Estabelecimento estabelecimento = obterEstabelecimento(idEstabelecimento, codigoAcessoEstabelecimento);
 
         Optional<SaborPizza> saborOptional = saborRepository.findById(idPizza);
 
@@ -107,17 +87,7 @@ public class SaborV1Service implements SaborService {
     @Override
     public List<SaborResponseDTO> buscarTodosSaboresPizza(Long idEstabelecimento, String codigoAcessoEstabelecimento) throws CodigoAcessoEstabelecimentoException, EstabelecimentoNaoEncontradoException {
 
-        Optional<Estabelecimento> estabelecimentoOptinial = estabelecimentoRepository.findById(idEstabelecimento);
-
-        if(!estabelecimentoOptinial.isPresent()){
-            throw new EstabelecimentoNaoEncontradoException();
-        }
-
-        Estabelecimento estabelecimento = estabelecimentoOptinial.get();
-
-        if(!estabelecimento.getCodigoAcesso().equals(codigoAcessoEstabelecimento)){
-            throw new CodigoAcessoEstabelecimentoException();
-        }
+        Estabelecimento estabelecimento = obterEstabelecimento(idEstabelecimento, codigoAcessoEstabelecimento);
 
         List<SaborResponseDTO> retorno = new ArrayList<>();
 
@@ -131,14 +101,7 @@ public class SaborV1Service implements SaborService {
     @Override
     public void deletarSaborPizza(Long idEstabelecimento, String codigoAcessoEstabelecimento,long idPizza) throws SaborPizzaNaoEncontradoException, CodigoAcessoEstabelecimentoException, EstabelecimentoNaoEncontradoException {
 
-        Optional<Estabelecimento> estabelecimentoOptinial = estabelecimentoRepository.findById(idEstabelecimento);
-        if(!estabelecimentoOptinial.isPresent()){
-            throw new EstabelecimentoNaoEncontradoException();
-        }
-        Estabelecimento estabelecimento = estabelecimentoOptinial.get();
-        if(!estabelecimento.getCodigoAcesso().equals(codigoAcessoEstabelecimento)){
-            throw new CodigoAcessoEstabelecimentoException();
-        }
+        Estabelecimento estabelecimento = obterEstabelecimento(idEstabelecimento, codigoAcessoEstabelecimento);
         if(saborRepository.findById(idPizza).isPresent()){
             saborRepository.deleteById(idPizza);
         } else{
@@ -149,17 +112,7 @@ public class SaborV1Service implements SaborService {
     @Override
     public SaborResponseDTO buscarId(Long idEstabelecimento, String codigoAcessoEstabelecimento, long idPizza) throws EstabelecimentoNaoEncontradoException {
 
-        Optional<Estabelecimento> estabelecimentoOptinial = estabelecimentoRepository.findById(idEstabelecimento);
-
-        if(!estabelecimentoOptinial.isPresent()){
-            throw new EstabelecimentoNaoEncontradoException();
-        }
-
-        Estabelecimento estabelecimento = estabelecimentoOptinial.get();
-
-        if(!estabelecimento.getCodigoAcesso().equals(codigoAcessoEstabelecimento)){
-            throw new CodigoAcessoEstabelecimentoException();
-        }
+        Estabelecimento estabelecimento = obterEstabelecimento(idEstabelecimento, codigoAcessoEstabelecimento);
 
 
         if(saborRepository.findById(idPizza).isPresent()){
@@ -176,6 +129,46 @@ public class SaborV1Service implements SaborService {
             throw new SaborPizzaNaoEncontradoException();
         }
 
+    }
+
+    @Override
+    public SaborResponseDTO atualizarSaborPizzaDisponibilidade(Long idEstabelecimento, String codigoAcessoEstabelecimento, Long idPizza, SaborPostPutDTO saborDTO, Boolean disponibilidade) {
+
+        Estabelecimento estabelecimento = obterEstabelecimento(idEstabelecimento, codigoAcessoEstabelecimento);
+
+        Optional<SaborPizza> saborOptional = saborRepository.findById(idPizza);
+
+        if(!saborOptional.isPresent()){
+            throw new SaborPizzaNaoEncontradoException();
+        }
+        if(!saborDTO.getDisponibilidadeSabor().equals(disponibilidade)){
+            throw new DisponibilidadeSaborException();
+        }
+        SaborPizza saborPizza = saborOptional.get();
+        saborPizza.setDisponibilidadeSabor(saborDTO.getDisponibilidadeSabor());
+
+        saborRepository.save(saborPizza);
+
+        return SaborResponseDTO.builder()
+                .idPizza(saborDTO.getIdPizza())
+                .disponibilidadeSabor(saborDTO.getDisponibilidadeSabor())
+                .build();
+    }
+
+    // metodo auxiliar
+    private Estabelecimento obterEstabelecimento(Long idEstabelecimento, String codigoAcessoEstabelecimento) {
+        Optional<Estabelecimento> estabelecimentoOptinial = estabelecimentoRepository.findById(idEstabelecimento);
+
+        if(!estabelecimentoOptinial.isPresent()){
+            throw new EstabelecimentoNaoEncontradoException();
+        }
+
+        Estabelecimento estabelecimento = estabelecimentoOptinial.get();
+
+        if(!estabelecimento.getCodigoAcesso().equals(codigoAcessoEstabelecimento)){
+            throw new CodigoAcessoEstabelecimentoException();
+        }
+        return estabelecimento;
     }
 
 }

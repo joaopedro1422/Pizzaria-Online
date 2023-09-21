@@ -41,6 +41,6 @@ public class SaborPostPutDTO {
     private Boolean disponibilidadeSabor;
 
     @JsonProperty("tipoDeSabor")
-    @NotNull(message = "Disponibilidade obrigatoria")
-    private TipoDeSabor tipoDeSabor;
+    @NotNull(message = "Tipo de Sabor obrigatorio")
+    private String tipoDeSabor;
 }

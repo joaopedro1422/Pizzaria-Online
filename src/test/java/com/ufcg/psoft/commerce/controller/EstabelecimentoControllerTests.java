@@ -11,6 +11,7 @@ import com.ufcg.psoft.commerce.exception.CustomErrorType;
 import com.ufcg.psoft.commerce.model.Estabelecimento.Estabelecimento;
 import com.ufcg.psoft.commerce.model.SaborPizza.SaborPizza;
 import com.ufcg.psoft.commerce.repository.Estabelecimento.EstabelecimentoRepository;
+import com.ufcg.psoft.commerce.repository.Pizza.SaborRepository;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -32,9 +33,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class EstabelecimentoControllerTests {
     @Autowired
     MockMvc driver;
+    final String URI_ESTABELECIMENTOS = "/estabelecimentos";
 
     @Autowired
     EstabelecimentoRepository estabelecimentoRepository;
+    @Autowired
+    SaborRepository saborRepository;
+
+    EstabelecimentoPostPutRequestDTO estabelecimentoPostPutRequestDTO;
 
     ObjectMapper objectMapper = new ObjectMapper();
 
@@ -157,8 +163,8 @@ public class EstabelecimentoControllerTests {
 
             // Assert
             assertAll(
-                    () -> assertEquals("Erros de validacao encontrados", resultado.getMessage())
-                    //() -> assertEquals("Codigo de acesso deve ter exatamente 6 digitos numericos", resultado.getErrors().get(0))
+                    () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
+                    () -> assertEquals("Codigo de acesso deve ter exatamente 6 digitos numericos", resultado.getErrors().get(0))
             );
         }
 
@@ -186,52 +192,61 @@ public class EstabelecimentoControllerTests {
                     //() -> assertEquals("Codigo de acesso deve ter exatamente 6 digitos numericos", resultado.getErrors().get(0))
             );
         }
+    }
 
+    @Nested
+    @DisplayName("Conjunto de casos de verificação sobre cardapio no estabelecimento")
+    class EstabelecimentoCardapioVerificacoes {
         @Test
         @DisplayName("Quando buscamos o cardapio de um estabelecimento")
         void quandoBuscarCardapioEstabelecimento() throws Exception {
             // Arrange
-            SaborPizza SaborPizza1 = SaborPizza.builder()
+            SaborPizza sabor1 = saborRepository.save(SaborPizza.builder()
                     .saborDaPizza("Calabresa")
                     .valorMedia(25.0)
                     .valorGrande(35.0)
-                    .tipoDeSabor(TipoDeSabor.SALGADO)
-                    .build();
+                    .tipoDeSabor("salgado")
+                    .disponibilidadeSabor(true)
+                    .estabelecimento(estabelecimento)
+                    .build());
 
-            SaborPizza SaborPizza2 = SaborPizza.builder()
+            SaborPizza sabor2 = saborRepository.save(SaborPizza.builder()
                     .saborDaPizza("Mussarela")
                     .valorMedia(20.0)
                     .valorGrande(30.0)
-                    .tipoDeSabor(TipoDeSabor.SALGADO)
-                    .build();
-            SaborPizza SaborPizza3 = SaborPizza.builder()
+                    .tipoDeSabor("salgado")
+                    .disponibilidadeSabor(true)
+                    .estabelecimento(estabelecimento)
+                    .build());
+            SaborPizza sabor3 = saborRepository.save(SaborPizza.builder()
                     .saborDaPizza("Chocolate")
                     .valorMedia(25.0)
                     .valorGrande(35.0)
-                    .tipoDeSabor(TipoDeSabor.DOCE)
-                    .build();
+                    .tipoDeSabor("doce")
+                    .disponibilidadeSabor(true)
+                    .estabelecimento(estabelecimento)
+                    .build());
 
-            SaborPizza SaborPizza4 = SaborPizza.builder()
+            SaborPizza sabor4 = saborRepository.save(SaborPizza.builder()
                     .saborDaPizza("Morango")
                     .valorMedia(20.0)
                     .valorGrande(30.0)
-                    .tipoDeSabor(TipoDeSabor.DOCE)
-                    .build();
-            Estabelecimento estabelecimento1 = Estabelecimento.builder()
-                    .codigoAcesso("123456")
-                    .saboresPizza(Set.of(SaborPizza1, SaborPizza2, SaborPizza3, SaborPizza4))
-                    .build();
-            estabelecimentoRepository.save(estabelecimento1);
+                    .tipoDeSabor("doce")
+                    .disponibilidadeSabor(true)
+                    .estabelecimento(estabelecimento)
+                    .build());
+
+            estabelecimentoRepository.save(estabelecimento);
 
             // Act
-            String responseJsonString = driver.perform(get(URI_ESTABELECIMENTOS + "/" + estabelecimento1.getId() + "/SaborPizzaes")
+            String responseJsonString = driver.perform(get(URI_ESTABELECIMENTOS + "/" + estabelecimento.getId())
                             .contentType(MediaType.APPLICATION_JSON)
-                            .content(objectMapper.writeValueAsString(estabelecimentoPostRequestDTO)))
+                            .content(objectMapper.writeValueAsString(estabelecimentoPostPutRequestDTO)))
                     .andExpect(status().isOk()) // Codigo 200
                     .andDo(print())
                     .andReturn().getResponse().getContentAsString();
 
-            List<SaborResponseDTO> resultado = objectMapper.readValue(responseJsonString, new TypeReference<>() {
+            List<SaborPizza> resultado = objectMapper.readValue(responseJsonString, new TypeReference<>() {
             });
 
             // Assert
@@ -247,9 +262,10 @@ public class EstabelecimentoControllerTests {
             // Nenhuma necessidade além do setup()
 
             // Act
-            String responseJsonString = driver.perform(get(URI_ESTABELECIMENTOS + "/" + 9999 + "/SaborPizzaes")
+            String responseJsonString = driver.perform(get(URI_ESTABELECIMENTOS + "/" + 9999 + "/sabores")
                             .contentType(MediaType.APPLICATION_JSON)
-                            .content(objectMapper.writeValueAsString(estabelecimentoPostRequestDTO)))
+
+                            .content(objectMapper.writeValueAsString(estabelecimentoPostPutRequestDTO)))
                     .andExpect(status().isBadRequest()) // Codigo 404
                     .andDo(print())
                     .andReturn().getResponse().getContentAsString();
@@ -264,50 +280,57 @@ public class EstabelecimentoControllerTests {
 
         @Test
         @DisplayName("Quando buscamos o cardapio de um estabelecimento por saborDaPizza (salgado)")
-        void quandoBuscarCardapioEstabelecimentoPorsaborDaPizza() throws Exception {
+        void quandoBuscarCardapioEstabelecimentoPorTipo() throws Exception {
             // Arrange
-            SaborPizza SaborPizza1 = SaborPizza.builder()
+            SaborPizza sabor1 = saborRepository.save(SaborPizza.builder()
                     .saborDaPizza("Calabresa")
                     .valorMedia(25.0)
                     .valorGrande(35.0)
-                    .tipoDeSabor(TipoDeSabor.SALGADO)
-                    .build();
+                    .tipoDeSabor("salgado")
+                    .disponibilidadeSabor(true)
+                    .estabelecimento(estabelecimento)
+                    .build());
 
-            SaborPizza SaborPizza2 = SaborPizza.builder()
+            SaborPizza sabor2 = saborRepository.save(SaborPizza.builder()
                     .saborDaPizza("Mussarela")
                     .valorMedia(20.0)
                     .valorGrande(30.0)
-                    .tipoDeSabor(TipoDeSabor.SALGADO)
-                    .build();
-            SaborPizza SaborPizza3 = SaborPizza.builder()
+                    .tipoDeSabor("salgado")
+                    .disponibilidadeSabor(true)
+                    .estabelecimento(estabelecimento)
+                    .build());
+            SaborPizza sabor3 = saborRepository.save(SaborPizza.builder()
                     .saborDaPizza("Chocolate")
                     .valorMedia(25.0)
                     .valorGrande(35.0)
-                    .tipoDeSabor(TipoDeSabor.DOCE)
-                    .build();
+                    .tipoDeSabor("salgado").disponibilidadeSabor(true)
 
-            SaborPizza SaborPizza4 = SaborPizza.builder()
+                    .disponibilidadeSabor(true)
+                    .estabelecimento(estabelecimento)
+                    .build());
+
+            SaborPizza sabor4 = saborRepository.save(SaborPizza.builder()
                     .saborDaPizza("Morango")
                     .valorMedia(20.0)
                     .valorGrande(30.0)
-                    .tipoDeSabor(TipoDeSabor.DOCE)
-                    .build();
-            Estabelecimento estabelecimento1 = Estabelecimento.builder()
-                    .codigoAcesso("123456")
-                    .saboresPizza(Set.of(SaborPizza1, SaborPizza2, SaborPizza3, SaborPizza4))
-                    .build();
-            estabelecimentoRepository.save(estabelecimento1);
+                    .tipoDeSabor("doce")
+                    .disponibilidadeSabor(true)
+                    .estabelecimento(estabelecimento)
+                    .build());
+
+            estabelecimentoRepository.save(estabelecimento);
 
             // Act
-            String responseJsonString = driver.perform(get(URI_ESTABELECIMENTOS + "/" + estabelecimento1.getId() + "/SaborPizzaes" + "/tipoDeSabor")
+            String responseJsonString = driver.perform(get(URI_ESTABELECIMENTOS + "/" + estabelecimento.getId() + "/sabores" + "/tipo")
                             .contentType(MediaType.APPLICATION_JSON)
-                            .param("SaborPizza",String.valueOf(TipoDeSabor.SALGADO))
-                            .content(objectMapper.writeValueAsString(estabelecimentoPostRequestDTO)))
+                            .param("tipo", String.valueOf("salgado"))
+                            .param("CodigoAcesso", estabelecimento.getCodigoAcesso()))
                     .andExpect(status().isOk()) // Codigo 200
                     .andDo(print())
                     .andReturn().getResponse().getContentAsString();
 
-            List<SaborResponseDTO> resultado = objectMapper.readValue(responseJsonString, new TypeReference<>() {
+
+            List<SaborPizza> resultado = objectMapper.readValue(responseJsonString, new TypeReference<>() {
             });
 
             // Assert
@@ -320,47 +343,54 @@ public class EstabelecimentoControllerTests {
         @DisplayName("Quando buscamos o cardapio de um estabelecimento por saborDaPizza (doce)")
         void quandoBuscarCardapioEstabelecimentoPorsaborDaPizzaDoce() throws Exception {
             // Arrange
-            SaborPizza SaborPizza1 = SaborPizza.builder()
+            SaborPizza sabor1 = saborRepository.save(SaborPizza.builder()
                     .saborDaPizza("Calabresa")
                     .valorMedia(25.0)
                     .valorGrande(35.0)
-                    .tipoDeSabor(TipoDeSabor.SALGADO)
-                    .build();
+                    .tipoDeSabor("salgado")
+                    .disponibilidadeSabor(true)
+                    .estabelecimento(estabelecimento)
+                    .build());
 
-            SaborPizza SaborPizza2 = SaborPizza.builder()
+            SaborPizza sabor2 = saborRepository.save(SaborPizza.builder()
                     .saborDaPizza("Mussarela")
                     .valorMedia(20.0)
                     .valorGrande(30.0)
-                    .tipoDeSabor(TipoDeSabor.SALGADO)
-                    .build();
-            SaborPizza SaborPizza3 = SaborPizza.builder()
+                    .tipoDeSabor("salgado")
+                    .disponibilidadeSabor(true)
+                    .estabelecimento(estabelecimento)
+                    .build());
+            SaborPizza sabor3 = saborRepository.save(SaborPizza.builder()
                     .saborDaPizza("Chocolate")
                     .valorMedia(25.0)
                     .valorGrande(35.0)
-                    .tipoDeSabor(TipoDeSabor.DOCE)
-                    .build();
+                    .tipoDeSabor("doce")
+                    .disponibilidadeSabor(true)
+                    .estabelecimento(estabelecimento)
+                    .build());
 
-            SaborPizza SaborPizza4 = SaborPizza.builder()
+            SaborPizza sabor4 = saborRepository.save(SaborPizza.builder()
                     .saborDaPizza("Morango")
                     .valorMedia(20.0)
                     .valorGrande(30.0)
-                    .tipoDeSabor(TipoDeSabor.DOCE)
-                    .build();
-            Estabelecimento estabelecimento1 = Estabelecimento.builder()
-                    .codigoAcesso("123456")
-                    .saboresPizza(Set.of(SaborPizza1, SaborPizza2, SaborPizza3, SaborPizza4))
-                    .build();
-            estabelecimentoRepository.save(estabelecimento1);
+                    .tipoDeSabor("doce")
+                    .disponibilidadeSabor(true)
+                    .estabelecimento(estabelecimento)
+                    .build());
+
+
+            estabelecimentoRepository.save(estabelecimento);
+
             // Act
-            String responseJsonString = driver.perform(get(URI_ESTABELECIMENTOS + "/" + estabelecimento1.getId() + "/SaborPizzaes" + "/tipoDeSabor")
+            String responseJsonString = driver.perform(get(URI_ESTABELECIMENTOS + "/" + estabelecimento.getId() + "/sabores" + "/tipo")
                             .contentType(MediaType.APPLICATION_JSON)
-                            .param("SaborPizza", String.valueOf(TipoDeSabor.DOCE))
-                            .content(objectMapper.writeValueAsString(estabelecimentoPostRequestDTO)))
+                            .param("tipo", String.valueOf("doce"))
+                            .param("codigoAcesso", estabelecimento.getCodigoAcesso()))
                     .andExpect(status().isOk()) // Codigo 200
                     .andDo(print())
                     .andReturn().getResponse().getContentAsString();
 
-            List<SaborResponseDTO> resultado = objectMapper.readValue(responseJsonString, new TypeReference<>() {
+            List<SaborPizza> resultado = objectMapper.readValue(responseJsonString, new TypeReference<>() {
             });
 
             // Assert
@@ -368,5 +398,423 @@ public class EstabelecimentoControllerTests {
                     () -> assertEquals(2, resultado.size())
             );
         }
+
+        @Test
+        @DisplayName("Quando buscamos o cardapio salgadode um estabelecimento com o id estabelecimento invalido")
+        void quandoBuscarCardapioSalgadoEstabelecimentoIdInvalido() throws Exception {
+            // Arrange
+            SaborPizza sabor1 = saborRepository.save(SaborPizza.builder()
+                    .saborDaPizza("Calabresa")
+                    .valorMedia(25.0)
+                    .valorGrande(35.0)
+                    .tipoDeSabor("salgado")
+                    .disponibilidadeSabor(true)
+                    .estabelecimento(estabelecimento)
+                    .build());
+
+            SaborPizza sabor2 = saborRepository.save(SaborPizza.builder()
+                    .saborDaPizza("Mussarela")
+                    .valorMedia(20.0)
+                    .valorGrande(30.0)
+                    .tipoDeSabor("salgado")
+                    .disponibilidadeSabor(true)
+                    .estabelecimento(estabelecimento)
+                    .build());
+            SaborPizza sabor3 = saborRepository.save(SaborPizza.builder()
+                    .saborDaPizza("Chocolate")
+                    .valorMedia(25.0)
+                    .valorGrande(35.0)
+                    .tipoDeSabor("doce")
+                    .disponibilidadeSabor(true)
+                    .estabelecimento(estabelecimento)
+                    .build());
+
+            SaborPizza sabor4 = saborRepository.save(SaborPizza.builder()
+                    .saborDaPizza("Morango")
+                    .valorMedia(20.0)
+                    .valorGrande(30.0)
+                    .tipoDeSabor("doce")
+                    .disponibilidadeSabor(true)
+                    .estabelecimento(estabelecimento)
+                    .build());
+
+            estabelecimentoRepository.save(estabelecimento);
+
+
+            //act
+            String responseJsonString = driver.perform(get(URI_ESTABELECIMENTOS + "/" + 300 + "/sabores" + "/tipo")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .param("tipo", "salgado")
+                            .param("codigoAcesso", estabelecimento.getCodigoAcesso())
+                            .content(objectMapper.writeValueAsString(estabelecimentoPostPutRequestDTO)))
+                    .andExpect(status().isBadRequest()) // Codigo 404
+                    .andDo(print())
+                    .andReturn().getResponse().getContentAsString();
+
+            CustomErrorType resultado = objectMapper.readValue(responseJsonString, CustomErrorType.class);
+
+            // Assert
+            assertAll(
+                    () -> assertEquals("O estabelecimento consultado nao existe!", resultado.getMessage())
+            );
+        }
+
+        @Test
+        @DisplayName("Quando buscamos o cardapio doce  de um estabelecimento com o id estabelecimento invalido")
+        void quandoBuscarCardapioDoceEstabelecimentoIdInvalido() throws Exception {
+            // Arrange
+            SaborPizza sabor01 = saborRepository.save(SaborPizza.builder()
+                    .saborDaPizza("Calabresa")
+                    .valorMedia(25.0)
+                    .valorGrande(35.0)
+                    .tipoDeSabor("salgado")
+                    .disponibilidadeSabor(true)
+                    .estabelecimento(estabelecimento)
+                    .build());
+
+            SaborPizza sabor02 = saborRepository.save(SaborPizza.builder()
+                    .saborDaPizza("Mussarela")
+                    .valorMedia(20.0)
+                    .valorGrande(30.0)
+                    .tipoDeSabor("salgado")
+                    .disponibilidadeSabor(true)
+                    .estabelecimento(estabelecimento)
+                    .build());
+            SaborPizza sabor03 = saborRepository.save(SaborPizza.builder()
+                    .saborDaPizza("Chocolate")
+                    .valorMedia(25.0)
+                    .valorGrande(35.0)
+                    .tipoDeSabor("doce")
+                    .disponibilidadeSabor(true)
+                    .estabelecimento(estabelecimento)
+                    .build());
+
+            SaborPizza sabor04 = saborRepository.save(SaborPizza.builder()
+                    .saborDaPizza("Morango")
+                    .valorMedia(20.0)
+                    .valorGrande(30.0)
+                    .tipoDeSabor("doce")
+                    .disponibilidadeSabor(true)
+                    .estabelecimento(estabelecimento)
+                    .build());
+
+            estabelecimentoRepository.save(estabelecimento);
+
+
+            //act
+            String responseJsonString = driver.perform(get(URI_ESTABELECIMENTOS + "/" + 300 + "/sabores" + "/tipo")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .param("tipo", "doce")
+                            .param("codigoAcesso", estabelecimento.getCodigoAcesso())
+                            .content(objectMapper.writeValueAsString(estabelecimentoPostPutRequestDTO)))
+                    .andExpect(status().isBadRequest()) // Codigo 404
+                    .andDo(print())
+                    .andReturn().getResponse().getContentAsString();
+
+            CustomErrorType result = objectMapper.readValue(responseJsonString, CustomErrorType.class);
+
+            // Assert
+            assertAll(
+                    () -> assertEquals("O estabelecimento consultado nao existe!", result.getMessage())
+            );
+        }
+
+        @Test
+        @DisplayName("Quando buscamos o cardapio  de um estabelecimento com tipo de sabor invalido")
+        void quandoBuscarCardapioEstabelecimentoTipoInvalido() throws Exception {
+            // Arrange
+            SaborPizza sabor1 = saborRepository.save(SaborPizza.builder()
+                    .saborDaPizza("Calabresa")
+                    .valorMedia(25.0)
+                    .valorGrande(35.0)
+                    .tipoDeSabor("salgado")
+                    .disponibilidadeSabor(true)
+                    .estabelecimento(estabelecimento)
+                    .build());
+
+            SaborPizza sabor2 = saborRepository.save(SaborPizza.builder()
+                    .saborDaPizza("Mussarela")
+                    .valorMedia(20.0)
+                    .valorGrande(30.0)
+                    .tipoDeSabor("salgado")
+                    .disponibilidadeSabor(true)
+                    .estabelecimento(estabelecimento)
+                    .build());
+            SaborPizza sabor3 = saborRepository.save(SaborPizza.builder()
+                    .saborDaPizza("Chocolate")
+                    .valorMedia(25.0)
+                    .valorGrande(35.0)
+                    .tipoDeSabor("doce")
+                    .disponibilidadeSabor(true)
+                    .estabelecimento(estabelecimento)
+                    .build());
+
+            SaborPizza sabor4 = saborRepository.save(SaborPizza.builder()
+                    .saborDaPizza("Morango")
+                    .valorMedia(20.0)
+                    .valorGrande(30.0)
+                    .tipoDeSabor("doce")
+                    .disponibilidadeSabor(true)
+                    .estabelecimento(estabelecimento)
+                    .build());
+            estabelecimentoRepository.save(estabelecimento);
+
+
+            //act
+            String responseJsonString = driver.perform(get(URI_ESTABELECIMENTOS + "/" + estabelecimento.getId() + "/sabores" + "/tipo")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .param("tipo","caramelizada")
+                    .param("codigoAcesso",estabelecimento.getCodigoAcesso())
+                    .content(objectMapper.writeValueAsString(estabelecimentoPostPutRequestDTO)))
+                .andExpect(status().isBadRequest()) // Codigo 404
+                    .andDo(print())
+                    .andReturn().getResponse().getContentAsString();
+
+            CustomErrorType resultado = objectMapper.readValue(responseJsonString, CustomErrorType.class);
+
+            // Assert
+            assertAll(
+                    () -> assertEquals("Erros de validacao encontrados", resultado.getMessage())
+            );
+
+        }
+
+        @Test
+        @DisplayName("Quando buscamos o cardapio  de um estabelecimento por disponibilidade true")
+        void quandoBuscarCardapioEstabelecimentoPorDisponibilidadeTrue() throws Exception {
+            // Arrange
+            SaborPizza sabor1 = saborRepository.save(SaborPizza.builder()
+                    .saborDaPizza("Calabresa")
+                    .valorMedia(25.0)
+                    .valorGrande(35.0)
+                    .tipoDeSabor("salgado")
+                    .disponibilidadeSabor(true)
+                    .estabelecimento(estabelecimento)
+                    .build());
+
+            SaborPizza sabor2 = saborRepository.save(SaborPizza.builder()
+                    .saborDaPizza("Mussarela")
+                    .valorMedia(20.0)
+                    .valorGrande(30.0)
+                    .tipoDeSabor("salgado")
+                    .disponibilidadeSabor(true)
+                    .estabelecimento(estabelecimento)
+                    .build());
+            SaborPizza sabor3 = saborRepository.save(SaborPizza.builder()
+                    .saborDaPizza("Chocolate")
+                    .valorMedia(25.0)
+                    .valorGrande(35.0)
+                    .tipoDeSabor("doce")
+                    .disponibilidadeSabor(true)
+                    .estabelecimento(estabelecimento)
+                    .build());
+
+            SaborPizza sabor4 = saborRepository.save(SaborPizza.builder()
+                    .saborDaPizza("Morango")
+                    .valorMedia(20.0)
+                    .valorGrande(30.0)
+                    .tipoDeSabor("doce")
+                    .disponibilidadeSabor(true)
+                    .estabelecimento(estabelecimento)
+                    .build());
+
+            estabelecimentoRepository.save(estabelecimento);
+
+
+            //act
+
+            String responseJsonString = driver.perform(get(URI_ESTABELECIMENTOS + "/" + estabelecimento.getId() + "/sabores" + "/disponibilidade")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .param("disponibilidade", "true")
+                            .param("codigoAcesso", estabelecimento.getCodigoAcesso()))
+                    .andExpect(status().isOk()) // Codigo 200
+                    .andDo(print())
+                    .andReturn().getResponse().getContentAsString();
+
+            List<SaborPizza> resultado = objectMapper.readValue(responseJsonString, new TypeReference<>() {
+            });
+
+
+            // Assert
+            assertAll(
+                    () -> assertEquals(2, resultado.size())
+            );
+        }
+        @Test
+        @DisplayName("Quando buscamos o cardapio  de um estabelecimento por disponibilidade com id invalido")
+        void quandoBuscarCardapioEstabelecimentoPorDisponibilidadeComIdInvalido() throws Exception {
+            // Arrange
+            SaborPizza sabor1 = saborRepository.save(SaborPizza.builder()
+                    .saborDaPizza("Calabresa")
+                    .valorMedia(25.0)
+                    .valorGrande(35.0)
+                    .tipoDeSabor("salgado")
+                    .disponibilidadeSabor(true)
+                    .estabelecimento(estabelecimento)
+                    .build());
+
+            SaborPizza sabor2 = saborRepository.save(SaborPizza.builder()
+                    .saborDaPizza("Mussarela")
+                    .valorMedia(20.0)
+                    .valorGrande(30.0)
+                    .tipoDeSabor("salgado")
+                    .disponibilidadeSabor(true)
+                    .estabelecimento(estabelecimento)
+                    .build());
+            SaborPizza sabor3 = saborRepository.save(SaborPizza.builder()
+                    .saborDaPizza("Chocolate")
+                    .valorMedia(25.0)
+                    .valorGrande(35.0)
+                    .tipoDeSabor("doce")
+                    .disponibilidadeSabor(true)
+                    .estabelecimento(estabelecimento)
+                    .build());
+
+            SaborPizza sabor4 = saborRepository.save(SaborPizza.builder()
+                    .saborDaPizza("Morango")
+                    .valorMedia(20.0)
+                    .valorGrande(30.0)
+                    .tipoDeSabor("doce")
+                    .disponibilidadeSabor(true)
+                    .estabelecimento(estabelecimento)
+                    .build());
+
+            estabelecimentoRepository.save(estabelecimento);
+
+            //act
+            String responseJsonString = driver.perform(get(URI_ESTABELECIMENTOS + "/" + 60 + "/sabores" + "/disponibilidade")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .param("disponibilidade","true")
+                        .param("codigoAcesso",estabelecimento.getCodigoAcesso()))
+                    .andExpect(status().isBadRequest()) // Codigo 404
+                    .andDo(print())
+                    .andReturn().getResponse().getContentAsString();
+
+            CustomErrorType resultado = objectMapper.readValue(responseJsonString, CustomErrorType.class);
+
+            // Assert
+            assertAll(
+                () -> assertEquals("O estabelecimento consultado nao existe!", resultado.getMessage())
+        );
+        }
+
+
+            @Test
+            @DisplayName("Quando buscamos o cardapio  de um estabelecimento por disponibilidade com codigo de acesso invalido")
+            void quandoBuscarCardapioEstabelecimentoPorDisponibilidadeComCodigoAcessoInvalido() throws Exception {
+                // Arrange
+                SaborPizza sabor1 = saborRepository.save(SaborPizza.builder()
+                        .saborDaPizza("Calabresa")
+                        .valorMedia(25.0)
+                        .valorGrande(35.0)
+                        .tipoDeSabor("salgado")
+                        .disponibilidadeSabor(true)
+                        .estabelecimento(estabelecimento)
+                        .build());
+
+                SaborPizza sabor2 = saborRepository.save(SaborPizza.builder()
+                        .saborDaPizza("Mussarela")
+                        .valorMedia(20.0)
+                        .valorGrande(30.0)
+                        .tipoDeSabor("salgado")
+                        .disponibilidadeSabor(true)
+                        .estabelecimento(estabelecimento)
+                        .build());
+                SaborPizza sabor3 = saborRepository.save(SaborPizza.builder()
+                        .saborDaPizza("Chocolate")
+                        .valorMedia(25.0)
+                        .valorGrande(35.0)
+                        .tipoDeSabor("doce")
+                        .disponibilidadeSabor(true)
+                        .estabelecimento(estabelecimento)
+                        .build());
+
+                SaborPizza sabor4 = saborRepository.save(SaborPizza.builder()
+                        .saborDaPizza("Morango")
+                        .valorMedia(20.0)
+                        .valorGrande(30.0)
+                        .tipoDeSabor("doce")
+                        .disponibilidadeSabor(true)
+                        .estabelecimento(estabelecimento)
+                        .build());
+                estabelecimentoRepository.save(estabelecimento);
+
+                //act
+                String responseJsonString = driver.perform(get(URI_ESTABELECIMENTOS + "/" + estabelecimento.getId() + "/sabores" + "/disponibilidade")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .param("disponibilidade","true")
+                        .param("codigoAcesso","2222"))
+
+                        .andExpect(status().isBadRequest()) // Codigo 404
+                        .andDo(print())
+                        .andReturn().getResponse().getContentAsString();
+
+                CustomErrorType resultado = objectMapper.readValue(responseJsonString, CustomErrorType.class);
+
+                // Assert
+                assertAll(
+                () -> assertEquals("Codigo de acesso invalido", resultado.getMessage())
+                );
+            }
+
+            @Test
+            @DisplayName("Quando buscamos o cardapio  de um estabelecimento por disponibilidade false")
+            void quandoBuscarCardapioEstabelecimentoPorDisponibilidadeFalse() throws Exception {
+                // Arrange
+                SaborPizza sabor1 = saborRepository.save(SaborPizza.builder()
+                        .saborDaPizza("Calabresa")
+                        .valorMedia(25.0)
+                        .valorGrande(35.0)
+                        .tipoDeSabor("salgado")
+                        .disponibilidadeSabor(true)
+                        .estabelecimento(estabelecimento)
+                        .build());
+
+                SaborPizza sabor2 = saborRepository.save(SaborPizza.builder()
+                        .saborDaPizza("Mussarela")
+                        .valorMedia(20.0)
+                        .valorGrande(30.0)
+                        .tipoDeSabor("salgado")
+                        .disponibilidadeSabor(true)
+                        .estabelecimento(estabelecimento)
+                        .build());
+                SaborPizza sabor3 = saborRepository.save(SaborPizza.builder()
+                        .saborDaPizza("Chocolate")
+                        .valorMedia(25.0)
+                        .valorGrande(35.0)
+                        .tipoDeSabor("doce")
+                        .disponibilidadeSabor(true)
+                        .estabelecimento(estabelecimento)
+                        .build());
+
+                SaborPizza sabor4 = saborRepository.save(SaborPizza.builder()
+                        .saborDaPizza("Morango")
+                        .valorMedia(20.0)
+                        .valorGrande(30.0)
+                        .tipoDeSabor("doce")
+                        .disponibilidadeSabor(true)
+                        .estabelecimento(estabelecimento)
+                        .build());
+
+                //act
+
+                String responseJsonString = driver.perform(get(URI_ESTABELECIMENTOS + "/" + estabelecimento.getId() + "/sabores" + "/disponibilidade")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .param("disponibilidade","false")
+                                .param("codigoAcesso",estabelecimento.getCodigoAcesso()))
+                        .andExpect(status().isOk()) // Codigo 200
+                        .andDo(print())
+                        .andReturn().getResponse().getContentAsString();
+
+                List<SaborPizza> resultado = objectMapper.readValue(responseJsonString, new TypeReference<>() {
+                });
+
+                // Assert
+                assertAll(
+                        () -> assertEquals(2, resultado.size())
+                );
+            }
+
     }
+
 }

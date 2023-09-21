@@ -7,6 +7,7 @@ import com.ufcg.psoft.commerce.exception.Cliente.ClienteCodigoAcessoInvalidoExce
 import com.ufcg.psoft.commerce.exception.Estabelecimento.CodigoAcessoEstabelecimentoException;
 import com.ufcg.psoft.commerce.exception.Estabelecimento.CodigoAcessoInvalidoException;
 import com.ufcg.psoft.commerce.exception.Estabelecimento.EstabelecimentoNaoEncontradoException;
+import com.ufcg.psoft.commerce.exception.Pizza.TipoDeSaborNaoExisteException;
 import com.ufcg.psoft.commerce.model.Estabelecimento.Estabelecimento;
 import com.ufcg.psoft.commerce.model.SaborPizza.SaborPizza;
 import com.ufcg.psoft.commerce.repository.Estabelecimento.EstabelecimentoRepository;
@@ -17,6 +18,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class EstabelecimentoV1Service {
@@ -198,4 +201,35 @@ public class EstabelecimentoV1Service {
         return resultado;
     }
 
+    public Set<SaborPizza> getCardapioDisponibilidade(Long id, String codigoAcesso,Boolean disponibilidade) {
+        Estabelecimento e = estabelecimentoRepository.findById(id).orElseThrow(EstabelecimentoNaoEncontradoException::new);
+        if(codigoAcesso.equals(e.getCodigoAcesso())){
+            throw new CodigoAcessoInvalidoException();
+        }
+
+        Stream<SaborPizza> cardapioDisponibilidade = e.getSaboresPizza().stream().filter(
+                item -> item.getDisponibilidadeSabor() == disponibilidade
+        );
+        return cardapioDisponibilidade.collect(Collectors.toSet());
+    }
+
+    public Set<SaborPizza> getCardapioCompleto(Long id, String codigoAcesso) {
+        Estabelecimento e = estabelecimentoRepository.findById(id).orElseThrow(EstabelecimentoNaoEncontradoException::new);
+        if(codigoAcesso.equals(e.getCodigoAcesso()))throw new CodigoAcessoInvalidoException();
+        return e.getSaboresPizza();
+    }
+
+    public Set<SaborPizza> listarCardapioPorTipoDePizza(Long id, String codigoAcesso,String tipo) {
+        Estabelecimento e = estabelecimentoRepository.findById(id).orElseThrow(EstabelecimentoNaoEncontradoException::new);
+
+        if(codigoAcesso.equals(e.getCodigoAcesso()))throw new CodigoAcessoInvalidoException();
+
+        if(!tipo.equalsIgnoreCase("SALGADO")&& !tipo.equalsIgnoreCase("DOCE")){
+            throw new TipoDeSaborNaoExisteException();
+        }
+        Stream<SaborPizza> cardapioTipo = e.getSaboresPizza().stream().filter(
+                item -> Objects.equals(item.getTipoDeSabor(), tipo)
+        );
+        return cardapioTipo.collect(Collectors.toSet());
+    }
 }

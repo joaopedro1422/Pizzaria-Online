@@ -30,6 +30,6 @@ public class SaborResponseDTO {
     private Boolean disponibilidadeSabor;
 
     @JsonProperty("tipoDeSabor")
-    private TipoDeSabor tipoDeSabor;
+    private String tipoDeSabor;
 
 }

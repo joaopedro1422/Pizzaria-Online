@@ -43,8 +43,12 @@ public class SaborPizza {
     @Positive(message = "PrecoG deve ser maior que zero")
     private double valorGrande;
 
+    @JsonProperty("tipoDeSabor")
+    @Column(nullable = false, name = "desc_tipoDeSabor")
+    private String tipoDeSabor;
+
     private Boolean disponibilidadeSabor;
-    private TipoDeSabor tipoDeSabor;
+
 
     @JsonIgnore
     @ManyToOne

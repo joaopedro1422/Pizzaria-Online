@@ -12,8 +12,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
+import com.ufcg.psoft.commerce.model.Entregador.Entregador;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -30,7 +33,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.ufcg.psoft.commerce.dto.PizzaDTO.SaborPostPutDTO;
 import com.ufcg.psoft.commerce.dto.PizzaDTO.SaborResponseDTO;
-import com.ufcg.psoft.commerce.enums.TipoDeSabor;
 import com.ufcg.psoft.commerce.exception.CustomErrorType;
 import com.ufcg.psoft.commerce.model.SaborPizza.SaborPizza;
 import com.ufcg.psoft.commerce.model.Estabelecimento.Estabelecimento;
@@ -58,19 +60,19 @@ public class SaborPizzaControllerTests {
 
     @BeforeEach
     void setup() {
-//		Set<SaborPizza> cardapio = new HashSet<SaborPizza>();
-//		Set<Entregador> entregadores = new HashSet<Entregador>();
+		Set<SaborPizza> cardapio = new HashSet<>();
+		Set<Entregador> entregadores = new HashSet<>();
 
         objectMapper.registerModule(new JavaTimeModule());
         estabelecimento = estabelecimentoRepository.save(Estabelecimento.builder()
                 .nome("bia")
-//				.cardapio(cardapio)
-//				.entregadores(entregadores)
+				.saboresPizza(cardapio)
+				.entregadores(entregadores)
                 .codigoAcesso("65431")
                 .build());
         sabor = saborRepository.save(SaborPizza.builder()
                 .saborDaPizza("Calabresa")
-                .tipoDeSabor(TipoDeSabor.SALGADO)
+                .tipoDeSabor("salgado")
                 .valorMedia(10.0)
                 .valorGrande(15.0)
                 .disponibilidadeSabor(true)
@@ -192,7 +194,7 @@ public class SaborPizzaControllerTests {
 
             SaborPizza sabor1 = SaborPizza.builder()
                     .saborDaPizza("Chocolate")
-                    .tipoDeSabor(TipoDeSabor.DOCE)
+                    .tipoDeSabor("doce")
                     .valorMedia(10.0)
                     .valorGrande(15.0)
                     .disponibilidadeSabor(false)
@@ -200,7 +202,7 @@ public class SaborPizzaControllerTests {
                     .build();
             SaborPizza sabor2 = SaborPizza.builder()
                     .saborDaPizza("Frango")
-                    .tipoDeSabor(TipoDeSabor.SALGADO)
+                    .tipoDeSabor("salgado")
                     .valorMedia(10.0)
                     .valorGrande(15.0)
                     .disponibilidadeSabor(false)
@@ -306,7 +308,7 @@ public class SaborPizzaControllerTests {
             Long idPizza = sabor.getIdPizza();
             saborPostPutDTO = SaborPostPutDTO.builder()
                     .saborDaPizza("Charque")
-                    .tipoDeSabor(TipoDeSabor.SALGADO)
+                    .tipoDeSabor("salgado")
                     .valorMedia(8.0)
                     .valorGrande(20.0)
                     .disponibilidadeSabor(true)
@@ -360,7 +362,6 @@ public class SaborPizzaControllerTests {
         @DisplayName("Quando alteramos um sabor passando código de acesso inválido")
         void quandoAlteramosSaborCodigoAcessoInvalido() throws Exception {
             // Arrange
-            Long idPizza = sabor.getIdPizza();
             // nenhuma necessidade além do setup()
 
             // Act
@@ -429,7 +430,7 @@ public class SaborPizzaControllerTests {
         @DisplayName("Quando alteramos um sabor com tipo válido")
         void quandoAlteramosSaborTipoValido() throws Exception {
             // Arrange
-            saborPostPutDTO.setTipoDeSabor(TipoDeSabor.SALGADO);
+            saborPostPutDTO.setTipoDeSabor("salgado");
 
             // Act
             String responseJsonString = driver
@@ -445,7 +446,7 @@ public class SaborPizzaControllerTests {
                     .readValue(responseJsonString, SaborResponseDTO.SaborResponseDTOBuilder.class).build();
 
             // Assert
-            assertEquals(TipoDeSabor.SALGADO, resultado.getTipoDeSabor());
+            assertEquals("salgado", resultado.getTipoDeSabor());
         }
 
         @Test
@@ -544,6 +545,7 @@ public class SaborPizzaControllerTests {
                     () -> assertEquals("PrecoG deve ser maior que zero", resultado.getErrors().get(0)));
         }
 
+
         @Test
         @DisplayName("Quando alteramos um sabor com disponibilidade válida")
         void quandoAlteramosSaborDisponibilidadeValida() throws Exception {
@@ -553,7 +555,6 @@ public class SaborPizzaControllerTests {
             // Act
             String responseJsonString = driver
                     .perform(put(URI_SABORES + "/" + sabor.getIdPizza()).contentType(MediaType.APPLICATION_JSON)
-//							.param("idPizza", sabor.getIdPizza().toString())
                             .param("idEstabelecimento", estabelecimento.getId().toString())
                             .param("codigoAcessoEstabelecimento", estabelecimento.getCodigoAcesso())
                             .content(objectMapper.writeValueAsString(saborPostPutDTO)))
@@ -575,7 +576,6 @@ public class SaborPizzaControllerTests {
             // Act
             String responseJsonString = driver
                     .perform(put(URI_SABORES + "/" + sabor.getIdPizza()).contentType(MediaType.APPLICATION_JSON)
-//							.param("idPizza", sabor.getIdPizza().toString())
                             .param("idEstabelecimento", estabelecimento.getId().toString())
                             .param("codigoAcessoEstabelecimento", estabelecimento.getCodigoAcesso())
                             .content(objectMapper.writeValueAsString(saborPostPutDTO)))
@@ -593,6 +593,8 @@ public class SaborPizzaControllerTests {
 //		@DisplayName("Quando alteramos a disponibilidade de um sabor para false")
 //		void quandoAlteramosDisponibilidadeSaborFalse() throws Exception {
 //			// Arrange
+//            saborPostPutDTO.setDisponibilidadeSabor(false);
+//            saborRepository.save(sabor);
 //			// Act
 //			String responseJsonString = driver
 //					.perform(put(URI_SABORES + "/" + sabor.getIdPizza() + "/" + false)
@@ -603,7 +605,7 @@ public class SaborPizzaControllerTests {
 //					.andExpect(status().isOk()) // Codigo 200
 //					.andDo(print()).andReturn().getResponse().getContentAsString();
 //
-//			SaborPizza resultado = objectMapper.readValue(responseJsonString, SaborPizza.class);
+//			SaborResponseDTO resultado = objectMapper.readValue(responseJsonString, SaborResponseDTO.class);
 //
 //			// Assert
 //			assertFalse(resultado.getDisponibilidadeSabor());
@@ -613,7 +615,7 @@ public class SaborPizzaControllerTests {
 //		@DisplayName("Quando alteramos a disponibilidade de um sabor para true")
 //		void quandoAlteramosDisponibilidadeSaborTrue() throws Exception {
 //			// Arrange
-//			sabor.setDisponibilidadeSabor(false);
+//			sabor.setDisponibilidadeSabor(true);
 //			saborRepository.save(sabor);
 //			// Act
 //			String responseJsonString = driver
@@ -644,7 +646,7 @@ public class SaborPizzaControllerTests {
 //							.param("idEstabelecimento", estabelecimento.getId().toString())
 //							.param("codigoAcessoEstabelecimento", estabelecimento.getCodigoAcesso())
 //							.content(objectMapper.writeValueAsString(sabor)))
-//					.andExpect(status().isBadRequest()) // Codigo 200
+//					.andExpect(status().isBadRequest())
 //					.andDo(print()).andReturn().getResponse().getContentAsString();
 //
 //			CustomErrorType resultado = objectMapper.readValue(responseJsonString, CustomErrorType.class);
@@ -657,6 +659,8 @@ public class SaborPizzaControllerTests {
 //		@DisplayName("Quando alteramos a disponibilidade de um sabor para true quando já está true")
 //		void quandoAlteramosDisponibilidadeSaborTrueQuandoJaEstaTrue() throws Exception {
 //			// Arrange
+//            sabor.setDisponibilidadeSabor(true);
+//            saborRepository.save(sabor);
 //			// Act
 //			String responseJsonString = driver
 //					.perform(put(URI_SABORES + "/" + sabor.getIdPizza() + "/" + true)

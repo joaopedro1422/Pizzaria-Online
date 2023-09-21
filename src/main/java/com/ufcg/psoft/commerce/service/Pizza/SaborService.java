@@ -22,4 +22,6 @@ public interface SaborService {
     void deletarSaborPizza(Long idEstabelecimento, String codigoAcessoEstabelecimento,long idPizza) throws SaborPizzaNaoEncontradoException, CodigoAcessoEstabelecimentoException, EstabelecimentoNaoEncontradoException;
 
     SaborResponseDTO buscarId(Long idEstabelecimento, String codigoAcessoEstabelecimento, long idPizza) throws EstabelecimentoNaoEncontradoException;
+
+    SaborResponseDTO atualizarSaborPizzaDisponibilidade(Long idEstabelecimento, String codigoAcessoEstabelecimento, Long idPizza, SaborPostPutDTO sabor,Boolean disponibilidade);
 }

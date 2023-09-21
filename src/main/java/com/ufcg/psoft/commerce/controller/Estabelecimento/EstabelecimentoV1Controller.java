@@ -274,7 +274,37 @@ public class EstabelecimentoV1Controller {
         return response;
 
     }
+    @GetMapping("{id}/sabores/disponibilidade")
+    ResponseEntity getCardapioDisponibilidade(
+            @Param("codigoAcesso") String codigoAcesso,
+            @PathVariable("id") Long id,
+            @Param("disponibilidade") Boolean disponibilidade
+            ){
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(estabelecimentov1Service.getCardapioDisponibilidade(id,codigoAcesso,disponibilidade));
+    }
+    @GetMapping("{id}/sabores")
+    ResponseEntity getCardapioCompleto(
+            @Param("codigoAcesso") String codigoAcesso,
+            @PathVariable("id") Long id
+    ){
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(estabelecimentov1Service.getCardapioCompleto(id,codigoAcesso));
+    }
 
+
+    @GetMapping("{id}/sabores/tipo")
+    ResponseEntity listarCardapioPorTipoDePizza(
+            @Param("codigoAcesso") String codigoAcesso,
+            @PathVariable("id") Long id,
+            @Param("tipo") String tipo
+            ){
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(estabelecimentov1Service.listarCardapioPorTipoDePizza(id,codigoAcesso,tipo));
+    }
 
 
 }

@@ -47,6 +47,17 @@ public class PizzaV1Controller {
                         .body(saborService.atualizarSaborPizza(idEstabelecimento,codigoAcessoEstabelecimento,idPizza,sabor));
             }
 
+    @PutMapping(value = "/{idPizza}/disponibilidade")
+    public ResponseEntity<?> atualizarSaborPizzaDisponibilidade(
+            @Valid @RequestParam  ("idEstabelecimento")Long idEstabelecimento,
+            @Valid @RequestParam("codigoAcessoEstabelecimento")String codigoAcessoEstabelecimento,
+            @Valid @PathVariable("idPizza") Long idPizza,
+            @Valid @RequestBody SaborPostPutDTO sabor,
+            @Valid @PathVariable("disponibilidade") Boolean disponibilidade) throws EstabelecimentoNaoEncontradoException, CodigoAcessoEstabelecimentoException {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(saborService.atualizarSaborPizzaDisponibilidade(idEstabelecimento,codigoAcessoEstabelecimento,idPizza,sabor,disponibilidade));
+    }
 
     @GetMapping
     public ResponseEntity<?> buscarTodosOsSabores(
