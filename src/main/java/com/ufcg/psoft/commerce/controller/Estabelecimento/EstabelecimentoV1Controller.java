@@ -7,7 +7,6 @@ import com.ufcg.psoft.commerce.enums.TipoDeSabor;
 import com.ufcg.psoft.commerce.exception.Estabelecimento.CodigoAcessoEstabelecimentoException;
 import com.ufcg.psoft.commerce.exception.Estabelecimento.CodigoAcessoInvalidoException;
 import com.ufcg.psoft.commerce.exception.Estabelecimento.EstabelecimentoNaoEncontradoException;
-import com.ufcg.psoft.commerce.model.Cardapio.Cardapio;
 import com.ufcg.psoft.commerce.model.Cliente.Cliente;
 import com.ufcg.psoft.commerce.model.Entregador.Entregador;
 import com.ufcg.psoft.commerce.model.Estabelecimento.Estabelecimento;

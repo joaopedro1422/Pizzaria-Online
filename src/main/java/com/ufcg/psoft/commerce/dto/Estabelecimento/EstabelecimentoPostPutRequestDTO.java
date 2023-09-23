@@ -1,7 +1,6 @@
 package com.ufcg.psoft.commerce.dto.Estabelecimento;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.ufcg.psoft.commerce.model.Cardapio.Cardapio;
 import com.ufcg.psoft.commerce.model.Cliente.Cliente;
 import com.ufcg.psoft.commerce.model.Entregador.Entregador;
 import com.ufcg.psoft.commerce.model.SaborPizza.SaborPizza;
