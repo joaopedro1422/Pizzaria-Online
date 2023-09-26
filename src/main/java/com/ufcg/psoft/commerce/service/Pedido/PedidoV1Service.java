@@ -24,19 +24,8 @@ public class PedidoV1Service implements PedidoService{
 
     @Override
     public Pedido criarPedido(PedidoDTO pedidoDTO) {
-        String codigoAcesso = pedidoDTO.getCodigoAcesso();
 
-        if (codigoAcesso == null || codigoAcesso.isEmpty() || !isValidCodigoAcesso(codigoAcesso)) {
-            throw new ClienteCodigoAcessoInvalidoException();
-        } else {
-            return clienteRepository.save(
-                    Cliente.builder()
-                            .nome(clienteDTO.getNome())
-                            .endereco(clienteDTO.getEndereco())
-                            .codigoAcesso(codigoAcesso)
-                            .build()
-            );
-        }
+        return null;
     }
 
     @Override
