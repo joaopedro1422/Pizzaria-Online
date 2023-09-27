@@ -7,7 +7,7 @@ public class EstabelecimentoIdNaoEncontradoException extends CommerceException {
 
     public EstabelecimentoIdNaoEncontradoException(){
 
-        super("Nenhum estabelecimento com esse id!");
+        super("O estabelecimento consultado nao existe!");
 
     }
 

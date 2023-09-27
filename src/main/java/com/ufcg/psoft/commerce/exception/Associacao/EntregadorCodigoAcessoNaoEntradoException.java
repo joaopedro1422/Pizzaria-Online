@@ -6,7 +6,7 @@ public class EntregadorCodigoAcessoNaoEntradoException extends CommerceException
 
     public EntregadorCodigoAcessoNaoEntradoException(){
 
-        super("Nenhum entregador encontrado com esse codigo de acesso");
+        super("Codigo de acesso invalido!");
 
     }
 

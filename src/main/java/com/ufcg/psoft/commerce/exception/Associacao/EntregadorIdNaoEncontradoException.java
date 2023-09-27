@@ -6,7 +6,7 @@ public class EntregadorIdNaoEncontradoException extends CommerceException {
 
     public EntregadorIdNaoEncontradoException(){
 
-        super("Nenhum Entregador encontrado com esse id!");
+        super("O entregador consultado nao existe!");
 
     }
 

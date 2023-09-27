@@ -5,16 +5,14 @@ import com.ufcg.psoft.commerce.exception.Associacao.EntregadorCodigoAcessoNaoEnt
 import com.ufcg.psoft.commerce.exception.Associacao.EntregadorIdNaoEncontradoException;
 import com.ufcg.psoft.commerce.exception.Associacao.EstabelecimentoIdNaoEncontradoException;
 import com.ufcg.psoft.commerce.model.Associacao.Associacao;
+import com.ufcg.psoft.commerce.repository.Estabelecimento.EstabelecimentoRepository;
 import com.ufcg.psoft.commerce.service.Associacao.AssociacaoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping(value = "/associacao", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -22,6 +20,7 @@ public class AssociacaoController {
 
     @Autowired
     AssociacaoService associacaoService;
+
 
     @PostMapping
     public ResponseEntity<?> criarAssociacao(
@@ -48,6 +47,9 @@ public class AssociacaoController {
 
         }catch (EntregadorCodigoAcessoNaoEntradoException entregadorCodigoAcessoNaoEntradoException){
 
+            response = ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .build();
             throw new EntregadorCodigoAcessoNaoEntradoException();
 
         }catch (EstabelecimentoIdNaoEncontradoException estabelecimentoIdNaoEncontradoException){
@@ -56,6 +58,48 @@ public class AssociacaoController {
 
         }
 
+
+
+        return response;
+    }
+
+    @PutMapping
+    public ResponseEntity<?>  aprovaEntregador(
+
+            @RequestParam("entregadorId") String idEntregador,
+            @RequestParam("estabelecimentoId") String idEstabelecimento,
+            @RequestParam("codigoAcesso") String codigoAcesso
+
+
+    ){
+
+        ResponseEntity<?> response;
+
+        Associacao associacao;
+
+        try{
+
+            associacao = associacaoService.aprovarEntregador(idEntregador,
+                    codigoAcesso,
+                    idEstabelecimento);
+
+            response =  ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(associacao);
+
+        }catch (EntregadorCodigoAcessoNaoEntradoException entregadorCodigoAcessoNaoEntradoException){
+
+            throw new EntregadorCodigoAcessoNaoEntradoException();
+
+        }catch (EntregadorIdNaoEncontradoException entregadorIdNaoEncontradoException){
+
+            throw new EntregadorIdNaoEncontradoException();
+
+        }catch (EstabelecimentoIdNaoEncontradoException estabelecimentoIdNaoEncontradoException){
+
+            throw new EstabelecimentoIdNaoEncontradoException();
+
+        }
 
 
         return response;

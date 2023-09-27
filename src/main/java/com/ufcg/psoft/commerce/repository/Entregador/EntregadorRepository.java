@@ -5,4 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 public interface EntregadorRepository extends JpaRepository<Entregador, Long> {
+
+    public Boolean existsByCodigoAcesso(String codigoAcesso);
+
 }
