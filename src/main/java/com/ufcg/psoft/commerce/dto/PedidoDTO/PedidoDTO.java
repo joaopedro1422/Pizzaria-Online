@@ -17,6 +17,11 @@ import java.util.List;
 public class PedidoDTO {
 
     @CodigoAcessoConstraint
+    @JsonProperty("codigoAcesso")
+    @NotBlank(message = "O código de acesso não pode estar vazio")
+    private String codigoAcesso;
+
+    @CodigoAcessoConstraint
     @JsonProperty("codigoAcessoCliente")
     @NotBlank(message = "O código de acesso não pode estar vazio")
     private String codigoAcessoCliente;

@@ -1,5 +1,5 @@
 package com.ufcg.psoft.commerce.enums;
 
 public enum MetodoPagamento {
-    CARTAO_CREDITO, CARTAO_DEBITO, PIX;
+    CARTAO_CREDITO, CARTAO_DEBITO, PIX
 }

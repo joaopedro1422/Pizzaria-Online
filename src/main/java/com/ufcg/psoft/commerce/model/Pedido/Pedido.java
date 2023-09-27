@@ -2,6 +2,7 @@ package com.ufcg.psoft.commerce.model.Pedido;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ufcg.psoft.commerce.enums.MetodoPagamento;
+import com.ufcg.psoft.commerce.enums.StatusPedido;
 import com.ufcg.psoft.commerce.model.Cliente.Cliente;
 import com.ufcg.psoft.commerce.model.SaborPizza.Pizza;
 import lombok.AllArgsConstructor;
@@ -22,6 +23,10 @@ public class Pedido {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false, name = "pk_id_pedido")
     private long id;
+
+    @JsonProperty("codigoAcesso")
+    @Column(nullable = false, name = "desc_codigoAcesso_pedido")
+    private String codigoAcesso;
 
     @JsonProperty("cliente")
     @ManyToOne
@@ -54,6 +59,10 @@ public class Pedido {
     @Column(nullable = false, name = "num_valor_total")
     private double valorTotal;
 
+    @JsonProperty("status")
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, name = "enum_status_pedido")
+    private StatusPedido status;
 
 }
 

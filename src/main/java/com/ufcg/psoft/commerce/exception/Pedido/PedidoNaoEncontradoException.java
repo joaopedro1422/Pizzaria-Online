@@ -9,7 +9,7 @@ public class PedidoNaoEncontradoException extends CommerceException {
 
     public PedidoNaoEncontradoException(){
 
-        super("Cliente não Encontrado");
+        super("Pedido Nao Encontrado");
     }
 
 }
