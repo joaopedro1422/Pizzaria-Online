@@ -1,9 +1,20 @@
 package com.ufcg.psoft.commerce.model.SaborPizza;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.ufcg.psoft.commerce.enums.TamanhoPizza;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import jakarta.persistence.*;
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.ufcg.psoft.commerce.enums.TamanhoPizza;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.Getter; // Adicione a importação para @Getter
 import lombok.NoArgsConstructor;
 import jakarta.persistence.*;
 import java.util.List;
@@ -29,4 +40,11 @@ public class Pizza {
             inverseJoinColumns = @JoinColumn(name = "fk_id_sabor_pizza")
     )
     private List<SaborPizza> sabores;
+
+    @JsonProperty("tamanho")
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, name = "desc_tamanho")
+    @Getter
+    private TamanhoPizza tamanho;
 }
+

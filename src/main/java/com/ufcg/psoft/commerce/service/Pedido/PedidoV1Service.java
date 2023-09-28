@@ -4,11 +4,13 @@ import com.ufcg.psoft.commerce.dto.PedidoDTO.PedidoDTO;
 import com.ufcg.psoft.commerce.enums.MetodoPagamento;
 
 import com.ufcg.psoft.commerce.enums.StatusPedido;
+import com.ufcg.psoft.commerce.enums.TamanhoPizza;
 import com.ufcg.psoft.commerce.exception.Cliente.ClienteNaoEncontradoException;
 import com.ufcg.psoft.commerce.exception.Pedido.PedidoCodigoAcessoIncorretoException;
 import com.ufcg.psoft.commerce.exception.Pedido.PedidoCodigoAcessoInvalidoException;
+import com.ufcg.psoft.commerce.exception.Pedido.PedidoMetodoPagamentoInvalidoException;
 import com.ufcg.psoft.commerce.exception.Pedido.PedidoNaoEncontradoException;
-import com.ufcg.psoft.commerce.exception.Pizza.SaborPizzaNaoEncontradoException;
+import com.ufcg.psoft.commerce.exception.Pizza.*;
 import com.ufcg.psoft.commerce.model.Cliente.Cliente;
 import com.ufcg.psoft.commerce.model.Pedido.Pedido;
 import com.ufcg.psoft.commerce.model.SaborPizza.Pizza;
@@ -42,22 +44,33 @@ public class PedidoV1Service implements PedidoService{
 
     @Autowired
     private ModelMapper modelMapper;
-
+    @Override
     public Pedido criarPedido(PedidoDTO pedidoDTO) {
         String codigoAcesso = pedidoDTO.getCodigoAcesso();
 
-            if (codigoAcesso == null || codigoAcesso.isEmpty() || !isValidCodigoAcesso(codigoAcesso)) {
-                throw new PedidoCodigoAcessoInvalidoException();
+        if (codigoAcesso == null || codigoAcesso.isEmpty() || !isValidCodigoAcesso(codigoAcesso)) {
+            throw new PedidoCodigoAcessoInvalidoException();
         }
 
+        // Verifique se o cliente com o código de acesso existe no banco de dados
         Cliente cliente = getClienteByCodigoAcesso(pedidoDTO.getCodigoAcessoCliente());
+
+        if (cliente == null) {
+            throw new ClienteNaoEncontradoException(); // Lançar exceção se o cliente não for encontrado
+        }
+
         List<Pizza> pizzas = getPizzasByIds(pedidoDTO.getPizzaIds());
         double valorTotal = calcularValorTotal(pizzas);
+
+        String enderecoEntrega = pedidoDTO.getEnderecoEntrega();
+        if (enderecoEntrega == null || enderecoEntrega.isEmpty()) {
+            enderecoEntrega = cliente.getEndereco();
+        }
 
         Pedido pedido = Pedido.builder()
                 .cliente(cliente)
                 .pizzas(pizzas)
-                .enderecoEntrega(pedidoDTO.getEnderecoEntrega())
+                .enderecoEntrega(enderecoEntrega)
                 .codigoAcessoCliente(pedidoDTO.getCodigoAcessoCliente())
                 .metodoPagamento(MetodoPagamento.valueOf(pedidoDTO.getMetodoPagamento()))
                 .valorTotal(valorTotal)
@@ -66,8 +79,8 @@ public class PedidoV1Service implements PedidoService{
         pedido = pedidoRepository.save(pedido);
 
         return pedido;
-
     }
+
 
 
     @Override
@@ -131,7 +144,7 @@ public class PedidoV1Service implements PedidoService{
         }
 
         if (!isValidMetodoPagamento(metodoPagamentoStr)) {
-            throw new PedidoCodigoAcessoIncorretoException();
+            throw new PedidoMetodoPagamentoInvalidoException();
         }
 
         if (!codigoAcesso.equals(pedido.getCodigoAcessoCliente())) {
@@ -206,17 +219,33 @@ public class PedidoV1Service implements PedidoService{
 
     private double calcularValorPizza(Pizza pizza) {
         List<SaborPizza> sabores = pizza.getSabores();
+
+        if (sabores.isEmpty()) {
+            throw new PizzaSemSaboresException();
+        }
+
         double valorTotal = 0.0;
 
-        if (sabores.size() == 0) {
-            return valorTotal; // A pizza não possui sabores, portanto o valor é zero.
+        if (pizza.getTamanho() == TamanhoPizza.GRANDE) {
+            if (sabores.size() == 1) {
+                valorTotal = sabores.get(0).getValorGrande();
+            } else if (sabores.size() == 2) {
+                double valor1 = sabores.get(0).getValorGrande();
+                double valor2 = sabores.get(1).getValorGrande();
+                valorTotal = (valor1 + valor2) / 2.0;
+            } else {
+                throw new PizzaGrandeComSaboresIncorretosException();
+            }
+        } else if (pizza.getTamanho() == TamanhoPizza.MEDIA) {
+            if (sabores.size() != 1) {
+                throw new PizzaMediaComSaboresIncorretosException();
+            }
+            valorTotal = sabores.get(0).getValorMedia();
+        } else {
+            throw new TamanhoPizzaInvalidoException();
         }
 
-        for (SaborPizza sabor : sabores) {
-            valorTotal += sabor.getValorMedia();
-        }
-
-        return valorTotal / sabores.size();
+        return valorTotal;
     }
 
     private boolean isValidMetodoPagamento(String metodoPagamento) {

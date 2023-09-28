@@ -36,5 +36,14 @@ public class PedidoDTO {
     @NotBlank(message = "O método de pagamento não pode estar em branco")
     private String metodoPagamento;
 
+    public PedidoDTO(String codigoAcesso, String metodoPagamento, String enderecoEntrega, List<Long> pizzaIds) {
+        this.codigoAcesso = codigoAcesso;
+        this.codigoAcessoCliente = codigoAcesso;
+        this.metodoPagamento = metodoPagamento;
+        this.enderecoEntrega = enderecoEntrega;
+        this.pizzaIds = pizzaIds;
+    }
+
+
 }
 
