@@ -65,6 +65,17 @@ public class ClienteV1Controller {
                 .body(clienteService.getClientes());
     }
 
+    @PutMapping("/cliente/{id}/{codigoAcesso}/{idPizza}")
+    ResponseEntity demonstrarInteressePizza(
+            @PathVariable("id") Long id,
+            @PathVariable ("codigoAcesso")String codigoAcesso,
+            @PathVariable ("idPizza")Long idPizza
+    ) {
+        clienteService.demonstrarInteressePizza(id,codigoAcesso,idPizza);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+
     @ExceptionHandler(ClienteNaoEncontradoException.class)
     ResponseEntity<?> handleClienteNaoEncontradoException(ClienteNaoEncontradoException ex) {
         return ResponseEntity

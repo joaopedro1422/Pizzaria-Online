@@ -5,8 +5,10 @@ import com.ufcg.psoft.commerce.exception.Cliente.ClienteCodigoAcessoIncorretoExc
 import com.ufcg.psoft.commerce.exception.Cliente.ClienteCodigoAcessoInvalidoException;
 import com.ufcg.psoft.commerce.exception.Cliente.ClienteNaoEncontradoException;
 import com.ufcg.psoft.commerce.model.Cliente.Cliente;
+import com.ufcg.psoft.commerce.model.SaborPizza.SaborPizza;
 import com.ufcg.psoft.commerce.repository.Cliente.ClienteRepository;
 import com.ufcg.psoft.commerce.service.Estabelecimento.EstabelecimentoV1Service;
+import com.ufcg.psoft.commerce.service.Pizza.SaborService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,6 +21,9 @@ public class ClienteV1Service implements ClienteService {
 
     @Autowired
     private  ClienteRepository clienteRepository;
+
+    @Autowired
+    private SaborService sabor;
 
     @Autowired
     private ModelMapper modelMapper;
@@ -94,6 +99,32 @@ public class ClienteV1Service implements ClienteService {
             throw new ClienteCodigoAcessoIncorretoException();
         }
         return true;
+    }
+
+    @Override
+    public void demonstrarInteressePizza(Long id, String codigoAcesso, Long idPizza) {
+        Cliente cliente = getClienteById(id);
+        if (codigoAcesso != null && !codigoAcesso.isEmpty() && !isValidCodigoAcesso(codigoAcesso)) {
+            throw new ClienteCodigoAcessoIncorretoException();
+        }
+        if (!cliente.getCodigoAcesso().equals(codigoAcesso)) {
+            throw new ClienteCodigoAcessoIncorretoException();
+        }
+//        SaborPizza pizza = pizzaService.consultarSaborPizzaById(idSaborPizza);
+//        Cliente cliente = getClienteById(idCliente);
+//
+//        if(!pizza.isDisponivel()){
+//            if(!cliente.isSubscribed(pizza)) {
+//                cliente.subscribeTo(pizza);
+//                clienteRepository.save(cliente);
+//                pizzaService.salvarSaborPizzaCadastrado(pizza);
+//            }else{
+//                throw new SaborPizzaClienteCadastrado();
+//            }
+//        } else {
+//            throw new SaborPizzaEstaDisponivel();
+//        }
+
     }
 
     private Cliente getClienteById(Long id) throws ClienteNaoEncontradoException {
