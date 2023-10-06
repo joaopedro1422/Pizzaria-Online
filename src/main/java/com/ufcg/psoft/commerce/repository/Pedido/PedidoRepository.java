@@ -9,4 +9,6 @@ import java.util.Optional;
 @Repository
 public interface PedidoRepository extends JpaRepository <Pedido, Long> {
 
+    public Boolean existsByCodigoAcesso(String codigoAcesso);
+    public Optional<Pedido> findByCodigoAcesso(String codigoAcesso);
 }

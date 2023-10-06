@@ -816,5 +816,60 @@ public class EstabelecimentoControllerTests {
             }
 
     }
+    @Nested
+    @DisplayName("Métodos pagamento")
+    class testesMetodoPagamento {
+
+        @Test
+        @DisplayName("Teste do pagamento por pix")
+        public void porPixTest(){
+
+            assertTrue(false);
+
+        }
+
+
+        @Test
+        @DisplayName("Teste do pagamento por cartao de credito")
+        public void porCreditoTest(){
+
+            assertTrue(false);
+
+        }
+
+        @Test
+        @DisplayName("Teste do pagamento por debito")
+        public void porDebitoTest(){
+
+            assertTrue(false);
+
+        }
+
+        @Test
+        @DisplayName("Teste codigo de acesso passado indevidamente")
+        public void codigoAcessoPedidoInvalidoTest(){
+
+            assertTrue(false);
+
+        }
+
+
+        @Test
+        @DisplayName("Teste codigo de acesso estabelecimento passado indevidamente")
+        public void codigoAcessoEstabelecimentoInvalidoTest(){
+
+            assertTrue(false);
+
+        }
+
+        @Test
+        @DisplayName("Teste pedido não existe")
+        public void pedidoInexistenteTest(){
+
+            assertTrue(false);
+
+        }
+
+    }
 
 }

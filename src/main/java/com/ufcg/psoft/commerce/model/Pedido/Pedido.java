@@ -64,6 +64,10 @@ public class Pedido {
     @Column(nullable = false, name = "enum_status_pedido")
     private StatusPedido status;
 
+    @JsonProperty("codigoAcessoEstabelecimento")
+    @Column(name = "fk_codigoAcessoEstabelecimento")
+    private String codigoAcessoEstabelecimento;
+
 }
 
 

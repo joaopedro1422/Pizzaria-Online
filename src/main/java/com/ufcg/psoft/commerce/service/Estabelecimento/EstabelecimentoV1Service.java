@@ -2,15 +2,19 @@ package com.ufcg.psoft.commerce.service.Estabelecimento;
 
 import com.ufcg.psoft.commerce.dto.Estabelecimento.EstabelecimentoPostPutRequestDTO;
 import com.ufcg.psoft.commerce.dto.PizzaDTO.SaborResponseDTO;
+import com.ufcg.psoft.commerce.enums.MetodoPagamento;
 import com.ufcg.psoft.commerce.enums.TipoDeSabor;
 import com.ufcg.psoft.commerce.exception.Cliente.ClienteCodigoAcessoInvalidoException;
 import com.ufcg.psoft.commerce.exception.Estabelecimento.CodigoAcessoEstabelecimentoException;
 import com.ufcg.psoft.commerce.exception.Estabelecimento.CodigoAcessoInvalidoException;
 import com.ufcg.psoft.commerce.exception.Estabelecimento.EstabelecimentoNaoEncontradoException;
+import com.ufcg.psoft.commerce.exception.Pedido.PedidoCodigoAcessoIncorretoException;
 import com.ufcg.psoft.commerce.exception.Pizza.TipoDeSaborNaoExisteException;
 import com.ufcg.psoft.commerce.model.Estabelecimento.Estabelecimento;
+import com.ufcg.psoft.commerce.model.Pedido.Pedido;
 import com.ufcg.psoft.commerce.model.SaborPizza.SaborPizza;
 import com.ufcg.psoft.commerce.repository.Estabelecimento.EstabelecimentoRepository;
+import com.ufcg.psoft.commerce.repository.Pedido.PedidoRepository;
 import com.ufcg.psoft.commerce.util.GerarCodigoAcessoEstabelecimento;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +30,9 @@ public class EstabelecimentoV1Service {
 
     @Autowired
     private EstabelecimentoRepository estabelecimentoRepository;
+
+    @Autowired
+    private PedidoRepository pedidoRepository;
 
     @Bean
     private ModelMapper mapeadorEstabelecimento(){
@@ -231,5 +238,55 @@ public class EstabelecimentoV1Service {
                 item -> Objects.equals(item.getTipoDeSabor(), tipo)
         );
         return cardapioTipo.collect(Collectors.toSet());
+    }
+
+    public Pedido disponibilizarMetodoPagamento(MetodoPagamento metodoPagamento,
+                                                String codigoAcessoEstabelecimento,
+                                                String codigoAcessoPedido){
+
+        if(!pedidoRepository.existsByCodigoAcesso(codigoAcessoPedido)){
+
+            throw new PedidoCodigoAcessoIncorretoException();
+
+        }
+
+        Pedido pedido = pedidoRepository.findByCodigoAcesso(codigoAcessoPedido).get();
+
+        if(!pedido.getCodigoAcessoEstabelecimento().equals(codigoAcessoEstabelecimento)){
+
+            throw new CodigoAcessoEstabelecimentoException();
+
+        }
+
+
+        double valor = calculaValor(pedido.getValorTotal(), metodoPagamento);
+
+        pedido.setMetodoPagamento(metodoPagamento);
+        pedido.setValorTotal(valor);
+
+        return pedidoRepository.saveAndFlush(pedido);
+
+    }
+
+    private Double calculaValor(Double valor, MetodoPagamento metodoPagamento){
+
+        Double resultado;
+
+        if(metodoPagamento.equals(MetodoPagamento.PIX)){
+
+            resultado = valor * 0.95;
+
+        }else if (metodoPagamento.equals(MetodoPagamento.CARTAO_DEBITO)){
+
+            resultado = valor * 0.975;
+
+        }else{
+
+            resultado = valor;
+
+        }
+
+
+        return resultado;
     }
 }

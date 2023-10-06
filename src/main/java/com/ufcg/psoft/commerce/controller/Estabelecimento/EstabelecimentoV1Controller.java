@@ -3,13 +3,16 @@ package com.ufcg.psoft.commerce.controller.Estabelecimento;
 
 import com.ufcg.psoft.commerce.dto.Estabelecimento.EstabelecimentoPostPutRequestDTO;
 import com.ufcg.psoft.commerce.dto.PizzaDTO.SaborResponseDTO;
+import com.ufcg.psoft.commerce.enums.MetodoPagamento;
 import com.ufcg.psoft.commerce.enums.TipoDeSabor;
 import com.ufcg.psoft.commerce.exception.Estabelecimento.CodigoAcessoEstabelecimentoException;
 import com.ufcg.psoft.commerce.exception.Estabelecimento.CodigoAcessoInvalidoException;
 import com.ufcg.psoft.commerce.exception.Estabelecimento.EstabelecimentoNaoEncontradoException;
+import com.ufcg.psoft.commerce.exception.Pedido.PedidoCodigoAcessoIncorretoException;
 import com.ufcg.psoft.commerce.model.Cliente.Cliente;
 import com.ufcg.psoft.commerce.model.Entregador.Entregador;
 import com.ufcg.psoft.commerce.model.Estabelecimento.Estabelecimento;
+import com.ufcg.psoft.commerce.model.Pedido.Pedido;
 import com.ufcg.psoft.commerce.service.Estabelecimento.EstabelecimentoV1Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
@@ -305,5 +308,46 @@ public class EstabelecimentoV1Controller {
                 .body(estabelecimentov1Service.listarCardapioPorTipoDePizza(id,codigoAcesso,tipo));
     }
 
+
+    /*
+    US11
+    Eu, enquanto estabelecimento, quero disponibilizar diferentes meios de pagamento para os pedidos, tal que cada meio de pagamento também gere descontos distintos.
+    Os pagamentos por cartão de crédito não recebem nenhum desconto.
+    Os pagamentos por cartão de débito recebem 2,5% de desconto sobre o valor total do pedido.
+    Os pagamentos por Pix recebem 5% de desconto sobre o valor total do pedido.
+     */
+
+    @PostMapping("disponibilidadePagamento/")
+    public ResponseEntity<?> disponibilizarMetodoPagamento(
+            @RequestParam("MetodoPagamento")MetodoPagamento metodoPagamento,
+            @RequestParam("CodigoAcessoEstabelecimento") String codigoAcessoEstabelecimento,
+            @RequestParam("CodigoAcessoPedido") String codigoAcessoPedido
+    ){
+        ResponseEntity<?> response;
+
+        try{
+
+            Pedido resultado = estabelecimentov1Service.disponibilizarMetodoPagamento(metodoPagamento,
+                    codigoAcessoEstabelecimento,
+                    codigoAcessoPedido);
+
+            response = ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(resultado);
+
+        }catch (CodigoAcessoEstabelecimentoException codigoAcessoEstabelecimentoException){
+
+            throw new CodigoAcessoEstabelecimentoException();
+
+        }catch (PedidoCodigoAcessoIncorretoException codigoAcessoPedidoException){
+
+            throw new PedidoCodigoAcessoIncorretoException();
+
+        }
+
+        return response;
+
+
+    }
 
 }
