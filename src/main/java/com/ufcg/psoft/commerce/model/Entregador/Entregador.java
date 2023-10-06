@@ -19,7 +19,7 @@ public class Entregador {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false,name = "pk_id_entregador")
-    private Long id;
+    private Long id;//
 
 
     @JsonProperty("codigoAcesso")

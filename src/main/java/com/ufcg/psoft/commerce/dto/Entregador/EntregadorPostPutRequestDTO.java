@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class EntregadorPostPutRequestDTO {
 
-    @JsonProperty("id")
+    @JsonProperty("id")//
     private Long id;
 
     @JsonProperty("codigoAcesso")

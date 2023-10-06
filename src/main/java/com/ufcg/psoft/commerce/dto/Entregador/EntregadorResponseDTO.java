@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class EntregadorResponseDTO {
+public class EntregadorResponseDTO {//
 
     @JsonProperty("id")
     private Long id;

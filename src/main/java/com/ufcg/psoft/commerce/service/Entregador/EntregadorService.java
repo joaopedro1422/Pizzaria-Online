@@ -15,7 +15,7 @@ public interface EntregadorService {
 
     Entregador getEntregador(Long id);
 
-    List<Entregador> getEntregadores();
+    List<Entregador> getEntregadores();//
 
     public Entregador updateStatus(Long id);
 

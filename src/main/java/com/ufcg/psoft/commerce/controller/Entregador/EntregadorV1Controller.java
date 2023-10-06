@@ -65,5 +65,5 @@ public class EntregadorV1Controller {
                 .body(entregadorService.updateStatus(id));
     }
 
-
+//
 }

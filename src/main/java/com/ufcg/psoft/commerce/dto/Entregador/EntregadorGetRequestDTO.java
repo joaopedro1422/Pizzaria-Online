@@ -23,7 +23,7 @@ public class EntregadorGetRequestDTO {
     @JsonProperty("nome")
     private String nome;
 
-    @JsonProperty("placaVeiculo")
+    @JsonProperty("placaVeiculo")//
     private String placaVeiculo;
 
     @JsonProperty("tipoVeiculo")

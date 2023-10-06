@@ -47,6 +47,7 @@ public class EntregadorV1Service implements EntregadorService{
             throw new CodigoAcessoInvalidoException();
         }
         return entregadorRepository.save(entregador);
+        //
     }
 
     @Override
