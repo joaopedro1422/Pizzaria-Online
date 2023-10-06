@@ -66,7 +66,7 @@ public class ClienteV1Controller {
     }
 
     @PutMapping("/cliente/{id}/{codigoAcesso}/{idPizza}")
-    ResponseEntity demonstrarInteressePizza(
+    ResponseEntity<?> demonstrarInteressePizza(
             @PathVariable("id") Long id,
             @PathVariable ("codigoAcesso")String codigoAcesso,
             @PathVariable ("idPizza")Long idPizza

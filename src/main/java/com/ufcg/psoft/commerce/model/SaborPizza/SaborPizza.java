@@ -58,5 +58,15 @@ public class SaborPizza {
     @OneToMany
     private List<Cliente> observers;
 
+    public void register(Cliente observer) {
+        this.observers.add(observer);
+    }
+
+    public void unregister(Cliente observer) {
+        if(this.observers.contains(observer)) {
+            this.observers.remove(observer);
+        }
+    }
+
 
 }

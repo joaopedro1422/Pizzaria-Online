@@ -33,4 +33,26 @@ public class Cliente {
     @Column(nullable = false, name = "desc_endereco_cliente")
     private String endereco;
 
+    @OneToOne
+    private SaborPizza subject = null;
+
+    public boolean isSubscribed(SaborPizza subject){
+        if(this.subject != null){
+            return this.subject.getSaborDaPizza().equals(subject.getSaborDaPizza());
+        }
+        return false;
+    }
+
+    public void subscribeTo(SaborPizza subject) {
+        if(!isSubscribed(subject)){
+            subject.register(this);
+            this.subject = subject;
+
+        }
+    }
+    public void unsubscribeFrom(SaborPizza subject) {
+        this.subject.unregister(this);
+        this.subject = null;
+    }
+
 }

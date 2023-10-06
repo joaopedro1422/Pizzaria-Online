@@ -4,6 +4,8 @@ import com.ufcg.psoft.commerce.dto.ClienteDTO.ClienteDTO;
 import com.ufcg.psoft.commerce.exception.Cliente.ClienteCodigoAcessoIncorretoException;
 import com.ufcg.psoft.commerce.exception.Cliente.ClienteCodigoAcessoInvalidoException;
 import com.ufcg.psoft.commerce.exception.Cliente.ClienteNaoEncontradoException;
+import com.ufcg.psoft.commerce.exception.Pizza.SaborPizzaClienteCadastrado;
+import com.ufcg.psoft.commerce.exception.Pizza.SaborPizzaEstaDisponivel;
 import com.ufcg.psoft.commerce.model.Cliente.Cliente;
 import com.ufcg.psoft.commerce.model.SaborPizza.SaborPizza;
 import com.ufcg.psoft.commerce.repository.Cliente.ClienteRepository;
@@ -16,6 +18,8 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
+import static org.apache.commons.lang3.StringUtils.equalsIgnoreCase;
+
 @Service
 public class ClienteV1Service implements ClienteService {
 
@@ -23,7 +27,8 @@ public class ClienteV1Service implements ClienteService {
     private  ClienteRepository clienteRepository;
 
     @Autowired
-    private SaborService sabor;
+    private SaborService saborService;
+
 
     @Autowired
     private ModelMapper modelMapper;
@@ -110,22 +115,23 @@ public class ClienteV1Service implements ClienteService {
         if (!cliente.getCodigoAcesso().equals(codigoAcesso)) {
             throw new ClienteCodigoAcessoIncorretoException();
         }
-//        SaborPizza pizza = pizzaService.consultarSaborPizzaById(idSaborPizza);
-//        Cliente cliente = getClienteById(idCliente);
-//
-//        if(!pizza.isDisponivel()){
-//            if(!cliente.isSubscribed(pizza)) {
-//                cliente.subscribeTo(pizza);
-//                clienteRepository.save(cliente);
-//                pizzaService.salvarSaborPizzaCadastrado(pizza);
-//            }else{
-//                throw new SaborPizzaClienteCadastrado();
-//            }
-//        } else {
-//            throw new SaborPizzaEstaDisponivel();
-//        }
+        SaborPizza pizza = saborService.consultarSaborPizzaById(idPizza);
+        if ((!String.valueOf(pizza.getDisponibilidadeSabor()).equalsIgnoreCase("true"))){
+            if(!cliente.isSubscribed(pizza)) {
+                cliente.subscribeTo(pizza);
+                clienteRepository.save(cliente);
+                saborService.salvarSaborPizzaCadastrado(pizza);
+            }else{
+                throw new SaborPizzaClienteCadastrado();
+            }
+        } else {
+            throw new SaborPizzaEstaDisponivel();
+            }
+        }
 
-    }
+
+
+
 
     private Cliente getClienteById(Long id) throws ClienteNaoEncontradoException {
         return clienteRepository.findById(id).orElseThrow(ClienteNaoEncontradoException::new);

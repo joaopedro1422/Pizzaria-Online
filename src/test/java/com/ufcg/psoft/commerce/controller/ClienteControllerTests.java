@@ -411,5 +411,17 @@ public class ClienteControllerTests {
         }
 
     }
+//    @Nested
+//    @DisplayName("Demonstrar Interesse em Sabores Cliente")
+//    class DemonstrarInteresseClientes{
+//        @Test
+//        @DisplayName("quando o cliente demonstrar interesse apenas em sabores indisponiveis")
+//        void quandoDemonstrarInteresseSaborIndisponivel () throws Exception{
+//            // arrange
+//            // act
+//            // assert
+//        }
+//    }
+
 
 }

@@ -24,4 +24,8 @@ public interface SaborService {
     SaborResponseDTO buscarId(Long idEstabelecimento, String codigoAcessoEstabelecimento, long idPizza) throws EstabelecimentoNaoEncontradoException;
 
     SaborResponseDTO atualizarSaborPizzaDisponibilidade(Long idEstabelecimento, String codigoAcessoEstabelecimento, Long idPizza, SaborPostPutDTO sabor,Boolean disponibilidade);
+
+    SaborPizza consultarSaborPizzaById(Long idPizza) throws SaborPizzaNaoEncontradoException;
+
+    void salvarSaborPizzaCadastrado(SaborPizza saborPizza);
 }

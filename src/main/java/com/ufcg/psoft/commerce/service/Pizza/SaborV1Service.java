@@ -155,6 +155,8 @@ public class SaborV1Service implements SaborService {
                 .build();
     }
 
+
+
     // metodo auxiliar
     private Estabelecimento obterEstabelecimento(Long idEstabelecimento, String codigoAcessoEstabelecimento) {
         Optional<Estabelecimento> estabelecimentoOptinial = estabelecimentoRepository.findById(idEstabelecimento);
@@ -169,6 +171,18 @@ public class SaborV1Service implements SaborService {
             throw new CodigoAcessoEstabelecimentoException();
         }
         return estabelecimento;
+    }
+
+    @Override
+    public SaborPizza consultarSaborPizzaById(Long idPizza) throws SaborPizzaNaoEncontradoException {
+        return saborRepository.findById(idPizza)
+                .orElseThrow(SaborPizzaNaoEncontradoException::new);
+
+    }
+
+    @Override
+    public void salvarSaborPizzaCadastrado(SaborPizza saborPizza) {
+        saborRepository.save(saborPizza);
     }
 
 }
