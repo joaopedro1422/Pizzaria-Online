@@ -67,6 +67,11 @@ public class SaborPizza {
             this.observers.remove(observer);
         }
     }
+    public void notifyObservers() {
+        for(Cliente c : observers) {
+            c.update(this);
+        }
+    }
 
 
 }

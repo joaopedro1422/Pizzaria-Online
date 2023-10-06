@@ -34,8 +34,13 @@ public class Cliente {
     private String endereco;
 
     @OneToOne
-    private SaborPizza subject = null;
+    private SaborPizza subject = null; // instância dessa classe pode estar associada a uma única instância de SaborPizza
 
+   /* verifica se o objeto atual (representado pela instância da classe que contém esse método)
+   está inscrito (ou seja, observando) uma instância específica de SaborPizza.
+   Ele faz isso verificando se a variável subject não é nula e se o sabor da pizza associada
+   ao subject atual é igual ao sabor da pizza passado como argumento
+    */
     public boolean isSubscribed(SaborPizza subject){
         if(this.subject != null){
             return this.subject.getSaborDaPizza().equals(subject.getSaborDaPizza());
@@ -43,6 +48,11 @@ public class Cliente {
         return false;
     }
 
+   /*permite que a instância atual se inscreva (ou seja, observe) uma instância específica de SaborPizza.
+   Ele faz isso chamando o método register no subject passado como argumento
+   (esse método não está presente no código que você forneceu) e atribuindo o subject passado como argumento
+   à variável subject desta instância
+    */
     public void subscribeTo(SaborPizza subject) {
         if(!isSubscribed(subject)){
             subject.register(this);
@@ -50,9 +60,25 @@ public class Cliente {
 
         }
     }
+
+    /* instância atual cancele a inscrição (ou seja, deixe de observar)
+    a instância específica de SaborPizza que está associada a ela.
+    Isso é feito chamando o método unregister no subject
+    (esse método também não está presente no código que você forneceu)
+    e atribuindo null à variável subject.
+    */
     public void unsubscribeFrom(SaborPizza subject) {
         this.subject.unregister(this);
         this.subject = null;
+    }
+
+
+    public void update(SaborPizza saborPizza) {
+        if(this.subject == null) {
+            System.out.println(this.nome + " você não está inscrito no sabor " + saborPizza.getSaborDaPizza());
+            return;
+        }
+        System.out.println(this.nome + ", a pizza de " + saborPizza.getSaborDaPizza() + " agora está " + saborPizza.getDisponibilidadeSabor() );
     }
 
 }

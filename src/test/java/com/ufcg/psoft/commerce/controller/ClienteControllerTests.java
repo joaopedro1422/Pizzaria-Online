@@ -3,13 +3,18 @@ package com.ufcg.psoft.commerce.controller;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ufcg.psoft.commerce.dto.ClienteDTO.ClienteDTO;
+import com.ufcg.psoft.commerce.enums.TipoDeSabor;
 import com.ufcg.psoft.commerce.exception.Cliente.ClienteCodigoAcessoIncorretoException;
 import com.ufcg.psoft.commerce.exception.Cliente.ClienteCodigoAcessoInvalidoException;
 import com.ufcg.psoft.commerce.exception.Cliente.ClienteNaoEncontradoException;
 import com.ufcg.psoft.commerce.exception.CustomErrorType;
+import com.ufcg.psoft.commerce.exception.Pizza.SaborPizzaEstaDisponivel;
 import com.ufcg.psoft.commerce.model.Cliente.Cliente;
+import com.ufcg.psoft.commerce.model.SaborPizza.SaborPizza;
 import com.ufcg.psoft.commerce.repository.Cliente.ClienteRepository;
+import com.ufcg.psoft.commerce.service.Cliente.ClienteService;
 import com.ufcg.psoft.commerce.service.Cliente.ClienteV1Service;
+import com.ufcg.psoft.commerce.service.Pizza.SaborService;
 import org.junit.jupiter.api.*;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,10 +29,12 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -51,6 +58,10 @@ public class ClienteControllerTests {
 
     @Autowired
     ModelMapper modelMapper;
+    @Autowired
+    ClienteService clienteService;
+    @Autowired
+    SaborService saborService;
 
     @BeforeEach
     void setup() {
@@ -413,13 +424,32 @@ public class ClienteControllerTests {
     }
 //    @Nested
 //    @DisplayName("Demonstrar Interesse em Sabores Cliente")
-//    class DemonstrarInteresseClientes{
+//    class DemonstrarInteresseClientes {
 //        @Test
 //        @DisplayName("quando o cliente demonstrar interesse apenas em sabores indisponiveis")
-//        void quandoDemonstrarInteresseSaborIndisponivel () throws Exception{
-//            // arrange
-//            // act
-//            // assert
+//        void quandoDemonstrarInteresseSaborIndisponivel() throws Exception {
+//                // Arrange
+//                SaborPizza saborPizza = new SaborPizza();
+//                saborPizza.setSaborDaPizza("chocolate");
+//                saborPizza.setTipoDeSabor("DOCE");
+//                saborPizza.setDisponibilidadeSabor(false);
+//                saborPizza.setValorMedia(10.0);
+//                saborPizza.setValorGrande(15.0);
+//                saborPizza.getIdPizza();
+//
+//                Cliente cliente = new Cliente();
+//                cliente.setNome("ana");
+//                cliente.setCodigoAcesso("123456");
+//                cliente.setEndereco("rua");
+//
+//                // Simulando o cliente já inscrito em uma pizza
+//                cliente.subscribeTo(saborPizza);
+//
+//                when(clienteRepository.findById(anyLong())).thenReturn(Optional.of(cliente));
+//            when(saborService.consultarSaborPizzaById((Long) any())).thenReturn(saborPizza);
+//            assertThrows(SaborPizzaEstaDisponivel.class, () -> clienteService.demonstrarInteressePizza(1L, "123456", 1L));
+//            verify(clienteRepository, atLeast(1)).findById((Long) any());
+//            verify(saborService).consultarSaborPizzaById((Long) any());
 //        }
 //    }
 

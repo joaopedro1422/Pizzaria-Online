@@ -676,7 +676,7 @@ public class SaborPizzaControllerTests {
 //			// Assert
 //			assertEquals("O sabor consultado ja esta disponivel!", resultado.getMessage());
 //		}
-//
+////
 //		@Test
 //		@DisplayName("Quando alteramos a disponibilidade de um sabor com o código de acesso errado")
 //		void quandoAlteramosDisponibilidadeSaborCodigoErrado() throws Exception {
@@ -696,6 +696,6 @@ public class SaborPizzaControllerTests {
 //			// Assert
 //			assertEquals("Codigo de acesso invalido!", resultado.getMessage());
 //		}
+//    }
     }
-
 }
