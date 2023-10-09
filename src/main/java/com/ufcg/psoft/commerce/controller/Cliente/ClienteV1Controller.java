@@ -65,7 +65,7 @@ public class ClienteV1Controller {
                 .body(clienteService.getClientes());
     }
 
-    @PutMapping("/cliente/{id}/{codigoAcesso}/{idPizza}")
+    @PutMapping("/{id}/{codigoAcesso}/{idPizza}")
     ResponseEntity<?> demonstrarInteressePizza(
             @PathVariable("id") Long id,
             @PathVariable ("codigoAcesso")String codigoAcesso,

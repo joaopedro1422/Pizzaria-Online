@@ -422,36 +422,37 @@ public class ClienteControllerTests {
         }
 
     }
-//    @Nested
-//    @DisplayName("Demonstrar Interesse em Sabores Cliente")
-//    class DemonstrarInteresseClientes {
-//        @Test
-//        @DisplayName("quando o cliente demonstrar interesse apenas em sabores indisponiveis")
-//        void quandoDemonstrarInteresseSaborIndisponivel() throws Exception {
-//                // Arrange
-//                SaborPizza saborPizza = new SaborPizza();
-//                saborPizza.setSaborDaPizza("chocolate");
-//                saborPizza.setTipoDeSabor("DOCE");
-//                saborPizza.setDisponibilidadeSabor(false);
-//                saborPizza.setValorMedia(10.0);
-//                saborPizza.setValorGrande(15.0);
-//                saborPizza.getIdPizza();
-//
-//                Cliente cliente = new Cliente();
-//                cliente.setNome("ana");
-//                cliente.setCodigoAcesso("123456");
-//                cliente.setEndereco("rua");
-//
-//                // Simulando o cliente já inscrito em uma pizza
-//                cliente.subscribeTo(saborPizza);
-//
-//                when(clienteRepository.findById(anyLong())).thenReturn(Optional.of(cliente));
-//            when(saborService.consultarSaborPizzaById((Long) any())).thenReturn(saborPizza);
-//            assertThrows(SaborPizzaEstaDisponivel.class, () -> clienteService.demonstrarInteressePizza(1L, "123456", 1L));
-//            verify(clienteRepository, atLeast(1)).findById((Long) any());
-//            verify(saborService).consultarSaborPizzaById((Long) any());
-//        }
-//    }
+    @Nested
+    @DisplayName("Demonstrar Interesse em Sabores Cliente")
+    class DemonstrarInteresseClientes {
+        @Test
+        @DisplayName("quando o cliente demonstrar interesse apenas em sabores indisponiveis")
+        void quandoDemonstrarInteresseSaborIndisponivel() throws Exception {
+                // Arrange
+                SaborPizza saborPizza = new SaborPizza();
+                saborPizza.setSaborDaPizza("chocolate");
+                saborPizza.setTipoDeSabor("DOCE");
+                saborPizza.setDisponibilidadeSabor(false);
+                saborPizza.setValorMedia(10.0);
+                saborPizza.setValorGrande(15.0);
+                saborPizza.getIdPizza();
+
+                Cliente cliente = new Cliente();
+                cliente.setNome("ana");
+                cliente.setCodigoAcesso("123456");
+                cliente.setEndereco("rua");
+
+                // Simulando o cliente já inscrito em uma pizza
+                cliente.subscribeTo(saborPizza);
+
+                //act
+            String resultadoStr = mockMvc.perform(MockMvcRequestBuilders.put(URL_TEMPLATE + "/" + cliente.getId() + "/" + "/codigoAcesso" + saborPizza.getIdPizza()))
+                    .andExpect(status().isOk()) // 200
+                    .andReturn().getResponse().getContentAsString();
+                // assert
+
+        }
+    }
 
 
 }

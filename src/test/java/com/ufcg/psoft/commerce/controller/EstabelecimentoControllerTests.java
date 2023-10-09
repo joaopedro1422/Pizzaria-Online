@@ -87,7 +87,7 @@ public class EstabelecimentoControllerTests {
                             .contentType(MediaType.APPLICATION_JSON)
                             .param("codigoAcesso", estabelecimentoPostRequestDTO.getCodigoAcesso())
                             .content(objectMapper.writeValueAsString(estabelecimentoPostRequestDTO)))
-                    .andExpect(status().isCreated()) // Codigo 201
+                    .andExpect(status().isCreated()) // Codigo 151
                     .andDo(print())
                     .andReturn().getResponse().getContentAsString();
 
@@ -110,7 +110,7 @@ public class EstabelecimentoControllerTests {
             String responseJsonString = driver.perform(delete(URI_ESTABELECIMENTOS + "/" + estabelecimento.getId())
                             .contentType(MediaType.APPLICATION_JSON)
                             .param("codigoAcesso", estabelecimento.getCodigoAcesso()))
-                    .andExpect(status().isNoContent()) // Codigo 204
+                    .andExpect(status().isNoContent()) // Codigo 154
                     .andDo(print())
                     .andReturn().getResponse().getContentAsString();
 
@@ -129,7 +129,7 @@ public class EstabelecimentoControllerTests {
                             .contentType(MediaType.APPLICATION_JSON)
                             .param("codigoAcesso", estabelecimento.getCodigoAcesso())
                             .content(objectMapper.writeValueAsString(estabelecimentoPutRequestDTO)))
-                    .andExpect(status().isOk()) // Codigo 200
+                    .andExpect(status().isOk()) // Codigo 150
                     .andDo(print())
                     .andReturn().getResponse().getContentAsString();
 
@@ -201,6 +201,7 @@ public class EstabelecimentoControllerTests {
         @DisplayName("Quando buscamos o cardapio de um estabelecimento")
         void quandoBuscarCardapioEstabelecimento() throws Exception {
             // Arrange
+
             SaborPizza sabor1 = saborRepository.save(SaborPizza.builder()
                     .saborDaPizza("Calabresa")
                     .valorMedia(25.0)
@@ -212,7 +213,7 @@ public class EstabelecimentoControllerTests {
 
             SaborPizza sabor2 = saborRepository.save(SaborPizza.builder()
                     .saborDaPizza("Mussarela")
-                    .valorMedia(20.0)
+                    .valorMedia(15.0)
                     .valorGrande(30.0)
                     .tipoDeSabor("salgado")
                     .disponibilidadeSabor(true)
@@ -229,11 +230,16 @@ public class EstabelecimentoControllerTests {
 
             SaborPizza sabor4 = saborRepository.save(SaborPizza.builder()
                     .saborDaPizza("Morango")
-                    .valorMedia(20.0)
+                    .valorMedia(15.0)
                     .valorGrande(30.0)
                     .tipoDeSabor("doce")
                     .disponibilidadeSabor(true)
                     .estabelecimento(estabelecimento)
+                    .build());
+
+            estabelecimento = estabelecimentoRepository.save(Estabelecimento.builder()
+                    .codigoAcesso("123456")
+                    .saboresPizza(Set.of(sabor1,sabor2,sabor3,sabor4))
                     .build());
 
             estabelecimentoRepository.save(estabelecimento);
@@ -242,7 +248,7 @@ public class EstabelecimentoControllerTests {
             String responseJsonString = driver.perform(get(URI_ESTABELECIMENTOS + "/" + estabelecimento.getId())
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(estabelecimentoPostPutRequestDTO)))
-                    .andExpect(status().isOk()) // Codigo 200
+                    .andExpect(status().isOk()) // Codigo 150
                     .andDo(print())
                     .andReturn().getResponse().getContentAsString();
 
@@ -282,6 +288,9 @@ public class EstabelecimentoControllerTests {
         @DisplayName("Quando buscamos o cardapio de um estabelecimento por saborDaPizza (salgado)")
         void quandoBuscarCardapioEstabelecimentoPorTipo() throws Exception {
             // Arrange
+            estabelecimento = estabelecimentoRepository.save(Estabelecimento.builder()
+                    .codigoAcesso("123456")
+                    .build());
             SaborPizza sabor1 = saborRepository.save(SaborPizza.builder()
                     .saborDaPizza("Calabresa")
                     .valorMedia(25.0)
@@ -293,7 +302,7 @@ public class EstabelecimentoControllerTests {
 
             SaborPizza sabor2 = saborRepository.save(SaborPizza.builder()
                     .saborDaPizza("Mussarela")
-                    .valorMedia(20.0)
+                    .valorMedia(15.0)
                     .valorGrande(30.0)
                     .tipoDeSabor("salgado")
                     .disponibilidadeSabor(true)
@@ -303,20 +312,25 @@ public class EstabelecimentoControllerTests {
                     .saborDaPizza("Chocolate")
                     .valorMedia(25.0)
                     .valorGrande(35.0)
-                    .tipoDeSabor("salgado").disponibilidadeSabor(true)
-
+                    .tipoDeSabor("doce")
                     .disponibilidadeSabor(true)
                     .estabelecimento(estabelecimento)
                     .build());
 
             SaborPizza sabor4 = saborRepository.save(SaborPizza.builder()
-                    .saborDaPizza("Morango")
-                    .valorMedia(20.0)
+                    .saborDaPizza("Brigadeiro MM")
+                    .valorMedia(15.0)
                     .valorGrande(30.0)
                     .tipoDeSabor("doce")
                     .disponibilidadeSabor(true)
                     .estabelecimento(estabelecimento)
                     .build());
+
+            estabelecimento = estabelecimentoRepository.save(Estabelecimento.builder()
+                    .codigoAcesso("123456")
+                    .saboresPizza(Set.of(sabor1,sabor2,sabor3,sabor4))
+                    .build());
+            
 
             estabelecimentoRepository.save(estabelecimento);
 
@@ -325,7 +339,7 @@ public class EstabelecimentoControllerTests {
                             .contentType(MediaType.APPLICATION_JSON)
                             .param("tipo", String.valueOf("salgado"))
                             .param("CodigoAcesso", estabelecimento.getCodigoAcesso()))
-                    .andExpect(status().isOk()) // Codigo 200
+                    .andExpect(status().isOk()) // Codigo 150
                     .andDo(print())
                     .andReturn().getResponse().getContentAsString();
 
@@ -343,6 +357,7 @@ public class EstabelecimentoControllerTests {
         @DisplayName("Quando buscamos o cardapio de um estabelecimento por saborDaPizza (doce)")
         void quandoBuscarCardapioEstabelecimentoPorsaborDaPizzaDoce() throws Exception {
             // Arrange
+
             SaborPizza sabor1 = saborRepository.save(SaborPizza.builder()
                     .saborDaPizza("Calabresa")
                     .valorMedia(25.0)
@@ -354,7 +369,7 @@ public class EstabelecimentoControllerTests {
 
             SaborPizza sabor2 = saborRepository.save(SaborPizza.builder()
                     .saborDaPizza("Mussarela")
-                    .valorMedia(20.0)
+                    .valorMedia(15.0)
                     .valorGrande(30.0)
                     .tipoDeSabor("salgado")
                     .disponibilidadeSabor(true)
@@ -362,7 +377,7 @@ public class EstabelecimentoControllerTests {
                     .build());
             SaborPizza sabor3 = saborRepository.save(SaborPizza.builder()
                     .saborDaPizza("Chocolate")
-                    .valorMedia(25.0)
+                    .valorMedia(15.0)
                     .valorGrande(35.0)
                     .tipoDeSabor("doce")
                     .disponibilidadeSabor(true)
@@ -370,14 +385,18 @@ public class EstabelecimentoControllerTests {
                     .build());
 
             SaborPizza sabor4 = saborRepository.save(SaborPizza.builder()
-                    .saborDaPizza("Morango")
-                    .valorMedia(20.0)
+                    .saborDaPizza("Brigadeiro")
+                    .valorMedia(15.0)
                     .valorGrande(30.0)
                     .tipoDeSabor("doce")
                     .disponibilidadeSabor(true)
                     .estabelecimento(estabelecimento)
                     .build());
 
+            estabelecimento = estabelecimentoRepository.save(Estabelecimento.builder()
+                    .codigoAcesso("123456")
+                    .saboresPizza(Set.of(sabor1,sabor2,sabor3,sabor4))
+                    .build());
 
             estabelecimentoRepository.save(estabelecimento);
 
@@ -386,7 +405,7 @@ public class EstabelecimentoControllerTests {
                             .contentType(MediaType.APPLICATION_JSON)
                             .param("tipo", String.valueOf("doce"))
                             .param("codigoAcesso", estabelecimento.getCodigoAcesso()))
-                    .andExpect(status().isOk()) // Codigo 200
+                    .andExpect(status().isOk()) // Codigo 150
                     .andDo(print())
                     .andReturn().getResponse().getContentAsString();
 
@@ -414,7 +433,7 @@ public class EstabelecimentoControllerTests {
 
             SaborPizza sabor2 = saborRepository.save(SaborPizza.builder()
                     .saborDaPizza("Mussarela")
-                    .valorMedia(20.0)
+                    .valorMedia(15.0)
                     .valorGrande(30.0)
                     .tipoDeSabor("salgado")
                     .disponibilidadeSabor(true)
@@ -431,7 +450,7 @@ public class EstabelecimentoControllerTests {
 
             SaborPizza sabor4 = saborRepository.save(SaborPizza.builder()
                     .saborDaPizza("Morango")
-                    .valorMedia(20.0)
+                    .valorMedia(15.0)
                     .valorGrande(30.0)
                     .tipoDeSabor("doce")
                     .disponibilidadeSabor(true)
@@ -474,7 +493,7 @@ public class EstabelecimentoControllerTests {
 
             SaborPizza sabor02 = saborRepository.save(SaborPizza.builder()
                     .saborDaPizza("Mussarela")
-                    .valorMedia(20.0)
+                    .valorMedia(15.0)
                     .valorGrande(30.0)
                     .tipoDeSabor("salgado")
                     .disponibilidadeSabor(true)
@@ -491,7 +510,7 @@ public class EstabelecimentoControllerTests {
 
             SaborPizza sabor04 = saborRepository.save(SaborPizza.builder()
                     .saborDaPizza("Morango")
-                    .valorMedia(20.0)
+                    .valorMedia(15.0)
                     .valorGrande(30.0)
                     .tipoDeSabor("doce")
                     .disponibilidadeSabor(true)
@@ -534,7 +553,7 @@ public class EstabelecimentoControllerTests {
 
             SaborPizza sabor2 = saborRepository.save(SaborPizza.builder()
                     .saborDaPizza("Mussarela")
-                    .valorMedia(20.0)
+                    .valorMedia(15.0)
                     .valorGrande(30.0)
                     .tipoDeSabor("salgado")
                     .disponibilidadeSabor(true)
@@ -551,7 +570,7 @@ public class EstabelecimentoControllerTests {
 
             SaborPizza sabor4 = saborRepository.save(SaborPizza.builder()
                     .saborDaPizza("Morango")
-                    .valorMedia(20.0)
+                    .valorMedia(15.0)
                     .valorGrande(30.0)
                     .tipoDeSabor("doce")
                     .disponibilidadeSabor(true)
@@ -594,7 +613,7 @@ public class EstabelecimentoControllerTests {
 
             SaborPizza sabor2 = saborRepository.save(SaborPizza.builder()
                     .saborDaPizza("Mussarela")
-                    .valorMedia(20.0)
+                    .valorMedia(15.0)
                     .valorGrande(30.0)
                     .tipoDeSabor("salgado")
                     .disponibilidadeSabor(true)
@@ -611,11 +630,16 @@ public class EstabelecimentoControllerTests {
 
             SaborPizza sabor4 = saborRepository.save(SaborPizza.builder()
                     .saborDaPizza("Morango")
-                    .valorMedia(20.0)
+                    .valorMedia(15.0)
                     .valorGrande(30.0)
                     .tipoDeSabor("doce")
                     .disponibilidadeSabor(true)
                     .estabelecimento(estabelecimento)
+                    .build());
+
+            estabelecimento = estabelecimentoRepository.save(Estabelecimento.builder()
+                    .codigoAcesso("123456")
+                    .saboresPizza(Set.of(sabor1,sabor2,sabor3,sabor4))
                     .build());
 
             estabelecimentoRepository.save(estabelecimento);
@@ -627,7 +651,7 @@ public class EstabelecimentoControllerTests {
                             .contentType(MediaType.APPLICATION_JSON)
                             .param("disponibilidade", "true")
                             .param("codigoAcesso", estabelecimento.getCodigoAcesso()))
-                    .andExpect(status().isOk()) // Codigo 200
+                    .andExpect(status().isOk()) // Codigo 150
                     .andDo(print())
                     .andReturn().getResponse().getContentAsString();
 
@@ -637,7 +661,7 @@ public class EstabelecimentoControllerTests {
 
             // Assert
             assertAll(
-                    () -> assertEquals(2, resultado.size())
+                    () -> assertEquals(4, resultado.size())
             );
         }
         @Test
@@ -655,7 +679,7 @@ public class EstabelecimentoControllerTests {
 
             SaborPizza sabor2 = saborRepository.save(SaborPizza.builder()
                     .saborDaPizza("Mussarela")
-                    .valorMedia(20.0)
+                    .valorMedia(15.0)
                     .valorGrande(30.0)
                     .tipoDeSabor("salgado")
                     .disponibilidadeSabor(true)
@@ -672,7 +696,7 @@ public class EstabelecimentoControllerTests {
 
             SaborPizza sabor4 = saborRepository.save(SaborPizza.builder()
                     .saborDaPizza("Morango")
-                    .valorMedia(20.0)
+                    .valorMedia(15.0)
                     .valorGrande(30.0)
                     .tipoDeSabor("doce")
                     .disponibilidadeSabor(true)
@@ -714,7 +738,7 @@ public class EstabelecimentoControllerTests {
 
                 SaborPizza sabor2 = saborRepository.save(SaborPizza.builder()
                         .saborDaPizza("Mussarela")
-                        .valorMedia(20.0)
+                        .valorMedia(15.0)
                         .valorGrande(30.0)
                         .tipoDeSabor("salgado")
                         .disponibilidadeSabor(true)
@@ -731,11 +755,15 @@ public class EstabelecimentoControllerTests {
 
                 SaborPizza sabor4 = saborRepository.save(SaborPizza.builder()
                         .saborDaPizza("Morango")
-                        .valorMedia(20.0)
+                        .valorMedia(15.0)
                         .valorGrande(30.0)
                         .tipoDeSabor("doce")
                         .disponibilidadeSabor(true)
                         .estabelecimento(estabelecimento)
+                        .build());
+                estabelecimento = estabelecimentoRepository.save(Estabelecimento.builder()
+                        .codigoAcesso("123456")
+                        .saboresPizza(Set.of(sabor1,sabor2,sabor3,sabor4))
                         .build());
                 estabelecimentoRepository.save(estabelecimento);
 
@@ -772,7 +800,7 @@ public class EstabelecimentoControllerTests {
 
                 SaborPizza sabor2 = saborRepository.save(SaborPizza.builder()
                         .saborDaPizza("Mussarela")
-                        .valorMedia(20.0)
+                        .valorMedia(15.0)
                         .valorGrande(30.0)
                         .tipoDeSabor("salgado")
                         .disponibilidadeSabor(true)
@@ -783,18 +811,25 @@ public class EstabelecimentoControllerTests {
                         .valorMedia(25.0)
                         .valorGrande(35.0)
                         .tipoDeSabor("doce")
-                        .disponibilidadeSabor(true)
+                        .disponibilidadeSabor(false)
                         .estabelecimento(estabelecimento)
                         .build());
 
                 SaborPizza sabor4 = saborRepository.save(SaborPizza.builder()
                         .saborDaPizza("Morango")
-                        .valorMedia(20.0)
+                        .valorMedia(15.0)
                         .valorGrande(30.0)
                         .tipoDeSabor("doce")
-                        .disponibilidadeSabor(true)
+                        .disponibilidadeSabor(false)
                         .estabelecimento(estabelecimento)
                         .build());
+
+                estabelecimento = estabelecimentoRepository.save(Estabelecimento.builder()
+                        .codigoAcesso("123456")
+                        .saboresPizza(Set.of(sabor1,sabor2,sabor3,sabor4))
+                        .build());
+                estabelecimentoRepository.save(estabelecimento);
+
 
                 //act
 
