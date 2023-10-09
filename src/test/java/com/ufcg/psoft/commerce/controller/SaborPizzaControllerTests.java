@@ -522,7 +522,7 @@ public class SaborPizzaControllerTests {
         }
 
         @Test
-        @DisplayName("Quando alteramos um sabor com precos válidos e inválidos")
+        @DisplayName("Quando alterar um sabor com precos válidos e inválidos")
         void quandoAlteramosSaborPrecosValidosEInvalidos() throws Exception {
             // Arrange
             saborPostPutDTO.setValorMedia(40.0);
