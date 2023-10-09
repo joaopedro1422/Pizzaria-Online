@@ -1,31 +1,27 @@
 package com.ufcg.psoft.commerce.service.Pedido;
 
-import com.ufcg.psoft.commerce.dto.PedidoDTO.PedidoDTO;
-import com.ufcg.psoft.commerce.enums.MetodoPagamento;
+import java.util.List;
 
-import com.ufcg.psoft.commerce.enums.StatusPedido;
-import com.ufcg.psoft.commerce.enums.TamanhoPizza;
-import com.ufcg.psoft.commerce.exception.Cliente.ClienteNaoEncontradoException;
-import com.ufcg.psoft.commerce.exception.Pedido.PedidoCodigoAcessoIncorretoException;
-import com.ufcg.psoft.commerce.exception.Pedido.PedidoCodigoAcessoInvalidoException;
-import com.ufcg.psoft.commerce.exception.Pedido.PedidoMetodoPagamentoInvalidoException;
-import com.ufcg.psoft.commerce.exception.Pedido.PedidoNaoEncontradoException;
-import com.ufcg.psoft.commerce.exception.Pizza.*;
-import com.ufcg.psoft.commerce.model.Cliente.Cliente;
-import com.ufcg.psoft.commerce.model.Pedido.Pedido;
-import com.ufcg.psoft.commerce.model.SaborPizza.Pizza;
-import com.ufcg.psoft.commerce.model.SaborPizza.SaborPizza;
-import com.ufcg.psoft.commerce.repository.Cliente.ClienteRepository;
-import com.ufcg.psoft.commerce.repository.Pedido.PedidoRepository;
-import com.ufcg.psoft.commerce.repository.Pizza.PizzaRepository;
-import com.ufcg.psoft.commerce.repository.Pizza.SaborRepository;
+import com.ufcg.psoft.commerce.exception.Pedido.*;
+import com.ufcg.psoft.commerce.exception.Pizza.PizzaSemSaboresException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import com.ufcg.psoft.commerce.dto.PedidoDTO.PedidoDTO;
+import com.ufcg.psoft.commerce.enums.MetodoPagamento;
+import com.ufcg.psoft.commerce.enums.StatusPedido;
+import com.ufcg.psoft.commerce.exception.Associacao.EstabelecimentoIdNaoEncontradoException;
+import com.ufcg.psoft.commerce.exception.Cliente.ClienteNaoEncontradoException;
+import com.ufcg.psoft.commerce.model.Cliente.Cliente;
+import com.ufcg.psoft.commerce.model.Estabelecimento.Estabelecimento;
+import com.ufcg.psoft.commerce.model.Pedido.Pedido;
+import com.ufcg.psoft.commerce.model.SaborPizza.Pizza;
+import com.ufcg.psoft.commerce.repository.Cliente.ClienteRepository;
+import com.ufcg.psoft.commerce.repository.Estabelecimento.EstabelecimentoRepository;
+import com.ufcg.psoft.commerce.repository.Pedido.PedidoRepository;
+import com.ufcg.psoft.commerce.repository.Pizza.PizzaRepository;
+import com.ufcg.psoft.commerce.repository.Pizza.SaborRepository;
 
 @Service
 public class PedidoV1Service implements PedidoService{
@@ -37,6 +33,9 @@ public class PedidoV1Service implements PedidoService{
     ClienteRepository clienteRepository;
 
     @Autowired
+    EstabelecimentoRepository estabelecimentoRepository;
+
+    @Autowired
     PizzaRepository pizzaRepository;
 
     @Autowired
@@ -44,22 +43,30 @@ public class PedidoV1Service implements PedidoService{
 
     @Autowired
     private ModelMapper modelMapper;
+
     @Override
-    public Pedido criarPedido(PedidoDTO pedidoDTO) {
+    public Pedido criarPedido(String codigoAcessoCliente, PedidoDTO pedidoDTO) {
+
         String codigoAcesso = pedidoDTO.getCodigoAcesso();
 
+        Cliente cliente = clienteRepository.findById(pedidoDTO.getClienteId()).orElseThrow(() -> new ClienteNaoEncontradoException());
+        Estabelecimento estabelecimento = estabelecimentoRepository.findById(pedidoDTO.getEstabelecimentoId()).orElseThrow(() -> new EstabelecimentoIdNaoEncontradoException());
+
         if (codigoAcesso == null || codigoAcesso.isEmpty() || !isValidCodigoAcesso(codigoAcesso)) {
+            throw new PedidoCodigoAcessoIncorretoException();
+        }
+
+        if (codigoAcessoCliente == null || codigoAcessoCliente.isEmpty() || !isValidCodigoAcesso(codigoAcessoCliente)) {
             throw new PedidoCodigoAcessoInvalidoException();
         }
 
-        // Verifique se o cliente com o código de acesso existe no banco de dados
-        Cliente cliente = getClienteByCodigoAcesso(pedidoDTO.getCodigoAcessoCliente());
+        List<Pizza> pizzas = pedidoDTO.getPizzas();
 
-        if (cliente == null) {
-            throw new ClienteNaoEncontradoException(); // Lançar exceção se o cliente não for encontrado
+        // Verificar se a lista de pizzas está vazia
+        if (pizzas == null || pizzas.isEmpty()) {
+            throw new PizzaSemSaboresException();
         }
 
-        List<Pizza> pizzas = getPizzasByIds(pedidoDTO.getPizzaIds());
         double valorTotal = calcularValorTotal(pizzas);
 
         String enderecoEntrega = pedidoDTO.getEnderecoEntrega();
@@ -67,66 +74,92 @@ public class PedidoV1Service implements PedidoService{
             enderecoEntrega = cliente.getEndereco();
         }
 
+        if (!isValidMetodoPagamento(pedidoDTO.getMetodoPagamento())) {
+            throw new MetodoPagamentoInvalidoException();
+        }
+
         Pedido pedido = Pedido.builder()
+                .codigoAcesso(codigoAcesso)
                 .cliente(cliente)
+                .estabelecimento(estabelecimento)
                 .pizzas(pizzas)
                 .enderecoEntrega(enderecoEntrega)
-                .codigoAcessoCliente(pedidoDTO.getCodigoAcessoCliente())
                 .metodoPagamento(MetodoPagamento.valueOf(pedidoDTO.getMetodoPagamento()))
                 .valorTotal(valorTotal)
+                .status(StatusPedido.AGUARDANDO_PAGAMENTO)
                 .build();
 
-        pedido = pedidoRepository.save(pedido);
+        // Setando o atributo pedido da classe Pizza, pois a pizza precisa guardar a informação
+        // de qual pedido ela faz parte
+        for(Pizza p : pedido.getPizzas()) {
+            p.setPedido(pedido);
+        }
 
-        return pedido;
+        return pedidoRepository.save(pedido);
     }
 
-
-
     @Override
-    public Pedido atualizarPedido(Long id, PedidoDTO pedidoDTO) throws PedidoNaoEncontradoException {
-        Optional<Pedido> pedidoOptional = pedidoRepository.findById(id);
-        if (pedidoOptional.isPresent()) {
-            Pedido pedido = pedidoOptional.get();
+    public Pedido atualizarPedido(Long pedidoId, String clienteCodigoAcesso, PedidoDTO pedidoDTO) {
+        // Verificar se o pedido existe
+        Pedido pedidoExistente = pedidoRepository.findById(pedidoId).orElseThrow(() -> new PedidoNaoEncontradoException());
 
-            if (!pedido.getCliente().getCodigoAcesso().equals(pedidoDTO.getCodigoAcessoCliente())) {
-                throw new PedidoCodigoAcessoIncorretoException();
+        Cliente cliente = clienteRepository.findById(pedidoDTO.getClienteId()).orElseThrow(() -> new ClienteNaoEncontradoException());
+        Estabelecimento estabelecimento = estabelecimentoRepository.findById(pedidoDTO.getEstabelecimentoId()).orElseThrow(() -> new EstabelecimentoIdNaoEncontradoException());
+
+
+        // Atualizar as informações do pedido
+        String enderecoEntrega = pedidoDTO.getEnderecoEntrega();
+        if (enderecoEntrega != null && !enderecoEntrega.isEmpty()) {
+            pedidoExistente.setEnderecoEntrega(enderecoEntrega);
+        } else {
+            pedidoExistente.setEnderecoEntrega(cliente.getEndereco());
+        }
+
+
+        // Atualizar pizzas, se necessário
+        if (pedidoDTO.getPizzas() != null && !pedidoDTO.getPizzas().isEmpty()) {
+            // Verificar se a lista de pizzas está vazia
+            if (pedidoDTO.getPizzas().stream().allMatch(pizza -> pizza.getSabor1() == null)) {
+                throw new PizzaSemSaboresException();
             }
 
-            List<Pizza> pizzas = getPizzasByIds(pedidoDTO.getPizzaIds());
-
-            double novoValorTotal = calcularValorTotal(pizzas);
-
-            pedido.setPizzas(pizzas);
-            pedido.setEnderecoEntrega(pedidoDTO.getEnderecoEntrega());
-            pedido.setMetodoPagamento(MetodoPagamento.valueOf(pedidoDTO.getMetodoPagamento()));
-            pedido.setValorTotal(novoValorTotal);
-
-            pedido = pedidoRepository.save(pedido);
-
-            return pedido;
-        } else {
-            throw new PedidoNaoEncontradoException();
+            pedidoExistente.setPizzas(pedidoDTO.getPizzas());
+            // Atualizar o atributo pedido da classe Pizza, se necessário
+            for (Pizza p : pedidoExistente.getPizzas()) {
+                p.setPedido(pedidoExistente);
+            }
         }
+
+        // Atualizar método de pagamento, se necessário
+        if (pedidoDTO.getMetodoPagamento() != null && !pedidoDTO.getMetodoPagamento().isEmpty()) {
+            // Verificar se o método de pagamento é válido
+            if (!isValidMetodoPagamento(pedidoDTO.getMetodoPagamento())) {
+                throw new MetodoPagamentoInvalidoException();
+            }
+
+            pedidoExistente.setMetodoPagamento(MetodoPagamento.valueOf(pedidoDTO.getMetodoPagamento()));
+        }
+
+
+
+
+        // Calcular e atualizar o valor total
+        double valorTotal = calcularValorTotal(pedidoExistente.getPizzas());
+        pedidoExistente.setValorTotal(valorTotal);
+
+        return pedidoRepository.save(pedidoExistente);
     }
 
-
     @Override
-    public void removerPedido(Long id) throws PedidoNaoEncontradoException {
-        if (!pedidoRepository.existsById(id)) {
-            throw new PedidoNaoEncontradoException();
-        }
-        pedidoRepository.deleteById(id);
+    public void removerPedido(Long pedidoId) throws PedidoNaoEncontradoException {
+        Pedido pedidoExistente = pedidoRepository.findById(pedidoId).orElseThrow(() -> new PedidoNaoEncontradoException());
+
+        pedidoRepository.delete(pedidoExistente);
     }
 
     @Override
     public Pedido getPedido(Long id) throws PedidoNaoEncontradoException {
-        Optional<Pedido> pedidoOptional = pedidoRepository.findById(id);
-        if (pedidoOptional.isPresent()) {
-            return pedidoOptional.get();
-        } else {
-            throw new PedidoNaoEncontradoException();
-        }
+        return pedidoRepository.findById(id).orElseThrow(() -> new PedidoNaoEncontradoException());
     }
 
     @Override
@@ -147,7 +180,7 @@ public class PedidoV1Service implements PedidoService{
             throw new PedidoMetodoPagamentoInvalidoException();
         }
 
-        if (!codigoAcesso.equals(pedido.getCodigoAcessoCliente())) {
+        if (!codigoAcesso.equals(pedido.getCliente())) {
             throw new PedidoCodigoAcessoIncorretoException();
         }
 
@@ -160,8 +193,6 @@ public class PedidoV1Service implements PedidoService{
         pedidoRepository.save(pedido);
     }
 
-
-
     @Override
     public boolean validarCodigoAcesso(Long id, String codigoAcesso) throws PedidoCodigoAcessoIncorretoException, PedidoNaoEncontradoException {
         Pedido pedido = getPedidoById(id);
@@ -170,7 +201,6 @@ public class PedidoV1Service implements PedidoService{
         }
         return true;
     }
-
 
     private boolean isValidCodigoAcesso(String codigoAcesso) {
         return codigoAcesso.matches("[0-9]+") && codigoAcesso.length() == 6;
@@ -181,72 +211,42 @@ public class PedidoV1Service implements PedidoService{
     }
 
 
-    private Cliente getClienteByCodigoAcesso(String codigoAcesso) {
-        Optional<Cliente> clienteOptional = clienteRepository.findByCodigoAcesso(codigoAcesso);
-        if (clienteOptional.isPresent()) {
-            return clienteOptional.get();
-        } else {
-            throw new ClienteNaoEncontradoException();
-        }
-    }
-
-    private List<Pizza> getPizzasByIds(List<Long> pizzaIds) {
-        List<Pizza> pizzas = new ArrayList<>();
-
-        for (Long pizzaId : pizzaIds) {
-            Optional<Pizza> pizzaOptional = pizzaRepository.findById(pizzaId);
-            if (pizzaOptional.isPresent()) {
-                Pizza pizza = pizzaOptional.get();
-                pizzas.add(pizza);
-            } else {
-               throw new SaborPizzaNaoEncontradoException();
-            }
-        }
-
-        return pizzas;
-    }
+//    private Cliente getClienteByCodigoAcesso(String codigoAcesso) {
+//        Optional<Cliente> clienteOptional = clienteRepository.findByCodigoAcesso(codigoAcesso);
+//        if (clienteOptional.isPresent()) {
+//            return clienteOptional.get();
+//        } else {
+//            throw new ClienteNaoEncontradoException();
+//        }
+//    }
+//
+//    private List<Pizza> getPizzasByIds(List<Long> pizzaIds) {
+//        List<Pizza> pizzas = new ArrayList<>();
+//
+//        for (Long pizzaId : pizzaIds) {
+//            Optional<Pizza> pizzaOptional = pizzaRepository.findById(pizzaId);
+//            if (pizzaOptional.isPresent()) {
+//                Pizza pizza = pizzaOptional.get();
+//                pizzas.add(pizza);
+//            } else {
+//                throw new SaborPizzaNaoEncontradoException();
+//            }
+//        }
+//
+//        return pizzas;
+//    }
 
 
     private double calcularValorTotal(List<Pizza> pizzas) {
         double valorTotal = 0.0;
+
         for (Pizza pizza : pizzas) {
-            double valorPizza = calcularValorPizza(pizza);
-            valorTotal += valorPizza;
-        }
-        return valorTotal;
-    }
-
-
-    private double calcularValorPizza(Pizza pizza) {
-        List<SaborPizza> sabores = pizza.getSabores();
-
-        if (sabores.isEmpty()) {
-            throw new PizzaSemSaboresException();
-        }
-
-        double valorTotal = 0.0;
-
-        if (pizza.getTamanho() == TamanhoPizza.GRANDE) {
-            if (sabores.size() == 1) {
-                valorTotal = sabores.get(0).getValorGrande();
-            } else if (sabores.size() == 2) {
-                double valor1 = sabores.get(0).getValorGrande();
-                double valor2 = sabores.get(1).getValorGrande();
-                valorTotal = (valor1 + valor2) / 2.0;
-            } else {
-                throw new PizzaGrandeComSaboresIncorretosException();
-            }
-        } else if (pizza.getTamanho() == TamanhoPizza.MEDIA) {
-            if (sabores.size() != 1) {
-                throw new PizzaMediaComSaboresIncorretosException();
-            }
-            valorTotal = sabores.get(0).getValorMedia();
-        } else {
-            throw new TamanhoPizzaInvalidoException();
+            valorTotal += pizza.calcularValorPizza();
         }
 
         return valorTotal;
     }
+
 
     private boolean isValidMetodoPagamento(String metodoPagamento) {
         MetodoPagamento[] metodosAceitaveis = MetodoPagamento.values();

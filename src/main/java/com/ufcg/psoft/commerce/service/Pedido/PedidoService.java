@@ -8,9 +8,9 @@ import com.ufcg.psoft.commerce.model.Pedido.Pedido;
 import java.util.List;
 
 public interface PedidoService {
-    Pedido criarPedido(PedidoDTO pedido);
+    Pedido criarPedido(String clienteCodigoAcesso, PedidoDTO pedido);
 
-    Pedido atualizarPedido(Long id, PedidoDTO pedido);
+    Pedido atualizarPedido(Long pedidoId, String clienteCodigoAcesso, PedidoDTO pedidoDTO);
 
     void removerPedido(Long id);
 

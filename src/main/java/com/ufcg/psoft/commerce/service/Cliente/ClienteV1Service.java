@@ -131,8 +131,6 @@ public class ClienteV1Service implements ClienteService {
 
 
 
-
-
     private Cliente getClienteById(Long id) throws ClienteNaoEncontradoException {
         return clienteRepository.findById(id).orElseThrow(ClienteNaoEncontradoException::new);
     }

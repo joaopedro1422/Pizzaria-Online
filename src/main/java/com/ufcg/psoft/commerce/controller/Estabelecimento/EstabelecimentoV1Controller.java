@@ -317,37 +317,4 @@ public class EstabelecimentoV1Controller {
     Os pagamentos por Pix recebem 5% de desconto sobre o valor total do pedido.
      */
 
-    @PostMapping("disponibilidadePagamento/")
-    public ResponseEntity<?> disponibilizarMetodoPagamento(
-            @RequestParam("MetodoPagamento")MetodoPagamento metodoPagamento,
-            @RequestParam("CodigoAcessoEstabelecimento") String codigoAcessoEstabelecimento,
-            @RequestParam("CodigoAcessoPedido") String codigoAcessoPedido
-    ){
-        ResponseEntity<?> response;
-
-        try{
-
-            Pedido resultado = estabelecimentov1Service.disponibilizarMetodoPagamento(metodoPagamento,
-                    codigoAcessoEstabelecimento,
-                    codigoAcessoPedido);
-
-            response = ResponseEntity
-                    .status(HttpStatus.OK)
-                    .body(resultado);
-
-        }catch (CodigoAcessoEstabelecimentoException codigoAcessoEstabelecimentoException){
-
-            throw new CodigoAcessoEstabelecimentoException();
-
-        }catch (PedidoCodigoAcessoIncorretoException codigoAcessoPedidoException){
-
-            throw new PedidoCodigoAcessoIncorretoException();
-
-        }
-
-        return response;
-
-
-    }
-
 }

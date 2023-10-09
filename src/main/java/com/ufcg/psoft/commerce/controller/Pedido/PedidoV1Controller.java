@@ -22,9 +22,10 @@ public class PedidoV1Controller {
 
     @PostMapping
     ResponseEntity<Pedido> criarPedido(
+            @RequestParam String clienteCodigoAcesso,
             @RequestBody @Valid PedidoDTO pedidoDTO
     ) {
-        Pedido pedido = pedidoService.criarPedido(pedidoDTO);
+        Pedido pedido = pedidoService.criarPedido(clienteCodigoAcesso, pedidoDTO);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(pedido);
@@ -33,9 +34,10 @@ public class PedidoV1Controller {
     @PutMapping("/{id}")
     ResponseEntity<Pedido> atualizarPedido(
             @PathVariable("id") Long id,
+            @RequestParam String clienteCodigoAcesso,
             @RequestBody @Valid PedidoDTO pedidoDTO
     ) throws PedidoNaoEncontradoException {
-        Pedido pedido = pedidoService.atualizarPedido(id, pedidoDTO);
+        Pedido pedido = pedidoService.atualizarPedido(id, clienteCodigoAcesso, pedidoDTO);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(pedido);
