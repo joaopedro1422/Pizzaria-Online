@@ -19,6 +19,10 @@ public interface EntregadorService {
 
     public Entregador updateStatus(Long id);
 
-    public Entregador updateEntregador(Long id, EntregadorPostPutRequestDTO entregador);
+    public Entregador updateEntregador(Long id,String codigoAcessoEntregador, EntregadorPostPutRequestDTO entregador);
+
+    public void removerEntregador(Long id, String codigoAcessoEntregador);
+
+    public Entregador atualizaDisponibilidade(Long id, String codigoAcessoEntregador, boolean disponibilidade);
 }
 

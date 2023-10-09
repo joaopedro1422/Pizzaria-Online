@@ -7,6 +7,7 @@ import com.ufcg.psoft.commerce.exception.Cliente.ClienteCodigoAcessoIncorretoExc
 import com.ufcg.psoft.commerce.exception.Cliente.ClienteNaoEncontradoException;
 import com.ufcg.psoft.commerce.exception.Entregador.CodigoAcessoEntregadorException;
 import com.ufcg.psoft.commerce.exception.Entregador.EntregadorNaoEncontradoException;
+import com.ufcg.psoft.commerce.exception.Entregador.TipoDeVeiculoInvalidoException;
 import com.ufcg.psoft.commerce.exception.Estabelecimento.CodigoAcessoInvalidoException;
 import com.ufcg.psoft.commerce.model.Cliente.Cliente;
 import com.ufcg.psoft.commerce.model.Entregador.Entregador;
@@ -66,23 +67,33 @@ public class EntregadorV1Service implements EntregadorService{
     }
 
     @Override
-    public Entregador updateEntregador(Long id, EntregadorPostPutRequestDTO entregadorPostPutDTO){
+    public Entregador updateEntregador(Long id, String codigoAcessoEntregador, EntregadorPostPutRequestDTO entregadorPostPutDTO){
         Optional<Entregador> entregadorOptional = entregadorRepository.findById(id);
+        if(!entregadorOptional.isPresent()){
+            throw new EntregadorNaoEncontradoException();
+        }
+        String codigoAcesso = entregadorPostPutDTO.getCodigoAcesso();
+        Entregador entregador= entregadorOptional.get();
+        if (codigoAcesso == null || codigoAcesso.isEmpty() || !isValidCodigoAcesso(codigoAcesso)) {
+            throw new CodigoAcessoEntregadorException();
+        }
+        if(!entregador.getCodigoAcesso().equals(codigoAcessoEntregador)){
+            throw new CodigoAcessoEntregadorException();
+        }
 
-        if(entregadorOptional.isPresent()){
-            String codigoAcesso = entregadorPostPutDTO.getCodigoAcesso();
-            if (codigoAcesso != null && !codigoAcesso.isEmpty() && !isValidCodigoAcesso(codigoAcesso)) {
-                throw new EntregadorNaoEncontradoException();
-            }
-            Entregador entregador= entregadorOptional.get();
+        // if(entregadorPostPutDTO.getTipoVeiculo() != "carro" && entregadorPostPutDTO.getTipoVeiculo() != "moto"){
+        //     throw new TipoDeVeiculoInvalidoException();
+        // }
+
+            entregador.setNome(entregadorPostPutDTO.getNome());
             entregador.setCorVeiculo(entregadorPostPutDTO.getCorVeiculo());
             entregador.setPlacaVeiculo(entregadorPostPutDTO.getPlacaVeiculo());
             entregador.setTipoVeiculo(entregadorPostPutDTO.getTipoVeiculo());
             return entregadorRepository.save(entregador);
-        } else {
-            throw new EntregadorNaoEncontradoException();
-        }
-    }
+        
+           
+        
+}
 
 
     @Override
@@ -94,7 +105,49 @@ public class EntregadorV1Service implements EntregadorService{
         return entregador;
     }
 
+    @Override
+    public void removerEntregador(Long id, String codigoAcessoEntregador){
+        Optional<Entregador> entregadorOptional = entregadorRepository.findById(id);
+        if(!entregadorOptional.isPresent()){
+            throw new EntregadorNaoEncontradoException();
+        }
+        Entregador entregador= entregadorOptional.get();
+        String codigoAcesso= entregador.getCodigoAcesso();
+        
+        
+        if (codigoAcesso == null || codigoAcesso.isEmpty() || !isValidCodigoAcesso(codigoAcesso)) {
+            throw new CodigoAcessoEntregadorException();
+        }
+        if(!entregador.getCodigoAcesso().equals(codigoAcessoEntregador)){
+            throw new CodigoAcessoEntregadorException();
+        }
+        entregadorRepository.deleteById(id);
+    }
+
     private boolean isValidCodigoAcesso(String codigoAcesso) {
         return codigoAcesso.matches("[0-9]+") && codigoAcesso.length() == 6;
+    }
+
+    public Entregador atualizaDisponibilidade(Long id, String codigoAcessoEntregador, boolean disponibilidade){
+        Optional<Entregador> entregadorOptional = entregadorRepository.findById(id);
+        if(!entregadorOptional.isPresent()){
+            throw new EntregadorNaoEncontradoException();
+        }
+
+        Entregador entregador= entregadorOptional.get();
+        String codigoAcesso= entregador.getCodigoAcesso();
+
+        if (codigoAcesso == null || codigoAcesso.isEmpty() || !isValidCodigoAcesso(codigoAcesso)) {
+            throw new CodigoAcessoEntregadorException();
+        }
+        if(!entregador.getCodigoAcesso().equals(codigoAcessoEntregador)){
+            throw new CodigoAcessoEntregadorException();
+        }
+
+        entregador.setDisponibilidade(disponibilidade);
+        entregadorRepository.save(entregador);
+
+        return entregador;
+
     }
 }

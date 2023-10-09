@@ -1,6 +1,7 @@
 package com.ufcg.psoft.commerce.controller.Entregador;
 
 import com.ufcg.psoft.commerce.dto.Entregador.EntregadorPostPutRequestDTO;
+import com.ufcg.psoft.commerce.model.Entregador.Entregador;
 import com.ufcg.psoft.commerce.dto.Entregador.EntregadorPostPutRequestDTO;
 import com.ufcg.psoft.commerce.service.Entregador.EntregadorService;
 import com.ufcg.psoft.commerce.service.Entregador.EntregadorV1Service;
@@ -47,11 +48,13 @@ public class EntregadorV1Controller {
     @PutMapping("/{id}")
     ResponseEntity<?> atualizarEntregador(
             @PathVariable("id") Long id,
+            @Valid @RequestParam("codigoAcesso") String codigoAcessoEntregador,
             @RequestBody @Valid EntregadorPostPutRequestDTO entregadorPostPutDTO
     ){
+        Entregador entregadorUpdate= entregadorService.updateEntregador(id, codigoAcessoEntregador, entregadorPostPutDTO);
         return  ResponseEntity
                 .status(HttpStatus.OK)
-                .body(entregadorService.updateEntregador(id, entregadorPostPutDTO));
+                .body(entregadorUpdate);
     }
 
     @PutMapping("/{id}/update")
@@ -65,5 +68,27 @@ public class EntregadorV1Controller {
                 .body(entregadorService.updateStatus(id));
     }
 
-//
+    @PutMapping("/{id}/disponibilidade")
+    ResponseEntity<?> updateDisponibilidade(
+        @Valid @PathVariable("id") Long id,
+        @Valid @RequestParam("codigoAcesso") String codigoAcessoEntregador,
+        @Valid @RequestParam("disponibilidade") boolean disponibilidade
+    ){
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(entregadorService.atualizaDisponibilidade(id, codigoAcessoEntregador, disponibilidade));
+    }
+
+    @DeleteMapping("/{id}")
+    ResponseEntity<?> excluirEntregador(
+            @PathVariable("id") Long id,
+            @Valid @RequestParam("codigoAcesso") String codigoAcessoEstabelecimento
+    ){
+        entregadorService.removerEntregador(id, codigoAcessoEstabelecimento);
+        return ResponseEntity
+                .status(HttpStatus.NO_CONTENT)
+                .build();
+
+    }
+
 }

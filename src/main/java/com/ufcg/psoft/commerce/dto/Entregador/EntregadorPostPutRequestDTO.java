@@ -24,25 +24,27 @@ public class EntregadorPostPutRequestDTO {
     private String codigoAcesso;
 
     @JsonProperty("nome")
-    @NotBlank(message = "O nome do entregador não pode estar em branco")
+    @NotBlank(message = "Nome e obrigatorio")
     @NotNull(message = "O nome do entregador não pode ser nulo")
     private String nome;
 
     @JsonProperty("placaVeiculo")
-    @NotBlank(message = "A placa do entregador não pode estar em branco")
+    @NotBlank(message = "Placa do veiculo e obrigatoria")
     private String placaVeiculo;
 
     @JsonProperty("tipoVeiculo")
-    @NotBlank(message = "O tipo do veiculo do entregador não pode estar em branco")
+    @NotBlank(message = "Tipo do veiculo e obrigatorio")
+    
     private String tipoVeiculo;
 
     @JsonProperty("corVeiculo")
-
+    @NotBlank(message = "Cor do veiculo e obrigatoria")
     private String corVeiculo;
 
     @JsonProperty("aprovado")
-
     private boolean aprovado;
 
 
+    @JsonProperty("isDisponibilidade")
+    public boolean isDisponibilidade;
 }

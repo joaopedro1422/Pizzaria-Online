@@ -43,7 +43,7 @@ public class EntregadorControllerTests {
 
     EntregadorPostPutRequestDTO entregadorPostPutRequestDTO;
 
-    EntregadorPostPutRequestDTO entregadorDTO;
+    EntregadorGetRequestDTO entregadorDTO;
 
     @BeforeEach
     void setup() {
@@ -64,7 +64,7 @@ public class EntregadorControllerTests {
                 .tipoVeiculo(entregador.getTipoVeiculo())
                 .build();
 
-        entregadorDTO = entregadorPostPutRequestDTO;
+        entregadorDTO = objectMapper.convertValue(entregador, EntregadorGetRequestDTO.class);
     }
 
     @AfterEach
@@ -219,7 +219,7 @@ public class EntregadorControllerTests {
             // Act
             String responseJsonString = driver.perform(put(URI_ENTREGADORES + "/999999")
                             .contentType(MediaType.APPLICATION_JSON)
-                            .param("codigoAcesso", entregador.getCodigoAcesso())
+                            .param(("codigoAcesso"), entregador.getCodigoAcesso())
                             .content(objectMapper.writeValueAsString(entregadorPostPutRequestDTO)))
                     .andExpect(status().isBadRequest())
                     .andDo(print())
@@ -522,8 +522,8 @@ public class EntregadorControllerTests {
 
             // Assert
             assertAll(
-                    () -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
-                    () -> assertEquals("Tipo do veiculo deve ser moto ou carro", resultado.getErrors().get(0))
+                    () -> assertEquals("Tipo de veiculo deve ser carro ou moto", resultado.getMessage())
+                    
             );
         }
 

@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class EntregadorGetRequestDTO {
 
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    @JsonProperty("id")
     private Long id;
 
     @JsonProperty("codigoAcesso")
@@ -35,5 +35,7 @@ public class EntregadorGetRequestDTO {
     @JsonProperty("aprovado")
     private boolean aprovado;
 
+    @JsonProperty("isDisponibilidade")
+    private boolean isDisponibilidade;
 
 }
