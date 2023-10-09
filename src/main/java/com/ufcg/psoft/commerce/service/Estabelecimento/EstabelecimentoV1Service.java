@@ -10,6 +10,7 @@ import com.ufcg.psoft.commerce.exception.Estabelecimento.CodigoAcessoInvalidoExc
 import com.ufcg.psoft.commerce.exception.Estabelecimento.EstabelecimentoNaoEncontradoException;
 import com.ufcg.psoft.commerce.exception.Pedido.PedidoCodigoAcessoIncorretoException;
 import com.ufcg.psoft.commerce.exception.Pizza.TipoDeSaborNaoExisteException;
+import com.ufcg.psoft.commerce.model.Entregador.Entregador;
 import com.ufcg.psoft.commerce.model.Estabelecimento.Estabelecimento;
 import com.ufcg.psoft.commerce.model.Pedido.Pedido;
 import com.ufcg.psoft.commerce.model.SaborPizza.SaborPizza;
@@ -238,6 +239,23 @@ public class EstabelecimentoV1Service {
                 item -> Objects.equals(item.getTipoDeSabor(), tipo)
         );
         return cardapioTipo.collect(Collectors.toSet());
+    }
+
+    private boolean isValidCodigoAcesso(String codigoAcesso) {
+        return codigoAcesso.matches("[0-9]+") && codigoAcesso.length() == 6;
+    }
+
+    public Estabelecimento alterarDisponibilidadeSaborPizza(Long idEstabelecimento,Long idSabor, String codigoAcesso, boolean disponibilidade){
+        Optional<Estabelecimento> estabelecimentoOptional = estabelecimentoRepository.findById(idEstabelecimento);
+        if(!estabelecimentoOptional.isPresent()){
+            throw new EstabelecimentoNaoEncontradoException();
+        }
+        if(!isValidCodigoAcesso(codigoAcesso)){
+            throw new CodigoAcessoInvalidoException();
+        }
+        Estabelecimento estabelecimento= estabelecimentoOptional.get();
+        estabelecimento.setDisponibilidadeSabor(idSabor,disponibilidade);
+        return estabelecimentoRepository.save(estabelecimento);
     }
 
 }

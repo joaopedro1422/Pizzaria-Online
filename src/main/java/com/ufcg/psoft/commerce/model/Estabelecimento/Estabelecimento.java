@@ -84,15 +84,19 @@ public class Estabelecimento {
 
                     entregadorEncontrado = entregador;
                     break;
-
                 }
-
             }
-
         }
-
         return entregadorEncontrado;
 
+    }
+
+    public void setDisponibilidadeSabor(Long idSaborPizza, boolean disponibilidade){
+        for (SaborPizza sabor: saboresPizza) {
+            if(sabor.getIdPizza().equals(idSaborPizza)){
+                sabor.setDisponibilidadeSabor(disponibilidade);
+            }
+        }
     }
 
     public Entregador associarEntregador(String codigoAcessoEntregador, String codigoAcessoEstabelecimento){

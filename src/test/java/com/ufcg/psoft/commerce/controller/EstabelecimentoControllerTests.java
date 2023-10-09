@@ -12,6 +12,7 @@ import com.ufcg.psoft.commerce.model.Estabelecimento.Estabelecimento;
 import com.ufcg.psoft.commerce.model.SaborPizza.SaborPizza;
 import com.ufcg.psoft.commerce.repository.Estabelecimento.EstabelecimentoRepository;
 import com.ufcg.psoft.commerce.repository.Pizza.SaborRepository;
+import jakarta.validation.constraints.AssertFalse;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -867,44 +868,80 @@ public class EstabelecimentoControllerTests {
         @Test
         @DisplayName("Teste do pagamento por cartao de credito")
         public void porCreditoTest(){
-
             assertTrue(false);
-
         }
 
         @Test
         @DisplayName("Teste do pagamento por debito")
         public void porDebitoTest(){
-
             assertTrue(false);
-
         }
 
         @Test
         @DisplayName("Teste codigo de acesso passado indevidamente")
         public void codigoAcessoPedidoInvalidoTest(){
-
             assertTrue(false);
-
         }
 
 
         @Test
         @DisplayName("Teste codigo de acesso estabelecimento passado indevidamente")
         public void codigoAcessoEstabelecimentoInvalidoTest(){
-
             assertTrue(false);
-
         }
 
         @Test
         @DisplayName("Teste pedido não existe")
         public void pedidoInexistenteTest(){
-
             assertTrue(false);
-
         }
 
+    }
+
+    @Nested
+    @DisplayName("Testes para alteraçoes de disponibilidade dos sabores do cardapio do estabelecimento")
+    class disponibilidadeCardapio{
+
+        @Test
+        @DisplayName("Teste alterar disponibilidade do sabor no cardapio")
+        public void alterarDisponibilidadeSaborCardapio() throws Exception{
+            SaborPizza sabor1 = saborRepository.save(SaborPizza.builder()
+                    .saborDaPizza("Calabresa")
+                    .valorMedia(25.0)
+                    .valorGrande(35.0)
+                    .tipoDeSabor("salgado")
+                    .disponibilidadeSabor(true)
+                    .estabelecimento(estabelecimento)
+                    .build());
+
+            SaborPizza sabor2 = saborRepository.save(SaborPizza.builder()
+                    .saborDaPizza("Mussarela")
+                    .valorMedia(15.0)
+                    .valorGrande(30.0)
+                    .tipoDeSabor("salgado")
+                    .disponibilidadeSabor(true)
+                    .estabelecimento(estabelecimento)
+                    .build());
+            estabelecimento.setSaboresPizza(Set.of(sabor1,sabor2));
+            estabelecimentoRepository.save(estabelecimento);
+
+            String responseJsonString = driver.perform(put(URI_ESTABELECIMENTOS + "/" + estabelecimento.getId()  + "/disponibilidade")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .param("idSaborPizza", sabor1.getIdPizza().toString())
+                            .param("codigoAcesso", estabelecimento.getCodigoAcesso())
+                            .param("disponibilidade", "false")
+                            .content(objectMapper.writeValueAsString(estabelecimentoPostPutRequestDTO)))
+                    .andExpect(status().isOk())
+                    .andDo(print())
+                    .andReturn().getResponse().getContentAsString();
+
+
+
+            SaborResponseDTO resultado= objectMapper.readValue(responseJsonString, SaborResponseDTO.SaborResponseDTOBuilder.class).build();
+
+            assertFalse(resultado.getDisponibilidadeSabor());
+
+        }
     }
 
 }

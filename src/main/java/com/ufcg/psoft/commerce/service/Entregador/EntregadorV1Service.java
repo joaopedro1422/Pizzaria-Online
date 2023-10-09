@@ -81,15 +81,18 @@ public class EntregadorV1Service implements EntregadorService{
             throw new CodigoAcessoEntregadorException();
         }
 
-        // if(entregadorPostPutDTO.getTipoVeiculo() != "carro" && entregadorPostPutDTO.getTipoVeiculo() != "moto"){
-        //     throw new TipoDeVeiculoInvalidoException();
-        // }
+         if(entregadorPostPutDTO.getTipoVeiculo().equals("carro") || entregadorPostPutDTO.getTipoVeiculo().equals("moto")){
+             entregador.setNome(entregadorPostPutDTO.getNome());
+             entregador.setCorVeiculo(entregadorPostPutDTO.getCorVeiculo());
+             entregador.setPlacaVeiculo(entregadorPostPutDTO.getPlacaVeiculo());
+             entregador.setTipoVeiculo(entregadorPostPutDTO.getTipoVeiculo());
+             return entregadorRepository.save(entregador);
+         }
+         else{
+             throw new TipoDeVeiculoInvalidoException();
+         }
 
-            entregador.setNome(entregadorPostPutDTO.getNome());
-            entregador.setCorVeiculo(entregadorPostPutDTO.getCorVeiculo());
-            entregador.setPlacaVeiculo(entregadorPostPutDTO.getPlacaVeiculo());
-            entregador.setTipoVeiculo(entregadorPostPutDTO.getTipoVeiculo());
-            return entregadorRepository.save(entregador);
+
         
            
         
