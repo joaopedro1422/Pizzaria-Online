@@ -141,7 +141,7 @@ public class SaborV1Service implements SaborService {
         if(!saborOptional.isPresent()){
             throw new SaborPizzaNaoEncontradoException();
         }
-        if(!saborDTO.getDisponibilidadeSabor().equals(disponibilidade)){
+        if(saborDTO.getDisponibilidadeSabor().equals(disponibilidade)){
             throw new DisponibilidadeSaborException();
         }
         SaborPizza saborPizza = saborOptional.get();

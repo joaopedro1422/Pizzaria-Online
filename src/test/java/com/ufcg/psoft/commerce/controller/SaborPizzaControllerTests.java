@@ -589,113 +589,118 @@ public class SaborPizzaControllerTests {
                     () -> assertEquals("Disponibilidade obrigatoria", resultado.getErrors().get(0)));
         }
 
-//		@Test
-//		@DisplayName("Quando alteramos a disponibilidade de um sabor para false")
-//		void quandoAlteramosDisponibilidadeSaborFalse() throws Exception {
-//			// Arrange
-//            saborPostPutDTO.setDisponibilidadeSabor(false);
-//            saborRepository.save(sabor);
-//			// Act
-//			String responseJsonString = driver
-//					.perform(put(URI_SABORES + "/" + sabor.getIdPizza() + "/" + false)
-//							.contentType(MediaType.APPLICATION_JSON).param("idPizza", sabor.getIdPizza().toString())
-//							.param("idEstabelecimento", estabelecimento.getId().toString())
-//							.param("codigoAcessoEstabelecimento", estabelecimento.getCodigoAcesso())
-//							.content(objectMapper.writeValueAsString(sabor)))
-//					.andExpect(status().isOk()) // Codigo 200
-//					.andDo(print()).andReturn().getResponse().getContentAsString();
-//
-//			SaborResponseDTO resultado = objectMapper.readValue(responseJsonString, SaborResponseDTO.class);
-//
-//			// Assert
-//			assertFalse(resultado.getDisponibilidadeSabor());
-//		}
-//
-//		@Test
-//		@DisplayName("Quando alteramos a disponibilidade de um sabor para true")
-//		void quandoAlteramosDisponibilidadeSaborTrue() throws Exception {
-//			// Arrange
-//			sabor.setDisponibilidadeSabor(true);
-//			saborRepository.save(sabor);
-//			// Act
-//			String responseJsonString = driver
-//					.perform(put(URI_SABORES + "/" + sabor.getIdPizza() + "/" + true)
-//							.contentType(MediaType.APPLICATION_JSON).param("idPizza", sabor.getIdPizza().toString())
-//							.param("idEstabelecimento", estabelecimento.getId().toString())
-//							.param("codigoAcessoEstabelecimento", estabelecimento.getCodigoAcesso())
-//							.content(objectMapper.writeValueAsString(sabor)))
-//					.andExpect(status().isOk()) // Codigo 200
-//					.andDo(print()).andReturn().getResponse().getContentAsString();
-//
-//			SaborPizza resultado = objectMapper.readValue(responseJsonString, SaborPizza.class);
-//
-//			// Assert
-//			assertTrue(resultado.getDisponibilidadeSabor());
-//		}
-//
-//		@Test
-//		@DisplayName("Quando alteramos a disponibilidade de um sabor para false quando já está false")
-//		void quandoAlteramosDisponibilidadeSaborFalseQuandoJaEstaFalse() throws Exception {
-//			// Arrange
-//			sabor.setDisponibilidadeSabor(false);
-//			saborRepository.save(sabor);
-//			// Act
-//			String responseJsonString = driver
-//					.perform(put(URI_SABORES + "/" + sabor.getIdPizza() + "/" + false)
-//							.contentType(MediaType.APPLICATION_JSON).param("idPizza", sabor.getIdPizza().toString())
-//							.param("idEstabelecimento", estabelecimento.getId().toString())
-//							.param("codigoAcessoEstabelecimento", estabelecimento.getCodigoAcesso())
-//							.content(objectMapper.writeValueAsString(sabor)))
-//					.andExpect(status().isBadRequest())
-//					.andDo(print()).andReturn().getResponse().getContentAsString();
-//
-//			CustomErrorType resultado = objectMapper.readValue(responseJsonString, CustomErrorType.class);
-//
-//			// Assert
-//			assertEquals("O sabor consultado ja esta indisponivel!", resultado.getMessage());
-//		}
-//
-//		@Test
-//		@DisplayName("Quando alteramos a disponibilidade de um sabor para true quando já está true")
-//		void quandoAlteramosDisponibilidadeSaborTrueQuandoJaEstaTrue() throws Exception {
-//			// Arrange
-//            sabor.setDisponibilidadeSabor(true);
-//            saborRepository.save(sabor);
-//			// Act
-//			String responseJsonString = driver
-//					.perform(put(URI_SABORES + "/" + sabor.getIdPizza() + "/" + true)
-//							.contentType(MediaType.APPLICATION_JSON).param("idPizza", sabor.getIdPizza().toString())
-//							.param("idEstabelecimento", estabelecimento.getId().toString())
-//							.param("codigoAcessoEstabelecimento", estabelecimento.getCodigoAcesso())
-//							.content(objectMapper.writeValueAsString(sabor)))
-//					.andExpect(status().isBadRequest()) // Codigo 200
-//					.andDo(print()).andReturn().getResponse().getContentAsString();
-//
-//			CustomErrorType resultado = objectMapper.readValue(responseJsonString, CustomErrorType.class);
-//
-//			// Assert
-//			assertEquals("O sabor consultado ja esta disponivel!", resultado.getMessage());
-//		}
-////
-//		@Test
-//		@DisplayName("Quando alteramos a disponibilidade de um sabor com o código de acesso errado")
-//		void quandoAlteramosDisponibilidadeSaborCodigoErrado() throws Exception {
-//			// Arrange
-//			// Act
-//			String responseJsonString = driver
-//					.perform(put(URI_SABORES + "/" + sabor.getIdPizza() + "/" + false)
-//							.contentType(MediaType.APPLICATION_JSON).param("idPizza", sabor.getIdPizza().toString())
-//							.param("idEstabelecimento", estabelecimento.getId().toString())
-//							.param("codigoAcessoEstabelecimento", "aaaaaa")
-//							.content(objectMapper.writeValueAsString(sabor)))
-//					.andExpect(status().isBadRequest()) // Codigo 200
-//					.andDo(print()).andReturn().getResponse().getContentAsString();
-//
-//			CustomErrorType resultado = objectMapper.readValue(responseJsonString, CustomErrorType.class);
-//
-//			// Assert
-//			assertEquals("Codigo de acesso invalido!", resultado.getMessage());
-//		}
-//    }
+		@Test
+		@DisplayName("Quando alteramos a disponibilidade de um sabor para false")
+		void quandoAlteramosDisponibilidadeSaborFalse() throws Exception {
+			// Arrange
+            sabor.setDisponibilidadeSabor(false);
+            saborRepository.save(sabor);
+			// Act
+			String responseJsonString = driver
+					.perform(put(URI_SABORES + "/" + sabor.getIdPizza() + "/disponibilidade" )
+							.contentType(MediaType.APPLICATION_JSON).param("idPizza", sabor.getIdPizza().toString())
+							.param("idEstabelecimento", estabelecimento.getId().toString())
+                            .param("disponibilidade","false")
+							.param("codigoAcessoEstabelecimento", estabelecimento.getCodigoAcesso())
+							.content(objectMapper.writeValueAsString(sabor)))
+					.andExpect(status().isOk()) // Codigo 200
+					.andDo(print()).andReturn().getResponse().getContentAsString();
+
+			SaborResponseDTO resultado = objectMapper.readValue(responseJsonString, SaborResponseDTO.class);
+
+			// Assert
+			assertFalse(resultado.getDisponibilidadeSabor());
+		}
+
+		@Test
+		@DisplayName("Quando alteramos a disponibilidade de um sabor para true")
+		void quandoAlteramosDisponibilidadeSaborTrue() throws Exception {
+			// Arrange
+			sabor.setDisponibilidadeSabor(true);
+			saborRepository.save(sabor);
+			// Act
+			String responseJsonString = driver
+					.perform(put(URI_SABORES + "/" + sabor.getIdPizza() + "/disponibilidade")
+							.contentType(MediaType.APPLICATION_JSON).param("idPizza", sabor.getIdPizza().toString())
+							.param("idEstabelecimento", estabelecimento.getId().toString())
+                            .param("disponibilidade","true")
+							.param("codigoAcessoEstabelecimento", estabelecimento.getCodigoAcesso())
+							.content(objectMapper.writeValueAsString(sabor)))
+					.andExpect(status().isOk()) // Codigo 200
+					.andDo(print()).andReturn().getResponse().getContentAsString();
+
+			SaborResponseDTO resultado = objectMapper.readValue(responseJsonString, SaborResponseDTO.class);
+
+			// Assert
+			assertTrue(resultado.getDisponibilidadeSabor());
+		}
+
+		@Test
+		@DisplayName("Quando alteramos a disponibilidade de um sabor para false quando já está false")
+		void quandoAlteramosDisponibilidadeSaborFalseQuandoJaEstaFalse() throws Exception {
+			// Arrange
+			sabor.setDisponibilidadeSabor(false);
+			saborRepository.save(sabor);
+			// Act
+			String responseJsonString = driver
+					.perform(put(URI_SABORES + "/" + sabor.getIdPizza() + "/disponibilidade")
+							.contentType(MediaType.APPLICATION_JSON).param("idPizza", sabor.getIdPizza().toString())
+							.param("idEstabelecimento", estabelecimento.getId().toString())
+                            .param("disponibilidade","false")
+							.param("codigoAcessoEstabelecimento", estabelecimento.getCodigoAcesso())
+							.content(objectMapper.writeValueAsString(sabor)))
+					.andExpect(status().isBadRequest())
+					.andDo(print()).andReturn().getResponse().getContentAsString();
+
+			CustomErrorType resultado = objectMapper.readValue(responseJsonString, CustomErrorType.class);
+
+			// Assert
+			assertEquals("O sabor consultado ja esta disponivel/indisponivel!", resultado.getMessage());
+		}
+
+		@Test
+		@DisplayName("Quando alteramos a disponibilidade de um sabor para true quando já está true")
+		void quandoAlteramosDisponibilidadeSaborTrueQuandoJaEstaTrue() throws Exception {
+			// Arrange
+            sabor.setDisponibilidadeSabor(true);
+            saborRepository.save(sabor);
+			// Act
+			String responseJsonString = driver
+					.perform(put(URI_SABORES + "/" + sabor.getIdPizza() + "/disponibilidade")
+							.contentType(MediaType.APPLICATION_JSON).param("idPizza", sabor.getIdPizza().toString())
+							.param("idEstabelecimento", estabelecimento.getId().toString())
+                            .param("disponibilidade","true")
+							.param("codigoAcessoEstabelecimento", estabelecimento.getCodigoAcesso())
+							.content(objectMapper.writeValueAsString(sabor)))
+					.andExpect(status().isBadRequest()) // Codigo 200
+					.andDo(print()).andReturn().getResponse().getContentAsString();
+
+			CustomErrorType resultado = objectMapper.readValue(responseJsonString, CustomErrorType.class);
+
+			// Assert
+			assertEquals("O sabor consultado ja esta disponivel/indisponivel!", resultado.getMessage());
+		}
+
+		@Test
+		@DisplayName("Quando alteramos a disponibilidade de um sabor com o código de acesso errado")
+		void quandoAlteramosDisponibilidadeSaborCodigoErrado() throws Exception {
+			// Arrange
+			// Act
+			String responseJsonString = driver
+					.perform(put(URI_SABORES + "/" + sabor.getIdPizza() + "/disponibilidade" )
+							.contentType(MediaType.APPLICATION_JSON).param("idPizza", sabor.getIdPizza().toString())
+							.param("idEstabelecimento", estabelecimento.getId().toString())
+                            .param("disponibilidade","true")
+							.param("codigoAcessoEstabelecimento", "aaaaaa")
+							.content(objectMapper.writeValueAsString(sabor)))
+					.andExpect(status().isBadRequest()) // Codigo 200
+					.andDo(print()).andReturn().getResponse().getContentAsString();
+
+			CustomErrorType resultado = objectMapper.readValue(responseJsonString, CustomErrorType.class);
+
+			// Assert
+			assertEquals("Codigo de acesso invalido!", resultado.getMessage());
+		}
     }
+
 }
