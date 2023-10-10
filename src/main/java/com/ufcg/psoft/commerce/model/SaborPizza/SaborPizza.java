@@ -55,8 +55,8 @@ public class SaborPizza {
     @JoinColumn(name = "estabelecimento_pk_id")
     private Estabelecimento estabelecimento;
 
-    @OneToMany
-    private List<Cliente> observers;
+    @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL)
+    private List<Cliente> observers = new ArrayList<>();
 
     public void register(Cliente observer) {
         this.observers.add(observer);
@@ -68,10 +68,13 @@ public class SaborPizza {
         }
     }
     public void notifyObservers() {
-        for(Cliente c : observers) {
-            c.update(this);
+        if (disponibilidadeSabor != null && disponibilidadeSabor) {
+            for (Cliente c : observers) {
+                c.update(this);
+            }
         }
     }
+
 
 
 }

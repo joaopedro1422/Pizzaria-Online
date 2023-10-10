@@ -854,69 +854,101 @@ public class PedidoControllerTests {
                     .andExpect(status().isNotFound());
         }
 
-//        @Test
-//        @DisplayName("quando Listar Pedidos então os pedidos são retornados")
-//        void quandoListarPedidos() throws Exception {
-//            // Arrange
-//            List<Pizza> pizzas = List.of(pizzaM);
-//
-//            PedidoDTO pedidoDTO1 = PedidoDTO.builder()
-//                    .codigoAcesso("123456")
-//                    .clienteId(cliente.getId())
-//                    .estabelecimentoId(estabelecimento.getId())
-//                    .metodoPagamento("CARTAO_CREDITO")
-//                    .enderecoEntrega("Rua Nova, 123")
-//                    .pizzas(pizzas)
-//                    .build();
-//
-//            PedidoDTO pedidoDTO2 = PedidoDTO.builder()
-//                    .codigoAcesso("789012")
-//                    .clienteId(cliente.getId())
-//                    .estabelecimentoId(estabelecimento.getId())
-//                    .metodoPagamento("DINHEIRO")
-//                    .enderecoEntrega("Rua Velha, 456")
-//                    .pizzas(pizzas)
-//                    .build();
-//
-//            mockMvc.perform(MockMvcRequestBuilders.post(URL_TEMPLATE)
-//                            .contentType(MediaType.APPLICATION_JSON)
-//                            .param("clienteCodigoAcesso", cliente.getCodigoAcesso())
-//                            .content(objectMapper.writeValueAsString(pedidoDTO1)))
-//                    .andExpect(MockMvcResultMatchers.status().isCreated());
-//
-//            mockMvc.perform(MockMvcRequestBuilders.post(URL_TEMPLATE)
-//                            .contentType(MediaType.APPLICATION_JSON)
-//                            .param("clienteCodigoAcesso", cliente.getCodigoAcesso())
-//                            .content(objectMapper.writeValueAsString(pedidoDTO2)))
-//                    .andExpect(MockMvcResultMatchers.status().isCreated());
-//
-//            // Act
-//            MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get(URL_TEMPLATE))
-//                    .andExpect(MockMvcResultMatchers.status().isOk())
-//                    .andReturn();
-//
-//            // Assert
-//            List<Pedido> pedidosEncontrados = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<List<Pedido>>() {});
-//            assertEquals(2, pedidosEncontrados.size());
-//
-//            // Você pode adicionar mais verificações conforme necessário
-//            assertTrue(pedidosEncontrados.stream().anyMatch(pedido -> pedido.getCodigoAcesso().equals(pedidoDTO1.getCodigoAcesso())));
-//            assertTrue(pedidosEncontrados.stream().anyMatch(pedido -> pedido.getCodigoAcesso().equals(pedidoDTO2.getCodigoAcesso())));
-//        }
-//
-//        @Test
-//        @DisplayName("quando Listar Pedidos com ID Inválido então retorna Lista Vazia")
-//        void quandoListarPedidosComIdInvalido() throws Exception {
-//            // Act
-//            MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get(URL_TEMPLATE + "/9999"))
-//                    .andExpect(MockMvcResultMatchers.status().isNotFound())
-//                    .andReturn();
-//
-//            // Assert
-//            List<Pedido> pedidosEncontrados = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<List<Pedido>>() {});
-//            assertTrue(pedidosEncontrados.isEmpty());
-//        }
+        @Test
+        @DisplayName("quando Listar Pedidos então os pedidos são retornados")
+        void quandoListarPedidos() throws Exception {
+            // Arrange
+            List<Pizza> pizzas = List.of(pizzaM);
+
+            PedidoDTO pedidoDTO1 = PedidoDTO.builder()
+                    .codigoAcesso("123456")
+                    .clienteId(cliente.getId())
+                    .estabelecimentoId(estabelecimento.getId())
+                    .metodoPagamento("CARTAO_CREDITO")
+                    .enderecoEntrega("Rua Nova, 123")
+                    .pizzas(pizzas)
+                    .build();
+
+            PedidoDTO pedidoDTO2 = PedidoDTO.builder()
+                    .codigoAcesso("789012")
+                    .clienteId(cliente.getId())
+                    .estabelecimentoId(estabelecimento.getId())
+                    .metodoPagamento("PIX")
+                    .enderecoEntrega("Rua Velha, 456")
+                    .pizzas(pizzas)
+                    .build();
+
+            mockMvc.perform(MockMvcRequestBuilders.post(URL_TEMPLATE)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .param("clienteCodigoAcesso", cliente.getCodigoAcesso())
+                            .content(objectMapper.writeValueAsString(pedidoDTO1)))
+                    .andExpect(MockMvcResultMatchers.status().isCreated());
+
+            mockMvc.perform(MockMvcRequestBuilders.post(URL_TEMPLATE)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .param("clienteCodigoAcesso", cliente.getCodigoAcesso())
+                            .content(objectMapper.writeValueAsString(pedidoDTO2)))
+                    .andExpect(MockMvcResultMatchers.status().isCreated());
+
+            // Act
+            MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get(URL_TEMPLATE))
+                    .andExpect(MockMvcResultMatchers.status().isOk())
+                    .andReturn();
+
+            // Assert
+            List<Pedido> pedidosEncontrados = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<List<Pedido>>() {});
+            assertEquals(2, pedidosEncontrados.size());
+
+            // Você pode adicionar mais verificações conforme necessário
+            assertTrue(pedidosEncontrados.stream().anyMatch(pedido -> pedido.getCodigoAcesso().equals(pedidoDTO1.getCodigoAcesso())));
+            assertTrue(pedidosEncontrados.stream().anyMatch(pedido -> pedido.getCodigoAcesso().equals(pedidoDTO2.getCodigoAcesso())));
+        }
+
+        @Test
+        @DisplayName("quando Listar Pedidos com ID Inválido então retorna Lista Vazia")
+        void quandoListarPedidosComIdInvalido() throws Exception {
+            // Arrange
+            List<Pizza> pizzas = List.of(pizzaM);
+
+            PedidoDTO pedidoDTO1 = PedidoDTO.builder()
+                    .codigoAcesso("123456")
+                    .clienteId(cliente.getId())
+                    .estabelecimentoId(estabelecimento.getId())
+                    .metodoPagamento("CARTAO_CREDITO")
+                    .enderecoEntrega("Rua Nova, 123")
+                    .pizzas(pizzas)
+                    .build();
+
+            PedidoDTO pedidoDTO2 = PedidoDTO.builder()
+                    .codigoAcesso("789012")
+                    .clienteId(cliente.getId())
+                    .estabelecimentoId(estabelecimento.getId())
+                    .metodoPagamento("PIX")
+                    .enderecoEntrega("Rua Velha, 456")
+                    .pizzas(pizzas)
+                    .build();
+
+            mockMvc.perform(MockMvcRequestBuilders.post(URL_TEMPLATE)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .param("clienteCodigoAcesso", cliente.getCodigoAcesso())
+                            .content(objectMapper.writeValueAsString(pedidoDTO1)))
+                    .andExpect(MockMvcResultMatchers.status().isCreated());
+
+            mockMvc.perform(MockMvcRequestBuilders.post(URL_TEMPLATE)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .param("clienteCodigoAcesso", cliente.getCodigoAcesso())
+                            .content(objectMapper.writeValueAsString(pedidoDTO2)))
+                    .andExpect(MockMvcResultMatchers.status().isCreated());
+
+            // Act //Assert
+            mockMvc.perform(MockMvcRequestBuilders.get(URL_TEMPLATE + "/999")
+                            .contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isNotFound());
+
+        }
 
     }
 
 }
+
+

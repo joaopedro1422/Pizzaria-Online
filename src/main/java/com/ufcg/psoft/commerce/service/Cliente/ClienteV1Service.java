@@ -116,20 +116,23 @@ public class ClienteV1Service implements ClienteService {
             throw new ClienteCodigoAcessoIncorretoException();
         }
         SaborPizza pizza = saborService.consultarSaborPizzaById(idPizza);
-        if ((!String.valueOf(pizza.getDisponibilidadeSabor()).equalsIgnoreCase("true"))){
-            if(!cliente.isSubscribed(pizza)) {
+        if (!String.valueOf(pizza.getDisponibilidadeSabor()).equalsIgnoreCase("true")) {
+            if (!cliente.isSubscribed(pizza)) {
                 cliente.subscribeTo(pizza);
                 clienteRepository.save(cliente);
                 saborService.salvarSaborPizzaCadastrado(pizza);
-            }else{
+
+                // Adicionando notificação dos observadores quando a pizza está disponível
+                if (pizza.getDisponibilidadeSabor()) {
+                    pizza.notifyObservers();
+                }
+            } else {
                 throw new SaborPizzaClienteCadastrado();
             }
         } else {
             throw new SaborPizzaEstaDisponivel();
-            }
         }
-
-
+    }
 
     private Cliente getClienteById(Long id) throws ClienteNaoEncontradoException {
         return clienteRepository.findById(id).orElseThrow(ClienteNaoEncontradoException::new);

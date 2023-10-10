@@ -422,6 +422,7 @@ public class ClienteControllerTests {
         }
 
     }
+
     @Nested
     @DisplayName("Demonstrar Interesse em Sabores Cliente")
     class DemonstrarInteresseClientes {
@@ -446,7 +447,7 @@ public class ClienteControllerTests {
                 cliente.subscribeTo(saborPizza);
 
                 //act
-            String resultadoStr = mockMvc.perform(MockMvcRequestBuilders.put(URL_TEMPLATE + "/" + cliente.getId() + "/" + "/codigoAcesso" + saborPizza.getIdPizza()))
+                mockMvc.perform(MockMvcRequestBuilders.put(URL_TEMPLATE + "/" + cliente.getId() + "/codigoAcesso/" + saborPizza.getIdPizza()))
                     .andExpect(status().isOk()) // 200
                     .andReturn().getResponse().getContentAsString();
                 // assert
