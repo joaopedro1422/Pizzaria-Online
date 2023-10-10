@@ -1,5 +1,6 @@
 package com.ufcg.psoft.commerce.model.Cliente;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ufcg.psoft.commerce.model.SaborPizza.SaborPizza;
 import lombok.AllArgsConstructor;
@@ -33,7 +34,9 @@ public class Cliente {
     @Column(nullable = false, name = "desc_endereco_cliente")
     private String endereco;
 
-    @OneToOne
+    @JsonBackReference
+    @ManyToOne
+    @JoinColumn(name = "saborPizza_pk_id")
     private SaborPizza subject = null; // instância dessa classe pode estar associada a uma única instância de SaborPizza
 
    /* verifica se o objeto atual (representado pela instância da classe que contém esse método)
@@ -54,7 +57,7 @@ public class Cliente {
    à variável subject desta instância
     */
     public void subscribeTo(SaborPizza subject) {
-        if(!isSubscribed(subject)){
+        if(!isSubscribed(subject) && subject.getDisponibilidadeSabor()==false){
             subject.register(this);
             this.subject = subject;
 
@@ -79,7 +82,7 @@ public class Cliente {
             System.out.println(this.nome + " você não está inscrito no sabor " + saborPizza.getSaborDaPizza());
             return;
         }
-        System.out.println(this.nome + ", a pizza de " + saborPizza.getSaborDaPizza() + " agora está " + saborPizza.getDisponibilidadeSabor() );
+        System.out.println(this.nome + ", a pizza de " + saborPizza.getSaborDaPizza() + " agora está disponivel" );
     }
 
 }

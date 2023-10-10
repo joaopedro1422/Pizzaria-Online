@@ -493,6 +493,7 @@ public class ClienteControllerTests {
             saborPizza.setDisponibilidadeSabor(false);
             saborPizza.setValorMedia(10.0);
             saborPizza.setValorGrande(15.0);
+            saborPizza.setObservers(new ArrayList<>());
 
             // ... Código para criar cliente e estabelecimento
 
@@ -509,6 +510,9 @@ public class ClienteControllerTests {
             // Act
             mockMvc.perform(MockMvcRequestBuilders.put(URL_TEMPLATE + "/" + cliente.getId() + "/codigoAcesso/" + saborPizza.getIdPizza()))
                     .andExpect(status().isOk()); // 200
+
+
+            assertEquals(1, saborPizza.observersSize());
         }
 
 

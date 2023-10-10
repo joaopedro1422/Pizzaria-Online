@@ -14,6 +14,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @Builder
@@ -48,4 +49,6 @@ public class SaborPostPutDTO {
     @NotNull(message = "Tipo de Sabor obrigatorio")
     private String tipoDeSabor;
 
+    @JsonProperty("observers")
+    private List<Cliente> observers;
 }

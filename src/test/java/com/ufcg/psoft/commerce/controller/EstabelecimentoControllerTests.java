@@ -933,6 +933,12 @@ public class EstabelecimentoControllerTests {
                     .codigoAcesso("123456")
                     .build();
 
+            Cliente clienteDois = Cliente.builder()
+                    .nome("Cliente2")
+                    .endereco("Rua velha, 123")
+                    .codigoAcesso("019999")
+                    .build();
+
             SaborPizza sabor1 = saborRepository.save(SaborPizza.builder()
                     .saborDaPizza("Calabresa")
                     .valorMedia(25.0)
@@ -947,12 +953,14 @@ public class EstabelecimentoControllerTests {
             estabelecimentoRepository.save(estabelecimento);
 
             clienteUm.subscribeTo(sabor1);
+            clienteDois.subscribeTo(sabor1);
+
 
             String responseJsonString = driver.perform(put(URI_ESTABELECIMENTOS + "/" + estabelecimento.getId()  + "/disponibilidade")
                             .contentType(MediaType.APPLICATION_JSON)
                             .param("idSaborPizza", sabor1.getIdPizza().toString())
                             .param("codigoAcesso", estabelecimento.getCodigoAcesso())
-                            .param("disponibilidade", "true")
+                            .param("disponibilidade", objectMapper.writeValueAsString(true))
                             .content(objectMapper.writeValueAsString(sabor1)))
                     .andExpect(status().isOk())
                     .andDo(print())
@@ -960,7 +968,10 @@ public class EstabelecimentoControllerTests {
 
             SaborResponseDTO resultado= objectMapper.readValue(responseJsonString, SaborResponseDTO.class);
 
-            assertTrue(false);
+            sabor1.notifyObservers();
+            assertEquals(2,sabor1.observersSize());
+
+
         }
     }
 

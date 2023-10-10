@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ufcg.psoft.commerce.enums.TipoDeSabor;
 import com.ufcg.psoft.commerce.model.Cliente.Cliente;
 import com.ufcg.psoft.commerce.model.Estabelecimento.Estabelecimento;
+import com.ufcg.psoft.commerce.repository.Cliente.ClienteRepository;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
@@ -12,6 +13,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +25,7 @@ import java.util.List;
 @Entity(name = "saboresPizza")
 @EqualsAndHashCode(of = {"saborDaPizza", "tipoDeSabor"})
 public class SaborPizza {
+
 
     @JsonProperty("idPizza")
     @Id
@@ -55,11 +58,16 @@ public class SaborPizza {
     @JoinColumn(name = "estabelecimento_pk_id")
     private Estabelecimento estabelecimento;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL)
     private List<Cliente> observers;
 
     public void register(Cliente observer) {
         this.observers.add(observer);
+    }
+
+    public int observersSize(){
+        return observers.size();
     }
 
     public void unregister(Cliente observer) {
@@ -68,7 +76,7 @@ public class SaborPizza {
         }
     }
     public void notifyObservers() {
-        if (disponibilidadeSabor != null && disponibilidadeSabor) {
+        if (disponibilidadeSabor != null) {
             for (Cliente c : observers) {
                 c.update(this);
             }
