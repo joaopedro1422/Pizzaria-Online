@@ -248,7 +248,7 @@ public class EstabelecimentoV1Service {
         return codigoAcesso.matches("[0-9]+") && codigoAcesso.length() == 6;
     }
 
-    public Estabelecimento alterarDisponibilidadeSaborPizza(Long idEstabelecimento,Long idSabor, String codigoAcesso, boolean disponibilidade){
+    public SaborPizza alterarDisponibilidadeSaborPizza(Long idEstabelecimento,Long idSabor, String codigoAcesso, boolean disponibilidade){
         Optional<Estabelecimento> estabelecimentoOptional = estabelecimentoRepository.findById(idEstabelecimento);
         if(!estabelecimentoOptional.isPresent()){
             throw new EstabelecimentoNaoEncontradoException();
@@ -256,9 +256,15 @@ public class EstabelecimentoV1Service {
         if(!isValidCodigoAcesso(codigoAcesso)){
             throw new CodigoAcessoInvalidoException();
         }
+
         Estabelecimento estabelecimento= estabelecimentoOptional.get();
         estabelecimento.setDisponibilidadeSabor(idSabor,disponibilidade);
-        return estabelecimentoRepository.save(estabelecimento);
+        SaborPizza sabor= estabelecimento.getSaborPizzaById(idSabor);
+        estabelecimentoRepository.save(estabelecimento);
+        if(disponibilidade==true){
+            sabor.notifyObservers();
+        }
+        return estabelecimento.getSaborPizzaById(idSabor);
     }
 
 }

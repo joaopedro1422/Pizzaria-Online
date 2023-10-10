@@ -8,6 +8,7 @@ import com.ufcg.psoft.commerce.dto.Estabelecimento.EstabelecimentoResponseDTO;
 import com.ufcg.psoft.commerce.dto.PizzaDTO.SaborResponseDTO;
 import com.ufcg.psoft.commerce.enums.TipoDeSabor;
 import com.ufcg.psoft.commerce.exception.CustomErrorType;
+import com.ufcg.psoft.commerce.model.Cliente.Cliente;
 import com.ufcg.psoft.commerce.model.Estabelecimento.Estabelecimento;
 import com.ufcg.psoft.commerce.model.SaborPizza.SaborPizza;
 import com.ufcg.psoft.commerce.repository.Estabelecimento.EstabelecimentoRepository;
@@ -20,6 +21,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -908,17 +910,57 @@ public class EstabelecimentoControllerTests {
                             .param("idSaborPizza", sabor1.getIdPizza().toString())
                             .param("codigoAcesso", estabelecimento.getCodigoAcesso())
                             .param("disponibilidade", "false")
-                            .content(objectMapper.writeValueAsString(estabelecimentoPostPutRequestDTO)))
+                            .content(objectMapper.writeValueAsString(sabor2)))
                     .andExpect(status().isOk())
                     .andDo(print())
                     .andReturn().getResponse().getContentAsString();
 
 
 
-            SaborResponseDTO resultado= objectMapper.readValue(responseJsonString, SaborResponseDTO.SaborResponseDTOBuilder.class).build();
-
+            SaborResponseDTO resultado= objectMapper.readValue(responseJsonString, SaborResponseDTO.class);
+            //o sabor2 como indisponivel e o sabor1 como disponivel
             assertFalse(resultado.getDisponibilidadeSabor());
+            assertTrue(sabor1.getDisponibilidadeSabor());
+        }
 
+        @Test
+        @DisplayName("Teste para notificaçao dos clientes interessados nos sabores indisponiveis")
+        public void notificarClientesInteressados() throws Exception{
+
+            Cliente clienteUm = Cliente.builder()
+                    .nome("Cliente1")
+                    .endereco("Rua Nova, 123")
+                    .codigoAcesso("123456")
+                    .build();
+
+            SaborPizza sabor1 = saborRepository.save(SaborPizza.builder()
+                    .saborDaPizza("Calabresa")
+                    .valorMedia(25.0)
+                    .valorGrande(35.0)
+                    .tipoDeSabor("salgado")
+                    .disponibilidadeSabor(false)
+                    .estabelecimento(estabelecimento)
+                    .observers(new ArrayList<>())
+                    .build());
+
+            estabelecimento.setSaboresPizza(Set.of(sabor1));
+            estabelecimentoRepository.save(estabelecimento);
+
+            clienteUm.subscribeTo(sabor1);
+
+            String responseJsonString = driver.perform(put(URI_ESTABELECIMENTOS + "/" + estabelecimento.getId()  + "/disponibilidade")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .param("idSaborPizza", sabor1.getIdPizza().toString())
+                            .param("codigoAcesso", estabelecimento.getCodigoAcesso())
+                            .param("disponibilidade", "true")
+                            .content(objectMapper.writeValueAsString(sabor1)))
+                    .andExpect(status().isOk())
+                    .andDo(print())
+                    .andReturn().getResponse().getContentAsString();
+
+            SaborResponseDTO resultado= objectMapper.readValue(responseJsonString, SaborResponseDTO.class);
+
+            assertTrue(false);
         }
     }
 

@@ -56,7 +56,7 @@ public class SaborPizza {
     private Estabelecimento estabelecimento;
 
     @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL)
-    private List<Cliente> observers = new ArrayList<>();
+    private List<Cliente> observers;
 
     public void register(Cliente observer) {
         this.observers.add(observer);

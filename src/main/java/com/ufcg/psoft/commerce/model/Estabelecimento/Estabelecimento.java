@@ -1,6 +1,7 @@
 package com.ufcg.psoft.commerce.model.Estabelecimento;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.ufcg.psoft.commerce.exception.Pizza.SaborPizzaNaoEncontradoException;
 import com.ufcg.psoft.commerce.model.Cliente.Cliente;
 import com.ufcg.psoft.commerce.model.Entregador.Entregador;
 import com.ufcg.psoft.commerce.model.SaborPizza.SaborPizza;
@@ -9,6 +10,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.xml.sax.SAXException;
 
 import java.util.Set;
 
@@ -91,12 +93,28 @@ public class Estabelecimento {
 
     }
 
-    public void setDisponibilidadeSabor(Long idSaborPizza, boolean disponibilidade){
+    public SaborPizza setDisponibilidadeSabor(Long idSaborPizza, boolean disponibilidade){
         for (SaborPizza sabor: saboresPizza) {
             if(sabor.getIdPizza().equals(idSaborPizza)){
                 sabor.setDisponibilidadeSabor(disponibilidade);
+                if(disponibilidade== true){
+                    sabor.notifyObservers();
+                }
+                return sabor;
             }
         }
+        throw new SaborPizzaNaoEncontradoException();
+
+    }
+
+    public SaborPizza getSaborPizzaById(Long id){
+        for (SaborPizza sabor: saboresPizza) {
+            if(sabor.getIdPizza().equals(id)){
+
+                return sabor;
+            }
+        }
+        throw new SaborPizzaNaoEncontradoException();
     }
 
     public Entregador associarEntregador(String codigoAcessoEntregador, String codigoAcessoEstabelecimento){

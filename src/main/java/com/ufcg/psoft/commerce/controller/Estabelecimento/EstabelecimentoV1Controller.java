@@ -316,6 +316,7 @@ public class EstabelecimentoV1Controller {
             @Valid @RequestParam("codigoAcesso") String codigoAcesso,
             @Valid @RequestParam("disponibilidade") boolean disponibilidade
     ){
+
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(estabelecimentov1Service.alterarDisponibilidadeSaborPizza(id,idSaborPizza,codigoAcesso,disponibilidade));
