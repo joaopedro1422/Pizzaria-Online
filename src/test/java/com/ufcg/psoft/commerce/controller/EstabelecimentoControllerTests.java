@@ -764,7 +764,7 @@ public class EstabelecimentoControllerTests {
 
             // Assert
             assertAll(
-                    () -> assertEquals("Codigo de acesso invalido", resultado.getMessage())
+                    () -> assertEquals("Erros de validacao encontrados", resultado.getMessage())
             );
         }
 

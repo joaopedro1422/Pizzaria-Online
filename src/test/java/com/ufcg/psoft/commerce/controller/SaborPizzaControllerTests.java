@@ -616,6 +616,14 @@ public class SaborPizzaControllerTests {
 		@DisplayName("Quando alteramos a disponibilidade de um sabor para true")
 		void quandoAlteramosDisponibilidadeSaborTrue() throws Exception {
 			// Arrange
+            sabor = saborRepository.save(SaborPizza.builder()
+                    .saborDaPizza("Calabresa")
+                    .tipoDeSabor("salgado")
+                    .valorMedia(10.0)
+                    .valorGrande(15.0)
+                    .disponibilidadeSabor(false)
+				    .estabelecimento(estabelecimento)
+                    .build());
 			sabor.setDisponibilidadeSabor(true);
 			saborRepository.save(sabor);
 			// Act

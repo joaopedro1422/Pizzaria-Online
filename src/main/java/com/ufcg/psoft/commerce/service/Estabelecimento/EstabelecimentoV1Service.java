@@ -209,17 +209,20 @@ public class EstabelecimentoV1Service {
         return resultado;
     }
 
-    public Set<SaborPizza> getCardapioDisponibilidade(Long id, String codigoAcesso,Boolean disponibilidade) {
+    public Set<SaborPizza> getCardapioDisponibilidade(Long id, String codigoAcesso, Boolean disponibilidade) {
         Estabelecimento e = estabelecimentoRepository.findById(id).orElseThrow(EstabelecimentoNaoEncontradoException::new);
-        if(codigoAcesso.equals(e.getCodigoAcesso())){
+
+        if (!codigoAcesso.equals(e.getCodigoAcesso())) {
             throw new CodigoAcessoInvalidoException();
         }
 
         Stream<SaborPizza> cardapioDisponibilidade = e.getSaboresPizza().stream().filter(
                 item -> item.getDisponibilidadeSabor() == disponibilidade
         );
+
         return cardapioDisponibilidade.collect(Collectors.toSet());
     }
+
 
     public Set<SaborPizza> getCardapioCompleto(Long id, String codigoAcesso) {
         Estabelecimento e = estabelecimentoRepository.findById(id).orElseThrow(EstabelecimentoNaoEncontradoException::new);
