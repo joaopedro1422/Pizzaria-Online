@@ -68,10 +68,11 @@ public class Cliente {
     e atribuindo null à variável subject.
     */
     public void unsubscribeFrom(SaborPizza subject) {
-        this.subject.unregister(this);
-        this.subject = null;
+        if (this.subject != null) {
+            this.subject.unregister(this);
+            this.subject = null;
+        }
     }
-
 
     public void update(SaborPizza saborPizza) {
         if(this.subject == null) {

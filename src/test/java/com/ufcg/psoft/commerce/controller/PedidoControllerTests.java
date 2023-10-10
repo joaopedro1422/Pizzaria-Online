@@ -53,7 +53,6 @@ public class PedidoControllerTests {
 
     Estabelecimento estabelecimento;
 
-
     @Autowired
     MockMvc mockMvc;
 

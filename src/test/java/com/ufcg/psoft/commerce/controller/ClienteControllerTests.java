@@ -2,7 +2,11 @@ package com.ufcg.psoft.commerce.controller;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.ufcg.psoft.commerce.dto.ClienteDTO.ClienteDTO;
+import com.ufcg.psoft.commerce.dto.PedidoDTO.PedidoDTO;
+import com.ufcg.psoft.commerce.dto.PizzaDTO.SaborPostPutDTO;
+import com.ufcg.psoft.commerce.enums.TamanhoPizza;
 import com.ufcg.psoft.commerce.enums.TipoDeSabor;
 import com.ufcg.psoft.commerce.exception.Cliente.ClienteCodigoAcessoIncorretoException;
 import com.ufcg.psoft.commerce.exception.Cliente.ClienteCodigoAcessoInvalidoException;
@@ -10,8 +14,13 @@ import com.ufcg.psoft.commerce.exception.Cliente.ClienteNaoEncontradoException;
 import com.ufcg.psoft.commerce.exception.CustomErrorType;
 import com.ufcg.psoft.commerce.exception.Pizza.SaborPizzaEstaDisponivel;
 import com.ufcg.psoft.commerce.model.Cliente.Cliente;
+import com.ufcg.psoft.commerce.model.Entregador.Entregador;
+import com.ufcg.psoft.commerce.model.Estabelecimento.Estabelecimento;
+import com.ufcg.psoft.commerce.model.SaborPizza.Pizza;
 import com.ufcg.psoft.commerce.model.SaborPizza.SaborPizza;
 import com.ufcg.psoft.commerce.repository.Cliente.ClienteRepository;
+import com.ufcg.psoft.commerce.repository.Estabelecimento.EstabelecimentoRepository;
+import com.ufcg.psoft.commerce.repository.Pizza.SaborRepository;
 import com.ufcg.psoft.commerce.service.Cliente.ClienteService;
 import com.ufcg.psoft.commerce.service.Cliente.ClienteV1Service;
 import com.ufcg.psoft.commerce.service.Pizza.SaborService;
@@ -27,9 +36,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
 import static org.junit.jupiter.api.Assertions.*;
@@ -63,9 +70,59 @@ public class ClienteControllerTests {
     @Autowired
     SaborService saborService;
 
+    @Autowired
+    SaborRepository saborRepository;
+
+    @Autowired
+    EstabelecimentoRepository estabelecimentoRepository;
+
+    PedidoDTO pedidoDTO;
+
+    Estabelecimento estabelecimento;
+
+    SaborPostPutDTO saborPostPutDTO;
+
+    SaborPizza sabor;
+
+    Cliente cliente;
+
+    Pizza pizzaM;
+
+
     @BeforeEach
     void setup() {
-        clienteRepository.deleteAll();
+
+
+        Set<SaborPizza> cardapio = new HashSet<>();
+        Set<Entregador> entregadores = new HashSet<>();
+
+        objectMapper.registerModule(new JavaTimeModule());
+        estabelecimento = estabelecimentoRepository.save(Estabelecimento.builder()
+                .nome("bia")
+                .saboresPizza(cardapio)
+                .entregadores(entregadores)
+                .codigoAcesso("65431")
+                .build());
+        sabor = saborRepository.save(SaborPizza.builder()
+                .saborDaPizza("Calabresa")
+                .tipoDeSabor("salgado")
+                .valorMedia(10.0)
+                .valorGrande(15.0)
+                .disponibilidadeSabor(true)
+                .estabelecimento(estabelecimento)
+                .build());
+        saborPostPutDTO = SaborPostPutDTO.builder()
+                .saborDaPizza(sabor.getSaborDaPizza())
+                .tipoDeSabor(sabor.getTipoDeSabor())
+                .valorMedia(sabor.getValorMedia())
+                .valorGrande(sabor.getValorGrande())
+                .disponibilidadeSabor(sabor.getDisponibilidadeSabor())
+                .build();
+
+        pizzaM = Pizza.builder()
+                .sabor1(sabor)
+                .tamanho(TamanhoPizza.MEDIA)
+                .build();clienteRepository.deleteAll();
     }
 
     @AfterEach
@@ -429,30 +486,33 @@ public class ClienteControllerTests {
         @Test
         @DisplayName("quando o cliente demonstrar interesse apenas em sabores indisponiveis")
         void quandoDemonstrarInteresseSaborIndisponivel() throws Exception {
-                // Arrange
-                SaborPizza saborPizza = new SaborPizza();
-                saborPizza.setSaborDaPizza("chocolate");
-                saborPizza.setTipoDeSabor("DOCE");
-                saborPizza.setDisponibilidadeSabor(false);
-                saborPizza.setValorMedia(10.0);
-                saborPizza.setValorGrande(15.0);
-                saborPizza.getIdPizza();
+            // Arrange
+            SaborPizza saborPizza = new SaborPizza();  // Declaração do objeto SaborPizza
+            saborPizza.setSaborDaPizza("chocolate");
+            saborPizza.setTipoDeSabor("DOCE");
+            saborPizza.setDisponibilidadeSabor(false);
+            saborPizza.setValorMedia(10.0);
+            saborPizza.setValorGrande(15.0);
 
-                Cliente cliente = new Cliente();
-                cliente.setNome("ana");
-                cliente.setCodigoAcesso("123456");
-                cliente.setEndereco("rua");
+            // ... Código para criar cliente e estabelecimento
 
-                // Simulando o cliente já inscrito em uma pizza
-                cliente.subscribeTo(saborPizza);
+            List<Pizza> pizzas = List.of(pizzaM);
 
-                //act
-                mockMvc.perform(MockMvcRequestBuilders.put(URL_TEMPLATE + "/" + cliente.getId() + "/codigoAcesso/" + saborPizza.getIdPizza()))
-                    .andExpect(status().isOk()) // 200
-                    .andReturn().getResponse().getContentAsString();
-                // assert
+            Cliente cliente = new Cliente();
+            cliente.setNome("ana");
+            cliente.setCodigoAcesso("123456");
+            cliente.setEndereco("rua");
 
+            // Simulando o cliente já inscrito em uma pizza
+            cliente.subscribeTo(saborPizza);
+
+            // Act
+            mockMvc.perform(MockMvcRequestBuilders.put(URL_TEMPLATE + "/" + cliente.getId() + "/codigoAcesso/" + saborPizza.getIdPizza()))
+                    .andExpect(status().isOk()); // 200
         }
+
+
+
     }
 
 

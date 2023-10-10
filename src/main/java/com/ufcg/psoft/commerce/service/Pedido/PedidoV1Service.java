@@ -211,32 +211,6 @@ public class PedidoV1Service implements PedidoService{
     }
 
 
-//    private Cliente getClienteByCodigoAcesso(String codigoAcesso) {
-//        Optional<Cliente> clienteOptional = clienteRepository.findByCodigoAcesso(codigoAcesso);
-//        if (clienteOptional.isPresent()) {
-//            return clienteOptional.get();
-//        } else {
-//            throw new ClienteNaoEncontradoException();
-//        }
-//    }
-//
-//    private List<Pizza> getPizzasByIds(List<Long> pizzaIds) {
-//        List<Pizza> pizzas = new ArrayList<>();
-//
-//        for (Long pizzaId : pizzaIds) {
-//            Optional<Pizza> pizzaOptional = pizzaRepository.findById(pizzaId);
-//            if (pizzaOptional.isPresent()) {
-//                Pizza pizza = pizzaOptional.get();
-//                pizzas.add(pizza);
-//            } else {
-//                throw new SaborPizzaNaoEncontradoException();
-//            }
-//        }
-//
-//        return pizzas;
-//    }
-
-
     private double calcularValorTotal(List<Pizza> pizzas) {
         double valorTotal = 0.0;
 

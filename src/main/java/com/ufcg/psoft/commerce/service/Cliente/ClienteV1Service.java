@@ -115,7 +115,14 @@ public class ClienteV1Service implements ClienteService {
         if (!cliente.getCodigoAcesso().equals(codigoAcesso)) {
             throw new ClienteCodigoAcessoIncorretoException();
         }
+
+        // Correção: Verifica se idPizza é nulo antes de tentar consultar
+        if (idPizza == null) {
+            throw new IllegalArgumentException("O ID da pizza não pode ser nulo.");
+        }
+
         SaborPizza pizza = saborService.consultarSaborPizzaById(idPizza);
+
         if (!String.valueOf(pizza.getDisponibilidadeSabor()).equalsIgnoreCase("true")) {
             if (!cliente.isSubscribed(pizza)) {
                 cliente.subscribeTo(pizza);
@@ -133,6 +140,7 @@ public class ClienteV1Service implements ClienteService {
             throw new SaborPizzaEstaDisponivel();
         }
     }
+
 
     private Cliente getClienteById(Long id) throws ClienteNaoEncontradoException {
         return clienteRepository.findById(id).orElseThrow(ClienteNaoEncontradoException::new);
