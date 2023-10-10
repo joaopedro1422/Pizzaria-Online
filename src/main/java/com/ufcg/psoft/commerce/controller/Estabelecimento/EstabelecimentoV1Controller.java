@@ -14,6 +14,7 @@ import com.ufcg.psoft.commerce.model.Entregador.Entregador;
 import com.ufcg.psoft.commerce.model.Estabelecimento.Estabelecimento;
 import com.ufcg.psoft.commerce.model.Pedido.Pedido;
 import com.ufcg.psoft.commerce.service.Estabelecimento.EstabelecimentoV1Service;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
@@ -306,6 +307,18 @@ public class EstabelecimentoV1Controller {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(estabelecimentov1Service.listarCardapioPorTipoDePizza(id,codigoAcesso,tipo));
+    }
+
+    @PutMapping("{id}/disponibilidade")
+    ResponseEntity<?> alterarDisponibilidadeSaborCardapio(
+            @Valid @PathVariable("id") Long id,
+            @Valid @RequestParam("idSaborPizza") Long idSaborPizza,
+            @Valid @RequestParam("codigoAcesso") String codigoAcesso,
+            @Valid @RequestParam("disponibilidade") boolean disponibilidade
+    ){
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(estabelecimentov1Service.alterarDisponibilidadeSaborPizza(id,idSaborPizza,codigoAcesso,disponibilidade));
     }
 
 
