@@ -323,6 +323,8 @@ public class EstabelecimentoV1Controller {
     }
 
 
+
+
     /*
     US11
     Eu, enquanto estabelecimento, quero disponibilizar diferentes meios de pagamento para os pedidos, tal que cada meio de pagamento também gere descontos distintos.

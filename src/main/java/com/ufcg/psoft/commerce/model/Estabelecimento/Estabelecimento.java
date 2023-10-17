@@ -1,16 +1,18 @@
 package com.ufcg.psoft.commerce.model.Estabelecimento;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.ufcg.psoft.commerce.exception.Entregador.NaoHaEntregadoresDisponiveisException;
+import com.ufcg.psoft.commerce.exception.Pedido.PedidoNaoEncontradoException;
 import com.ufcg.psoft.commerce.exception.Pizza.SaborPizzaNaoEncontradoException;
 import com.ufcg.psoft.commerce.model.Cliente.Cliente;
 import com.ufcg.psoft.commerce.model.Entregador.Entregador;
+import com.ufcg.psoft.commerce.model.Pedido.Pedido;
 import com.ufcg.psoft.commerce.model.SaborPizza.SaborPizza;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.xml.sax.SAXException;
 
 import java.util.Set;
 
@@ -42,6 +44,9 @@ public class Estabelecimento {
     @OneToMany(cascade=CascadeType.PERSIST)
     private Set<Cliente> clientes;
 
+    @OneToMany(mappedBy = "estabelecimento",cascade = {CascadeType.REMOVE,CascadeType.MERGE,CascadeType.PERSIST}, fetch = FetchType.EAGER)
+    private Set<Pedido> pedidos ;
+
 
     @OneToMany(cascade=CascadeType.PERSIST)
     private Set<Entregador> entregadores;
@@ -70,6 +75,15 @@ public class Estabelecimento {
         }
 
         return cliente;
+    }
+
+    public Entregador getEntregadorDisponivel() {
+        for(Entregador entregador: entregadores){
+            if (entregador.isDisponibilidade()){
+                return entregador;
+            }
+        }
+        throw new NaoHaEntregadoresDisponiveisException();
 
     }
 
@@ -91,6 +105,15 @@ public class Estabelecimento {
         }
         return entregadorEncontrado;
 
+    }
+
+    public Pedido getPedido(Long idPedido){
+        for(Pedido pedido: pedidos){
+            if(pedido.getId().equals(idPedido)){
+                return pedido;
+            }
+        }
+        throw new PedidoNaoEncontradoException();
     }
 
     public SaborPizza setDisponibilidadeSabor(Long idSaborPizza, boolean disponibilidade){

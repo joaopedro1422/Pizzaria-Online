@@ -22,4 +22,6 @@ public interface ClienteService {
     boolean validarCodigoAcesso(Long id, String codigoAcesso) throws ClienteCodigoAcessoIncorretoException, ClienteNaoEncontradoException;
      void demonstrarInteressePizza(Long id, String codigoAcesso, Long idPizza);
 
+     public boolean confirmarEntrega(Long idPedido);
+
 }

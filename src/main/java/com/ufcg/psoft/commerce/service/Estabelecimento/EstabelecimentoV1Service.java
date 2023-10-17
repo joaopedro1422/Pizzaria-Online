@@ -3,6 +3,7 @@ package com.ufcg.psoft.commerce.service.Estabelecimento;
 import com.ufcg.psoft.commerce.dto.Estabelecimento.EstabelecimentoPostPutRequestDTO;
 import com.ufcg.psoft.commerce.dto.PizzaDTO.SaborResponseDTO;
 import com.ufcg.psoft.commerce.enums.MetodoPagamento;
+import com.ufcg.psoft.commerce.enums.StatusPedido;
 import com.ufcg.psoft.commerce.enums.TipoDeSabor;
 import com.ufcg.psoft.commerce.exception.Cliente.ClienteCodigoAcessoInvalidoException;
 import com.ufcg.psoft.commerce.exception.Estabelecimento.CodigoAcessoEstabelecimentoException;
@@ -10,12 +11,15 @@ import com.ufcg.psoft.commerce.exception.Estabelecimento.CodigoAcessoInvalidoExc
 import com.ufcg.psoft.commerce.exception.Estabelecimento.EstabelecimentoNaoEncontradoException;
 import com.ufcg.psoft.commerce.exception.Pedido.PedidoCodigoAcessoIncorretoException;
 import com.ufcg.psoft.commerce.exception.Pizza.TipoDeSaborNaoExisteException;
+import com.ufcg.psoft.commerce.model.Cliente.Cliente;
 import com.ufcg.psoft.commerce.model.Entregador.Entregador;
 import com.ufcg.psoft.commerce.model.Estabelecimento.Estabelecimento;
 import com.ufcg.psoft.commerce.model.Pedido.Pedido;
 import com.ufcg.psoft.commerce.model.SaborPizza.SaborPizza;
 import com.ufcg.psoft.commerce.repository.Estabelecimento.EstabelecimentoRepository;
 import com.ufcg.psoft.commerce.repository.Pedido.PedidoRepository;
+import com.ufcg.psoft.commerce.service.Cliente.ClienteService;
+import com.ufcg.psoft.commerce.service.Cliente.ClienteV1Service;
 import com.ufcg.psoft.commerce.util.GerarCodigoAcessoEstabelecimento;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +38,9 @@ public class EstabelecimentoV1Service {
 
     @Autowired
     private PedidoRepository pedidoRepository;
+
+
+
 
     @Bean
     private ModelMapper mapeadorEstabelecimento(){
@@ -266,5 +273,45 @@ public class EstabelecimentoV1Service {
         }
         return estabelecimento.getSaborPizzaById(idSabor);
     }
+
+    public void confirmarPreparacaoPedido(Long id,String codigoAcesso,Long idPedido){
+        Estabelecimento estabelecimento= estabelecimentoRepository.findById(id).orElseThrow(EstabelecimentoNaoEncontradoException::new);
+        Pedido pedidoAtual= estabelecimento.getPedido(idPedido);
+        if(!isValidCodigoAcesso(codigoAcesso)){
+            throw new CodigoAcessoInvalidoException();
+        }
+        if (estabelecimento.getCodigoAcesso().equals(codigoAcesso)){
+            pedidoAtual.setStatus(StatusPedido.PEDIDO_PRONTO);
+            pedidoRepository.save(pedidoAtual);
+        }
+        else{
+            throw new CodigoAcessoEstabelecimentoException();
+        }
+
+    }
+
+    public void atribuirPedidoAEntregador(Long id, String codigoAcesso, Long idPedido){
+        Estabelecimento estabelecimento= estabelecimentoRepository.findById(id).orElseThrow(EstabelecimentoNaoEncontradoException::new);
+        Pedido pedidoAtual= estabelecimento.getPedido(idPedido);
+        if(!isValidCodigoAcesso(codigoAcesso)){
+            throw new CodigoAcessoInvalidoException();
+        }
+        if (estabelecimento.getCodigoAcesso().equals(codigoAcesso)){
+            Entregador entregadorPedido=estabelecimento.getEntregadorDisponivel();
+            pedidoAtual.setEntregador(entregadorPedido);
+            pedidoAtual.setStatus(StatusPedido.PEDIDO_EM_ROTA);
+            pedidoRepository.save(pedidoAtual);
+        }
+
+        else{
+            throw new CodigoAcessoEstabelecimentoException();
+        }
+
+
+    }
+
+
+
+
 
 }

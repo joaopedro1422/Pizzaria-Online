@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ufcg.psoft.commerce.dto.validators.CodigoAcessoConstraint;
+import com.ufcg.psoft.commerce.enums.StatusPedido;
 import com.ufcg.psoft.commerce.model.SaborPizza.Pizza;
 
 import jakarta.validation.constraints.NotBlank;
@@ -42,6 +43,9 @@ public class PedidoDTO {
     @JsonProperty("metodoPagamento")
     @NotBlank(message = "O método de pagamento não pode estar em branco/Inválido")
     private String metodoPagamento;
+
+    @JsonProperty("status")
+    private StatusPedido statusPedido;
 
 
 }

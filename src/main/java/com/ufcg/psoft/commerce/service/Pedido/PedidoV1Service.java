@@ -86,7 +86,7 @@ public class PedidoV1Service implements PedidoService{
                 .enderecoEntrega(enderecoEntrega)
                 .metodoPagamento(MetodoPagamento.valueOf(pedidoDTO.getMetodoPagamento()))
                 .valorTotal(valorTotal)
-                .status(StatusPedido.AGUARDANDO_PAGAMENTO)
+                .status(StatusPedido.PEDIDO_RECEBIDO)
                 .build();
 
         // Setando o atributo pedido da classe Pizza, pois a pizza precisa guardar a informação
@@ -184,7 +184,7 @@ public class PedidoV1Service implements PedidoService{
             throw new PedidoCodigoAcessoIncorretoException();
         }
 
-        StatusPedido statusPedido = StatusPedido.PAGAMENTO_CONFIRMADO;
+        StatusPedido statusPedido = StatusPedido.PEDIDO_EM_PREPARO;
         pedido.setStatus(statusPedido);
 
         MetodoPagamento metodoPagamento = MetodoPagamento.valueOf(metodoPagamentoStr);

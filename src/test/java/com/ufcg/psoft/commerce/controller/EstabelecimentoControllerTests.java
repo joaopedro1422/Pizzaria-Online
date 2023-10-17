@@ -1,25 +1,34 @@
 package com.ufcg.psoft.commerce.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.ufcg.psoft.commerce.dto.ClienteDTO.ClienteDTO;
 import com.ufcg.psoft.commerce.dto.Estabelecimento.EstabelecimentoPostPutRequestDTO;
 import com.ufcg.psoft.commerce.dto.Estabelecimento.EstabelecimentoResponseDTO;
+import com.ufcg.psoft.commerce.dto.PedidoDTO.PedidoDTO;
+import com.ufcg.psoft.commerce.dto.PizzaDTO.SaborPostPutDTO;
 import com.ufcg.psoft.commerce.dto.PizzaDTO.SaborResponseDTO;
-import com.ufcg.psoft.commerce.enums.TipoDeSabor;
+import com.ufcg.psoft.commerce.enums.MetodoPagamento;
+import com.ufcg.psoft.commerce.enums.TamanhoPizza;
 import com.ufcg.psoft.commerce.exception.CustomErrorType;
 import com.ufcg.psoft.commerce.model.Cliente.Cliente;
 import com.ufcg.psoft.commerce.model.Estabelecimento.Estabelecimento;
+import com.ufcg.psoft.commerce.model.Pedido.Pedido;
+import com.ufcg.psoft.commerce.model.SaborPizza.Pizza;
 import com.ufcg.psoft.commerce.model.SaborPizza.SaborPizza;
+import com.ufcg.psoft.commerce.repository.Cliente.ClienteRepository;
 import com.ufcg.psoft.commerce.repository.Estabelecimento.EstabelecimentoRepository;
+import com.ufcg.psoft.commerce.repository.Pedido.PedidoRepository;
 import com.ufcg.psoft.commerce.repository.Pizza.SaborRepository;
-import jakarta.validation.constraints.AssertFalse;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,10 +48,19 @@ public class EstabelecimentoControllerTests {
     MockMvc driver;
     final String URI_ESTABELECIMENTOS = "/estabelecimentos";
 
+    final String URI_PEDIDOS= "/v1/pedidos";
+
     @Autowired
     EstabelecimentoRepository estabelecimentoRepository;
     @Autowired
     SaborRepository saborRepository;
+
+    @Autowired
+    ClienteRepository clienteRepository;
+
+    @Autowired
+    PedidoRepository pedidoRepository;
+
 
     EstabelecimentoPostPutRequestDTO estabelecimentoPostPutRequestDTO;
 
@@ -50,17 +68,33 @@ public class EstabelecimentoControllerTests {
 
     Estabelecimento estabelecimento;
 
+    PedidoDTO pedidoDTO;
+
+    SaborPostPutDTO saborPostPutDTO;
+
+    SaborPizza sabor;
+
+    Pedido pedido;
+
+    Cliente cliente;
+
+    Pizza pizzaM;
+
     @BeforeEach
     void setup() {
         objectMapper.registerModule(new JavaTimeModule());
         estabelecimento = estabelecimentoRepository.save(Estabelecimento.builder()
                 .codigoAcesso("123456")
                 .build());
+
+
     }
 
     @AfterEach
     void tearDown() {
         estabelecimentoRepository.deleteAll();
+        pedidoRepository.deleteAll();
+        clienteRepository.deleteAll();
     }
 
     @Nested
@@ -975,4 +1009,14 @@ public class EstabelecimentoControllerTests {
         }
     }
 
+    @Nested
+    @DisplayName("Conjunto de testes para atualizaçoes do status do pedido")
+    class statusPedido {
+        @Test
+        @DisplayName("Quando um pedido for criado, seu status devera indicar que o pedido foi recebido pelo estabelecimento")
+        public void pedidoRecebido() throws Exception {
+
+
+        }
+    }
 }

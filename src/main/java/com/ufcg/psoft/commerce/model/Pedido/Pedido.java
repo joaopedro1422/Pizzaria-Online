@@ -35,7 +35,7 @@ public class Pedido {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false, name = "pk_id_pedido")
-    private long id;
+    private Long id;
 
     @JsonProperty("codigoAcesso")
     @Column(nullable = false, name = "desc_codigoAcesso_pedido")

@@ -1,14 +1,20 @@
 package com.ufcg.psoft.commerce.service.Cliente;
 
 import com.ufcg.psoft.commerce.dto.ClienteDTO.ClienteDTO;
+import com.ufcg.psoft.commerce.enums.StatusPedido;
 import com.ufcg.psoft.commerce.exception.Cliente.ClienteCodigoAcessoIncorretoException;
 import com.ufcg.psoft.commerce.exception.Cliente.ClienteCodigoAcessoInvalidoException;
 import com.ufcg.psoft.commerce.exception.Cliente.ClienteNaoEncontradoException;
+import com.ufcg.psoft.commerce.exception.Estabelecimento.EstabelecimentoNaoEncontradoException;
+import com.ufcg.psoft.commerce.exception.Pedido.PedidoNaoEncontradoException;
 import com.ufcg.psoft.commerce.exception.Pizza.SaborPizzaClienteCadastrado;
 import com.ufcg.psoft.commerce.exception.Pizza.SaborPizzaEstaDisponivel;
 import com.ufcg.psoft.commerce.model.Cliente.Cliente;
+import com.ufcg.psoft.commerce.model.Estabelecimento.Estabelecimento;
+import com.ufcg.psoft.commerce.model.Pedido.Pedido;
 import com.ufcg.psoft.commerce.model.SaborPizza.SaborPizza;
 import com.ufcg.psoft.commerce.repository.Cliente.ClienteRepository;
+import com.ufcg.psoft.commerce.repository.Pedido.PedidoRepository;
 import com.ufcg.psoft.commerce.service.Estabelecimento.EstabelecimentoV1Service;
 import com.ufcg.psoft.commerce.service.Pizza.SaborService;
 import org.modelmapper.ModelMapper;
@@ -28,6 +34,9 @@ public class ClienteV1Service implements ClienteService {
 
     @Autowired
     private SaborService saborService;
+
+    @Autowired
+    private PedidoRepository pedidoRepository;
 
 
     @Autowired
@@ -148,6 +157,14 @@ public class ClienteV1Service implements ClienteService {
 
     private boolean isValidCodigoAcesso(String codigoAcesso) {
         return codigoAcesso.matches("[0-9]+") && codigoAcesso.length() == 6;
+    }
+
+    @Override
+    public boolean confirmarEntrega(Long idPedido){
+        Pedido pedido = pedidoRepository.findById(idPedido).orElseThrow(PedidoNaoEncontradoException::new);
+        pedido.setStatus(StatusPedido.PEDIDO_ENTREGUE);
+        pedidoRepository.save(pedido);
+        return true;
     }
 
 
