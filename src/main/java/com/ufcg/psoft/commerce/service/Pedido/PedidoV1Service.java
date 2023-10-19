@@ -74,17 +74,15 @@ public class PedidoV1Service implements PedidoService{
             enderecoEntrega = cliente.getEndereco();
         }
 
-        if (!isValidMetodoPagamento(pedidoDTO.getMetodoPagamento())) {
-            throw new MetodoPagamentoInvalidoException();
-        }
+
 
         Pedido pedido = Pedido.builder()
-                .codigoAcesso(codigoAcesso)
-                .cliente(cliente)
-                .estabelecimento(estabelecimento)
+                .codigoAcesso("123456")
+                .cliente(cliente.getId())
+                .estabelecimento(estabelecimento.getId())
                 .pizzas(pizzas)
                 .enderecoEntrega(enderecoEntrega)
-                .metodoPagamento(MetodoPagamento.valueOf(pedidoDTO.getMetodoPagamento()))
+                .metodoPagamento(pedidoDTO.getMetodoPagamento())
                 .valorTotal(valorTotal)
                 .status(StatusPedido.PEDIDO_RECEBIDO)
                 .build();
@@ -131,13 +129,10 @@ public class PedidoV1Service implements PedidoService{
         }
 
         // Atualizar método de pagamento, se necessário
-        if (pedidoDTO.getMetodoPagamento() != null && !pedidoDTO.getMetodoPagamento().isEmpty()) {
-            // Verificar se o método de pagamento é válido
-            if (!isValidMetodoPagamento(pedidoDTO.getMetodoPagamento())) {
-                throw new MetodoPagamentoInvalidoException();
-            }
+        if (pedidoDTO.getMetodoPagamento() != null) {
 
-            pedidoExistente.setMetodoPagamento(MetodoPagamento.valueOf(pedidoDTO.getMetodoPagamento()));
+
+            pedidoExistente.setMetodoPagamento(pedidoDTO.getMetodoPagamento());
         }
 
 
@@ -168,7 +163,7 @@ public class PedidoV1Service implements PedidoService{
     }
 
     @Override
-    public void confirmarPagamento(Long id, String metodoPagamentoStr, String codigoAcesso)
+    public Pedido confirmarPagamento(Long id, MetodoPagamento metodoPagamentoStr, String codigoAcesso)
             throws PedidoNaoEncontradoException, PedidoCodigoAcessoIncorretoException {
         Pedido pedido = getPedido(id);
 
@@ -176,21 +171,14 @@ public class PedidoV1Service implements PedidoService{
             throw new PedidoNaoEncontradoException();
         }
 
-        if (!isValidMetodoPagamento(metodoPagamentoStr)) {
-            throw new PedidoMetodoPagamentoInvalidoException();
-        }
-
-        if (!codigoAcesso.equals(pedido.getCliente())) {
-            throw new PedidoCodigoAcessoIncorretoException();
-        }
-
         StatusPedido statusPedido = StatusPedido.PEDIDO_EM_PREPARO;
         pedido.setStatus(statusPedido);
 
-        MetodoPagamento metodoPagamento = MetodoPagamento.valueOf(metodoPagamentoStr);
+        MetodoPagamento metodoPagamento =metodoPagamentoStr;
         pedido.setMetodoPagamento(metodoPagamento);
 
         pedidoRepository.save(pedido);
+        return pedido;
     }
 
     @Override
@@ -231,6 +219,7 @@ public class PedidoV1Service implements PedidoService{
         }
         return false;
     }
+
 
 
 }

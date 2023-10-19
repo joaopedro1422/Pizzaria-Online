@@ -2,6 +2,7 @@ package com.ufcg.psoft.commerce.model.Entregador;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import com.ufcg.psoft.commerce.model.Estabelecimento.Estabelecimento;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

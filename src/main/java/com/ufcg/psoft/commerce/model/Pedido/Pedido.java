@@ -35,21 +35,19 @@ public class Pedido {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false, name = "pk_id_pedido")
-    private Long id;
+    private long id;
 
     @JsonProperty("codigoAcesso")
     @Column(nullable = false, name = "desc_codigoAcesso_pedido")
     private String codigoAcesso;
 
-    @JsonProperty("cliente")
-    @ManyToOne
+    @JsonProperty("clienteId")
     @JoinColumn(name = "fk_id_cliente")
-    private Cliente cliente;
+    private Long cliente;
 
-    @JsonProperty("estabelecimento")
-    @ManyToOne
+    @JsonProperty("estabelecimentoId")
     @JoinColumn(name = "fk_id_estabelecimento")
-    private Estabelecimento estabelecimento;
+    private Long estabelecimento;
 
     @JsonProperty("entregador")
     @ManyToOne

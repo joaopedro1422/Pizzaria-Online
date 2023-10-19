@@ -46,6 +46,7 @@ class AssociacaoControllerTests {
     @Autowired
     EstabelecimentoRepository estabelecimentoV1Repository;
 
+
     Entregador entregador;
 
     Estabelecimento estabelecimento;
@@ -62,8 +63,11 @@ class AssociacaoControllerTests {
                 .corVeiculo("Branco")
                 .tipoVeiculo("Carro")
                 .codigoAcesso("123456")
+                .isDisponibilidade(true)
                 .build()
         );
+
+
         estabelecimento = estabelecimentoV1Repository.save(Estabelecimento.builder()
                 .codigoAcesso("654321")
                 .build()
@@ -189,6 +193,7 @@ class AssociacaoControllerTests {
             associacaoRepository.save(Associacao.builder()
                     .entregadorId(entregador.getId())
                     .estabelecimentoId(estabelecimento.getId())
+                            .codigoAcesso(entregador.getCodigoAcesso())
                     .status(false)
                     .build()
             );
@@ -202,14 +207,16 @@ class AssociacaoControllerTests {
             // Act
             String responseJsonString = driver.perform(put(URI_ASSOCIACAO)
                             .contentType(MediaType.APPLICATION_JSON)
-                            .param("entregadorId", entregador.getId().toString())
-                            .param("estabelecimentoId", estabelecimento.getId().toString())
-                            .param("codigoAcesso", estabelecimento.getCodigoAcesso()))
-                    .andExpect(status().isOk())
-                    .andDo(print())
-                    .andReturn().getResponse().getContentAsString();
+                            .param("codigoAcesso", estabelecimento.getCodigoAcesso())
+                            .param("idAssociacao", String.valueOf(1)))
+                            .andExpect(status().isOk())
+                            .andDo(print())
+                            .andReturn().getResponse().getContentAsString();
 
             Associacao resultado = objectMapper.readValue(responseJsonString, Associacao.AssociacaoBuilder.class).build();
+
+            Estabelecimento estab= estabelecimentoV1Repository.findById(resultado.getEstabelecimentoId()).get();
+
 
             // Assert
             assertAll(
@@ -219,64 +226,15 @@ class AssociacaoControllerTests {
         }
 
         @Test
-        @DisplayName("Quando aprovamos uma associacao com entregador inexistente")
-        void quandoAprovamosAssociacaoComEntregadorInexistente() throws Exception {
+        @DisplayName("Quando aprovamos uma associacao com codigo de acesso invalido")
+        void quandoAprovamosAssociacaoComCodigoAcessoInvalido() throws Exception {
             // Arrange
 
             // Act
             String responseJsonString = driver.perform(put(URI_ASSOCIACAO)
                             .contentType(MediaType.APPLICATION_JSON)
-                            .param("entregadorId", "9999")
-                            .param("estabelecimentoId", estabelecimento.getId().toString())
-                            .param("codigoAcesso", entregador.getCodigoAcesso()))
-                    .andExpect(status().isBadRequest())
-                    .andDo(print())
-                    .andReturn().getResponse().getContentAsString();
-
-            CustomErrorType resultado = objectMapper.readValue(responseJsonString, CustomErrorType.class);
-
-            // Assert
-            assertAll(
-                    () -> assertEquals(1, associacaoRepository.count()),
-                    () -> assertEquals("O entregador consultado nao existe!", resultado.getMessage())
-            );
-        }
-
-        @Test
-        @DisplayName("Quando aprovamos uma associacao com estabelecimento inexistente")
-        void quandoAprovamosAssociacaoComEstabelecimentoInexistente() throws Exception {
-            // Arrange
-
-            // Act
-            String responseJsonString = driver.perform(put(URI_ASSOCIACAO)
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .param("entregadorId", entregador.getId().toString())
-                            .param("codigoAcesso", entregador.getCodigoAcesso())
-                            .param("estabelecimentoId", "9999"))
-                    .andExpect(status().isBadRequest())
-                    .andDo(print())
-                    .andReturn().getResponse().getContentAsString();
-
-            CustomErrorType resultado = objectMapper.readValue(responseJsonString, CustomErrorType.class);
-
-            // Assert
-            assertAll(
-                    () -> assertEquals(1, associacaoRepository.count()),
-                    () -> assertEquals("O estabelecimento consultado nao existe!", resultado.getMessage())
-            );
-        }
-
-        @Test
-        @DisplayName("Quando aprovamos uma associacao passando codigo de acesso invalido")
-        void quandoAprovamosAssociacaoComCodigoDeAcessoInvalido() throws Exception {
-            // Arrange
-
-            // Act
-            String responseJsonString = driver.perform(post(URI_ASSOCIACAO)
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .param("entregadorId", entregador.getId().toString())
-                            .param("codigoAcesso", "654321")
-                            .param("estabelecimentoId", estabelecimento.getId().toString()))
+                            .param("codigoAcesso", String.valueOf(123))
+                            .param("idAssociacao", String.valueOf(1)))
                     .andExpect(status().isBadRequest())
                     .andDo(print())
                     .andReturn().getResponse().getContentAsString();
@@ -289,6 +247,30 @@ class AssociacaoControllerTests {
                     () -> assertEquals("Codigo de acesso invalido!", resultado.getMessage())
             );
         }
+
+        @Test
+        @DisplayName("Quando aprovamos uma associacao com estabelecimento inexistente")
+        void quandoAprovamosAssociacaoInexistente() throws Exception {
+            // Arrange
+            // Act
+            String responseJsonString = driver.perform(put(URI_ASSOCIACAO)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .param("codigoAcesso", estabelecimento.getCodigoAcesso())
+                            .param("idAssociacao", String.valueOf(10)))
+                    .andExpect(status().isBadRequest())
+                    .andDo(print())
+                    .andReturn().getResponse().getContentAsString();
+
+            CustomErrorType resultado = objectMapper.readValue(responseJsonString, CustomErrorType.class);
+
+            // Assert
+            assertAll(
+                    () -> assertEquals(1, associacaoRepository.count()),
+                    () -> assertEquals("Associacao inexistente!", resultado.getMessage())
+            );
+        }
+
+
     }
 }
 

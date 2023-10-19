@@ -1,6 +1,7 @@
 package com.ufcg.psoft.commerce.controller.Pedido;
 
 import com.ufcg.psoft.commerce.dto.PedidoDTO.PedidoDTO;
+import com.ufcg.psoft.commerce.enums.MetodoPagamento;
 import com.ufcg.psoft.commerce.exception.Pedido.PedidoNaoEncontradoException;
 import com.ufcg.psoft.commerce.model.Pedido.Pedido;
 import com.ufcg.psoft.commerce.service.Pedido.PedidoService;
@@ -22,13 +23,13 @@ public class PedidoV1Controller {
 
     @PostMapping
     ResponseEntity<Pedido> criarPedido(
-            @RequestParam String clienteCodigoAcesso,
+            @RequestParam("clienteCodigoAcesso") String clienteCodigoAcesso,
             @RequestBody @Valid PedidoDTO pedidoDTO
     ) {
-        Pedido pedido = pedidoService.criarPedido(clienteCodigoAcesso, pedidoDTO);
+
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(pedido);
+                .body(pedidoService.criarPedido(clienteCodigoAcesso, pedidoDTO));
     }
 
     @PutMapping("/{id}")
@@ -74,13 +75,12 @@ public class PedidoV1Controller {
     @PutMapping("/{id}/confirmar-pagamento")
     ResponseEntity<?> confirmarPagamento(
             @PathVariable("id") Long id,
-            @RequestParam("metodoPagamento") String metodoPagamento,
-            @RequestParam("codigoAcesso") String codigoAcesso
+            @RequestParam("metodoPagamento") MetodoPagamento metodoPagamento,
+            @RequestParam("clienteCodigoAcesso") String clienteCodigoAcesso
     ) throws PedidoNaoEncontradoException {
-        pedidoService.confirmarPagamento(id, metodoPagamento, codigoAcesso);
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .build();
+                .body(pedidoService.confirmarPagamento(id, metodoPagamento, clienteCodigoAcesso));
     }
 
     @ExceptionHandler(PedidoNaoEncontradoException.class)

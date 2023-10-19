@@ -49,7 +49,6 @@ public class EstabelecimentoV1Controller {
             throw new CodigoAcessoInvalidoException();
 
         }
-
         return response;
 
     }
@@ -73,21 +72,15 @@ public class EstabelecimentoV1Controller {
                     .body(msgErro);
         }
 
-
-
         return response;
 
     }
 
-
     @GetMapping
     public ResponseEntity<?> getAll(){
-
-
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(estabelecimentov1Service.getAll());
-
     }
 
     @PutMapping("/{id}")
@@ -113,9 +106,7 @@ public class EstabelecimentoV1Controller {
             response = ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
                     .body("Codigo de acesso inválido!");
-
         }
-
 
         return response;
     }
@@ -137,13 +128,8 @@ public class EstabelecimentoV1Controller {
             response = ResponseEntity
                     .status(HttpStatus.NO_CONTENT)
                     .build();
-
         }
-
         return response;
-
-
-
     }
 
     @RequestMapping(value = "consultaCliente/{codigoAcessoEstabelecimento}/{CodigoAcessoCliente}", method = RequestMethod.GET)
@@ -321,6 +307,29 @@ public class EstabelecimentoV1Controller {
                 .status(HttpStatus.OK)
                 .body(estabelecimentov1Service.alterarDisponibilidadeSaborPizza(id,idSaborPizza,codigoAcesso,disponibilidade));
     }
+
+    @PutMapping("{id}/pedido-pronto")
+    ResponseEntity<?> confirmarPedidoPronto(
+            @Valid @PathVariable("id") Long id,
+            @Valid @RequestParam("idPedido") Long idPedido,
+            @Valid @RequestParam("codigoAcessoEstabelecimento") String codigoAcesso
+    ){
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(estabelecimentov1Service.confirmarPreparacaoPedido(id,codigoAcesso,idPedido));
+
+    }
+
+    @PutMapping("{id}/envia-pedido")
+    ResponseEntity<?> enviaPedido(
+            @Valid @PathVariable("id") Long id,
+            @Valid @RequestParam("codigoAcesso") String codigoAcesso,
+            @Valid @RequestParam("idPedido") Long idPedido){
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(estabelecimentov1Service.atribuirPedidoAEntregador(id,codigoAcesso,idPedido));
+    }
+
+
 
 
 

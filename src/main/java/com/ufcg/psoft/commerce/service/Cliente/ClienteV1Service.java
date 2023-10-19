@@ -160,11 +160,17 @@ public class ClienteV1Service implements ClienteService {
     }
 
     @Override
-    public boolean confirmarEntrega(Long idPedido){
+    public Pedido confirmarEntrega(Long id, String codigoAcesso,Long idPedido){
+        Cliente cliente= clienteRepository.findById(id).get();
+        if(!codigoAcesso.equals(cliente.getCodigoAcesso())){
+            throw  new ClienteCodigoAcessoIncorretoException();
+        }
         Pedido pedido = pedidoRepository.findById(idPedido).orElseThrow(PedidoNaoEncontradoException::new);
         pedido.setStatus(StatusPedido.PEDIDO_ENTREGUE);
         pedidoRepository.save(pedido);
-        return true;
+        pedido.getEntregador().setDisponibilidade(true);
+        return pedido;
+
     }
 
 

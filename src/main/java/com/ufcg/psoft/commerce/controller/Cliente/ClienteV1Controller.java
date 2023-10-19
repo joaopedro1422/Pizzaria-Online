@@ -75,6 +75,16 @@ public class ClienteV1Controller {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @PutMapping("/{id}/confirma-entrega")
+    ResponseEntity<?> confirmarEntrega(
+            @Valid @PathVariable("id") Long id,
+            @Valid @RequestParam("codigoAcesso") String codigoAcesso,
+            @Valid @RequestParam("idPedido") Long idPedido
+    ){
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(clienteService.confirmarEntrega(id,codigoAcesso,idPedido));
+    }
+
 
     @ExceptionHandler(ClienteNaoEncontradoException.class)
     ResponseEntity<?> handleClienteNaoEncontradoException(ClienteNaoEncontradoException ex) {

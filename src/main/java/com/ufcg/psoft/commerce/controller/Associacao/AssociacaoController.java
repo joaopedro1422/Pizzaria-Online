@@ -58,30 +58,22 @@ public class AssociacaoController {
 
         }
 
-
-
         return response;
     }
 
     @PutMapping
     public ResponseEntity<?>  aprovaEntregador(
-
-            @RequestParam("entregadorId") String idEntregador,
-            @RequestParam("estabelecimentoId") String idEstabelecimento,
-            @RequestParam("codigoAcesso") String codigoAcesso
-
-
+            @RequestParam("codigoAcesso") String codigoAcesso,
+            @RequestParam("idAssociacao") Long idAssociacao
     ){
 
         ResponseEntity<?> response;
 
         Associacao associacao;
-
         try{
 
-            associacao = associacaoService.aprovarEntregador(idEntregador,
-                    codigoAcesso,
-                    idEstabelecimento);
+            associacao = associacaoService.aprovarEntregador(codigoAcesso,
+                    idAssociacao);
 
             response =  ResponseEntity
                     .status(HttpStatus.OK)
@@ -100,8 +92,6 @@ public class AssociacaoController {
             throw new EstabelecimentoIdNaoEncontradoException();
 
         }
-
-
         return response;
     }
 

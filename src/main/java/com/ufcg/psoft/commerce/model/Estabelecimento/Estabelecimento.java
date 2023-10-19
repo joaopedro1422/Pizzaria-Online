@@ -1,5 +1,6 @@
 package com.ufcg.psoft.commerce.model.Estabelecimento;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ufcg.psoft.commerce.exception.Entregador.NaoHaEntregadoresDisponiveisException;
 import com.ufcg.psoft.commerce.exception.Pedido.PedidoNaoEncontradoException;
@@ -13,6 +14,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.engine.internal.Cascade;
 
 import java.util.Set;
 
@@ -38,17 +40,16 @@ public class Estabelecimento {
     @Column(name = "nome_estabelecimento")
     private String nome;
 
-    @OneToMany(mappedBy = "estabelecimento",cascade = {CascadeType.REMOVE,CascadeType.MERGE,CascadeType.PERSIST}, fetch = FetchType.EAGER)
+    @OneToMany(cascade=CascadeType.PERSIST)
     private Set<SaborPizza> saboresPizza;
 
     @OneToMany(cascade=CascadeType.PERSIST)
     private Set<Cliente> clientes;
 
-    @OneToMany(mappedBy = "estabelecimento",cascade = {CascadeType.REMOVE,CascadeType.MERGE,CascadeType.PERSIST}, fetch = FetchType.EAGER)
-    private Set<Pedido> pedidos ;
 
-
-    @OneToMany(cascade=CascadeType.PERSIST)
+    @JsonIgnore
+    @JoinColumn(name = "estabelecimento_id")
+    @OneToMany(cascade= CascadeType.PERSIST, fetch = FetchType.EAGER)
     private Set<Entregador> entregadores;
 
 
@@ -66,14 +67,9 @@ public class Estabelecimento {
 
                     cliente = c;
                     break;
-
                 }
-
-
             }
-
         }
-
         return cliente;
     }
 
@@ -83,9 +79,10 @@ public class Estabelecimento {
                 return entregador;
             }
         }
-        throw new NaoHaEntregadoresDisponiveisException();
+        return null;
 
     }
+
 
 
     public Entregador entregadorPorCodigoAcesso(String codigoAcessoEntregador, String codigoAcessoEstabelecimento){
@@ -107,14 +104,7 @@ public class Estabelecimento {
 
     }
 
-    public Pedido getPedido(Long idPedido){
-        for(Pedido pedido: pedidos){
-            if(pedido.getId().equals(idPedido)){
-                return pedido;
-            }
-        }
-        throw new PedidoNaoEncontradoException();
-    }
+
 
     public SaborPizza setDisponibilidadeSabor(Long idSaborPizza, boolean disponibilidade){
         for (SaborPizza sabor: saboresPizza) {
@@ -140,27 +130,24 @@ public class Estabelecimento {
         throw new SaborPizzaNaoEncontradoException();
     }
 
-    public Entregador associarEntregador(String codigoAcessoEntregador, String codigoAcessoEstabelecimento){
-        Entregador entregador = null;
+//    public Entregador associarEntregador(String codigoAcessoEntregador, String codigoAcessoEstabelecimento){
+//        Entregador entregador = null;
+//
+//        if(codigoAcessoEstabelecimento.equals(this.codigoAcesso)){
+//
+//            //Implementar
+//
+//        }
+//
+//        return entregador;
+//
+//    }
 
-        if(codigoAcessoEstabelecimento.equals(this.codigoAcesso)){
 
-            //Implementar
-
-        }
-
-        return entregador;
-
-    }
-
-
-    public void aprovarEntregador(String codigoAcessoEstabelecimento, String codigoAcessoEntregador,
-                                  boolean aprovado){
+    public void aprovarEntregador(String codigoAcessoEstabelecimento, Entregador entregador){
 
         if (codigoAcessoEstabelecimento.equals(this.codigoAcesso)){
-
-            //Implementar
-
+            entregadores.add(entregador);
         }
 
     }

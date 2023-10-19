@@ -1,14 +1,17 @@
 package com.ufcg.psoft.commerce.service.Associacao;
 
 
+import com.ufcg.psoft.commerce.exception.Associacao.AssociacaoNaoEncontradaException;
 import com.ufcg.psoft.commerce.exception.Associacao.EntregadorCodigoAcessoNaoEntradoException;
 import com.ufcg.psoft.commerce.exception.Associacao.EntregadorIdNaoEncontradoException;
 import com.ufcg.psoft.commerce.exception.Associacao.EstabelecimentoIdNaoEncontradoException;
 import com.ufcg.psoft.commerce.model.Associacao.Associacao;
+import com.ufcg.psoft.commerce.model.Entregador.Entregador;
 import com.ufcg.psoft.commerce.model.Estabelecimento.Estabelecimento;
 import com.ufcg.psoft.commerce.repository.Associacao.AssociacaoRepository;
 import com.ufcg.psoft.commerce.repository.Entregador.EntregadorRepository;
 import com.ufcg.psoft.commerce.repository.Estabelecimento.EstabelecimentoRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,7 +26,7 @@ public class AssociacaoService {
 
     @Autowired
     EntregadorRepository entregadorRepository;
-
+    @Transactional
     public Associacao criarAssociacao(String idEntregador, String codigoAcessoEntregador,
                                       String idEstabelecimento){
 
@@ -55,13 +58,17 @@ public class AssociacaoService {
 
     }
 
-    public Associacao aprovarEntregador(String idEntregador, String codigoAcesso, String idEstabelecimento){
+    public Associacao aprovarEntregador( String codigoAcesso, Long idAssociacao){
+        if(!associacaoRepository.existsById(idAssociacao)){
+            throw new AssociacaoNaoEncontradaException();
+        }
+        Associacao resultado= associacaoRepository.findById(idAssociacao).get();
+        Long idNumericoEntregador = resultado.getEntregadorId();
+        Long idNumericoEstatabelecimento =resultado.getEstabelecimentoId();
+        Entregador entregador= entregadorRepository.findById(idNumericoEntregador).get();
 
-        Long idNumericoEntregador = Long.parseLong(idEntregador);
-        Long idNumericoEstatabelecimento = Long.parseLong(idEstabelecimento);
 
-        Associacao resultado;
-
+        Estabelecimento estabelecimento = estabelecimentoRepository.findById(idNumericoEstatabelecimento).get();
         if(!associacaoRepository.existsByEstabelecimentoId(idNumericoEstatabelecimento)){
 
             throw new EstabelecimentoIdNaoEncontradoException();
@@ -76,23 +83,18 @@ public class AssociacaoService {
 
         }else{
 
-            Estabelecimento estabelecimento = estabelecimentoRepository.findById(idNumericoEstatabelecimento).get();
-
             if (!estabelecimento.getCodigoAcesso().equals(codigoAcesso)) throw new EntregadorCodigoAcessoNaoEntradoException();
 
-
         }
-
-        resultado = associacaoRepository.findByEntregadorIdAndEstabelecimentoId(
-
-                idNumericoEntregador,
-                idNumericoEstatabelecimento
-
-        ).get();
-
+//        resultado = associacaoRepository.findByEntregadorIdAndEstabelecimentoId(
+//                idNumericoEntregador,
+//                idNumericoEstatabelecimento
+//
+//        ).get();
         resultado.setStatus(true);
-
-        return associacaoRepository.saveAndFlush(resultado);
+        estabelecimento.getEntregadores().add(entregador);
+        estabelecimentoRepository.save(estabelecimento);
+        return associacaoRepository.save(resultado);
 
     }
 
