@@ -13,6 +13,7 @@ import com.ufcg.psoft.commerce.enums.TamanhoPizza;
 import com.ufcg.psoft.commerce.exception.Associacao.EstabelecimentoIdNaoEncontradoException;
 import com.ufcg.psoft.commerce.exception.Cliente.ClienteNaoEncontradoException;
 import com.ufcg.psoft.commerce.exception.Pedido.MetodoPagamentoInvalidoException;
+import com.ufcg.psoft.commerce.exception.Pedido.PedidoNaoCancelavelException;
 import com.ufcg.psoft.commerce.exception.Pizza.PizzaSemSaboresException;
 import com.ufcg.psoft.commerce.model.Associacao.Associacao;
 import com.ufcg.psoft.commerce.model.Cliente.Cliente;
@@ -43,6 +44,7 @@ import java.util.List;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.jsonPath;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -1136,6 +1138,98 @@ public class PedidoControllerTests {
         }
 
     }
+
+
+    @Nested
+    @DisplayName("conjunto de testes para cancelar pedidos")
+    class CancelarPedido {
+
+        @Test
+        @DisplayName("Quando o cliente cancela um pedido, o status do pedido deve ser 'CANCELADO'")
+        public void cancelaPedidoComSucesso() throws Exception {
+            List<Pizza> pizzas = List.of(pizzaM);
+
+            PedidoDTO pedidoDTO = PedidoDTO.builder()
+                    .codigoAcesso("123456")
+                    .clienteId(cliente.getId())
+                    .estabelecimentoId(estabelecimento.getId())
+                    .metodoPagamento(MetodoPagamento.CARTAO_CREDITO)
+                    .enderecoEntrega("Rua Nova, 123")
+                    .pizzas(pizzas)
+                    .build();
+
+            // Cria o pedido
+            String resultadoStr = mockMvc.perform(MockMvcRequestBuilders.post(URL_TEMPLATE)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .param("clienteCodigoAcesso", cliente.getCodigoAcesso())
+                            .content(objectMapper.writeValueAsString(pedidoDTO)))
+                    .andExpect(status().isCreated())
+                    .andReturn().getResponse().getContentAsString();
+
+            PedidoResponseDTO pedidoResponseDTO = objectMapper.readValue(resultadoStr, PedidoResponseDTO.class);
+
+            // Cliente cancela o pedido
+            mockMvc.perform(MockMvcRequestBuilders.delete(URL_TEMPLATE + "/" + pedidoResponseDTO.getId())
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .param("clienteCodigoAcesso", cliente.getCodigoAcesso()))
+                    .andExpect(status().isNoContent());
+
+            // Obtém o pedido cancelado para verificar o status
+            String resultadoCancelamentoStr = mockMvc.perform(MockMvcRequestBuilders.get(URL_TEMPLATE + "/" + pedidoResponseDTO.getId())
+                            .contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isNotFound())
+                    .andReturn().getResponse().getContentAsString();
+
+            // Verifica se o pedido foi cancelado corretamente
+            assertEquals("Pedido Nao Encontrado", resultadoCancelamentoStr);
+        }
+
+
+
+        @Test
+        @DisplayName("Quando o cliente não pode cancelar um pedido, deve retornar status 'BAD_REQUEST'")
+        public void clienteNaoPodeCancelarPedido() throws Exception {
+            List<Pizza> pizzas = List.of(pizzaM);
+
+            PedidoDTO pedidoDTO = PedidoDTO.builder()
+                    .codigoAcesso("123456")
+                    .clienteId(cliente.getId())
+                    .estabelecimentoId(estabelecimento.getId())
+                    .metodoPagamento(MetodoPagamento.CARTAO_CREDITO)
+                    .enderecoEntrega("Rua Nova, 123")
+                    .pizzas(pizzas)
+                    .build();
+
+            // Cria o pedido
+            String resultadoStr = mockMvc.perform(MockMvcRequestBuilders.post(URL_TEMPLATE)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .param("clienteCodigoAcesso", cliente.getCodigoAcesso())
+                            .content(objectMapper.writeValueAsString(pedidoDTO)))
+                    .andExpect(status().isCreated())
+                    .andReturn().getResponse().getContentAsString();
+
+            PedidoResponseDTO pedidoResponseDTO = objectMapper.readValue(resultadoStr, PedidoResponseDTO.class);
+
+            // Atualiza o pedido para um estado onde não pode ser cancelado (exemplo: PEDIDO_PRONTO)
+            mockMvc.perform(MockMvcRequestBuilders.put(URL_TEMPLATE + "/" + pedidoResponseDTO.getId() + "/confirmar-pagamento")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .param("metodoPagamento", MetodoPagamento.CARTAO_CREDITO.name())
+                            .param("clienteCodigoAcesso", cliente.getCodigoAcesso()))
+                    .andExpect(status().isOk());
+
+            // Cliente tenta cancelar o pedido
+            mockMvc.perform(MockMvcRequestBuilders.delete(URL_TEMPLATE + "/" + pedidoResponseDTO.getId())
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .param("clienteCodigoAcesso", cliente.getCodigoAcesso()))
+                    .andExpect(status().isBadRequest())
+                    .andExpect(result -> assertTrue(result.getResolvedException() instanceof PedidoNaoCancelavelException))
+                    .andExpect(result -> assertEquals("Pedido não cancelável no estado PEDIDO_PRONTO", result.getResolvedException().getMessage()));
+        }
+
+
+    }
+
+
 }
 
 

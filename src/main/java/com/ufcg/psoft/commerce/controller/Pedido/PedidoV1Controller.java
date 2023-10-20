@@ -2,6 +2,8 @@ package com.ufcg.psoft.commerce.controller.Pedido;
 
 import com.ufcg.psoft.commerce.dto.PedidoDTO.PedidoDTO;
 import com.ufcg.psoft.commerce.enums.MetodoPagamento;
+import com.ufcg.psoft.commerce.exception.Pedido.PedidoCodigoAcessoIncorretoException;
+import com.ufcg.psoft.commerce.exception.Pedido.PedidoNaoCancelavelException;
 import com.ufcg.psoft.commerce.exception.Pedido.PedidoNaoEncontradoException;
 import com.ufcg.psoft.commerce.model.Pedido.Pedido;
 import com.ufcg.psoft.commerce.service.Pedido.PedidoService;
@@ -82,6 +84,24 @@ public class PedidoV1Controller {
                 .status(HttpStatus.OK)
                 .body(pedidoService.confirmarPagamento(id, metodoPagamento, clienteCodigoAcesso));
     }
+
+    @DeleteMapping("/cancelar/{id}")
+    public ResponseEntity<?> cancelarPedido(
+            @PathVariable("id") Long id,
+            @RequestParam("clienteCodigoAcesso") String clienteCodigoAcesso
+    ) {
+        try {
+            pedidoService.cancelarPedido(id, clienteCodigoAcesso);
+            return ResponseEntity
+                    .status(HttpStatus.NO_CONTENT)
+                    .build();
+        } catch (PedidoNaoEncontradoException | PedidoCodigoAcessoIncorretoException | PedidoNaoCancelavelException e) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(e.getMessage());
+        }
+    }
+
 
     @ExceptionHandler(PedidoNaoEncontradoException.class)
     ResponseEntity<?> handlePedidoNaoEncontradoException(PedidoNaoEncontradoException ex) {
