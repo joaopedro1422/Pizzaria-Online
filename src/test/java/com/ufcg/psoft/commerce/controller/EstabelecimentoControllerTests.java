@@ -13,14 +13,17 @@ import com.ufcg.psoft.commerce.enums.MetodoPagamento;
 import com.ufcg.psoft.commerce.enums.TamanhoPizza;
 import com.ufcg.psoft.commerce.exception.CustomErrorType;
 import com.ufcg.psoft.commerce.model.Cliente.Cliente;
+import com.ufcg.psoft.commerce.model.Entregador.Entregador;
 import com.ufcg.psoft.commerce.model.Estabelecimento.Estabelecimento;
 import com.ufcg.psoft.commerce.model.Pedido.Pedido;
 import com.ufcg.psoft.commerce.model.SaborPizza.Pizza;
 import com.ufcg.psoft.commerce.model.SaborPizza.SaborPizza;
 import com.ufcg.psoft.commerce.repository.Cliente.ClienteRepository;
+import com.ufcg.psoft.commerce.repository.Entregador.EntregadorRepository;
 import com.ufcg.psoft.commerce.repository.Estabelecimento.EstabelecimentoRepository;
 import com.ufcg.psoft.commerce.repository.Pedido.PedidoRepository;
 import com.ufcg.psoft.commerce.repository.Pizza.SaborRepository;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -28,8 +31,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -51,6 +58,9 @@ public class EstabelecimentoControllerTests {
 
     @Autowired
     EstabelecimentoRepository estabelecimentoRepository;
+
+    @Autowired
+    EntregadorRepository entregadorRepository;
     @Autowired
     SaborRepository saborRepository;
 
@@ -1016,6 +1026,120 @@ public class EstabelecimentoControllerTests {
         public void pedidoRecebido() throws Exception {
 
 
+        }
+    }
+
+    @Nested
+    @DisplayName("Testes para notificar o cliente sobre o pedido em rota")
+    class notificarCliente{
+        @Test
+        @DisplayName("Quando atribuo um entregador existente a um pedido existente")
+        @Transactional
+        public void test01() throws Exception {
+            //arrange
+            ClienteDTO clienteDTO = ClienteDTO.builder()
+                    .nome("Cliente de Exemplo")
+                    .endereco("Rua Exemplo, 123")
+                    .codigoAcesso("123456")
+                    .build();
+
+            cliente = clienteRepository.save(objectMapper.convertValue(clienteDTO, Cliente.class));
+
+            Set<SaborPizza> cardapio = new HashSet<>();
+            Set<Entregador> entregadores = new HashSet<>();
+
+            objectMapper.registerModule(new JavaTimeModule());
+            estabelecimento = estabelecimentoRepository.save(Estabelecimento.builder()
+                    .nome("bia")
+                    .saboresPizza(cardapio)
+                    .entregadores(entregadores)
+                    .codigoAcesso("654311")
+                    .build());
+            sabor = saborRepository.save(SaborPizza.builder()
+                    .saborDaPizza("Calabresa")
+                    .tipoDeSabor("salgado")
+                    .valorMedia(10.0)
+                    .valorGrande(15.0)
+                    .disponibilidadeSabor(true)
+                    .estabelecimento(estabelecimento)
+                    .build());
+            saborPostPutDTO = SaborPostPutDTO.builder()
+                    .saborDaPizza(sabor.getSaborDaPizza())
+                    .tipoDeSabor(sabor.getTipoDeSabor())
+                    .valorMedia(sabor.getValorMedia())
+                    .valorGrande(sabor.getValorGrande())
+                    .disponibilidadeSabor(sabor.getDisponibilidadeSabor())
+                    .build();
+
+            pizzaM = Pizza.builder()
+                    .sabor1(sabor)
+                    .tamanho(TamanhoPizza.MEDIA)
+                    .build();
+
+
+            List<Pizza> pizzas = List.of(pizzaM);
+
+            pedido = pedidoRepository.save(Pedido.builder()
+                    .codigoAcesso("123456")
+                    .cliente(cliente.getId())
+                    .estabelecimento(estabelecimento.getId())
+                    .metodoPagamento(MetodoPagamento.CARTAO_CREDITO)
+                    .enderecoEntrega("Rua nova,123")
+                    .pizzas(pizzas)
+                    .status(com.ufcg.psoft.commerce.enums.StatusPedido.PEDIDO_RECEBIDO)
+                    .build());
+
+            pedidoDTO = PedidoDTO.builder()
+                    .codigoAcesso(pedido.getCodigoAcesso())
+                    .clienteId(pedido.getCliente())
+                    .estabelecimentoId(pedido.getEstabelecimento())
+                    .metodoPagamento(pedido.getMetodoPagamento())
+                    .enderecoEntrega(pedido.getEnderecoEntrega())
+                    .pizzas(pedido.getPizzas())
+                    .build();
+
+            Entregador entregador = entregadorRepository.save(Entregador.builder()
+                    .nome("Entregador Um")
+                    .placaVeiculo("ABC-1234")
+                    .corVeiculo("Branco")
+                    .tipoVeiculo("Carro")
+                    .codigoAcesso("123456")
+                    .isDisponibilidade(true)
+                    .build());
+
+            // act
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            PrintStream printStream = new PrintStream(outputStream);
+            PrintStream originalSystemOut = System.out;
+            System.setOut(printStream);
+
+
+            String resultadoStr = driver.perform(MockMvcRequestBuilders.put(URI_ESTABELECIMENTOS + "/" + estabelecimento.getId()  + "/notificarCliente")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .param("idPedido", String.valueOf(pedido.getId()))
+                            .param("codigoAcesso", entregador.getCodigoAcesso())
+                            .param("id", estabelecimento.getId().toString()))
+                    .andExpect(status().isOk())
+                    .andDo(MockMvcResultHandlers.print())
+                    .andReturn().getResponse().getContentAsString();
+
+            Pedido pedidoAtualizado = objectMapper.readValue(resultadoStr, Pedido.class);
+
+            assertEquals(pedidoAtualizado.getStatus(), com.ufcg.psoft.commerce.enums.StatusPedido.PEDIDO_EM_ROTA);
+            assertNotNull(pedidoAtualizado.getEntregador());
+
+            System.setOut(originalSystemOut); // Restaurar a saída do System.out
+
+            String resultadoPrint = outputStream.toString().trim();
+
+            String notificacaoEsperada = " - PEDIDO EM ROTA - \n" +
+                    "Cliente: " + cliente.getNome() + "\n" +
+                    "Entregador: " + entregador.getNome() + "\n" +
+                    "Tipo do Veiculo: " + entregador.getTipoVeiculo() + "\n" +
+                    "Cor do Veiculo: " + entregador.getCorVeiculo() + "\n" +
+                    "Placa do Veiculo: " + entregador.getPlacaVeiculo();
+
+            assertTrue(resultadoPrint.contains(notificacaoEsperada));
         }
     }
 }
