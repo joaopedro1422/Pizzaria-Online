@@ -329,6 +329,17 @@ public class EstabelecimentoV1Controller {
                 .body(estabelecimentov1Service.atribuirPedidoAEntregador(id,codigoAcesso,idPedido));
     }
 
+    @PutMapping("{idEstabelecimento}/ notificarCliente")
+    ResponseEntity<?> notificarClientePedidoRota(
+            @Valid @PathVariable("id") Long id,
+            @Valid @RequestParam("idPedido") Long idPedido,
+            @Valid @RequestParam("codigoAcesso") String codigoAcesso
+    ){
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(estabelecimentov1Service.atribuirPedidoAEntregador(id,codigoAcesso,idPedido));
+    }
+
 
 
 

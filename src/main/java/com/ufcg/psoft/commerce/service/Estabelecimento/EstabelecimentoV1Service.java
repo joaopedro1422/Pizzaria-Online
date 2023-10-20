@@ -299,6 +299,7 @@ public class EstabelecimentoV1Service {
             Entregador entregadorPedido = estabelecimento.getEntregadorDisponivel();
             pedidoAtual.setEntregador(entregadorPedido);
             pedidoAtual.setStatus(StatusPedido.PEDIDO_EM_ROTA);
+            //pedidoAtual.getCliente().notifica
             pedidoAtual.getEntregador().setDisponibilidade(false);
             pedidoRepository.save(pedidoAtual);
             return pedidoAtual;

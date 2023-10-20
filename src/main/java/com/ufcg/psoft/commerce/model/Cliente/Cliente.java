@@ -2,6 +2,7 @@ package com.ufcg.psoft.commerce.model.Cliente;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.ufcg.psoft.commerce.model.Entregador.Entregador;
 import com.ufcg.psoft.commerce.model.SaborPizza.SaborPizza;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -75,6 +76,12 @@ public class Cliente {
             this.subject.unregister(this);
             this.subject = null;
         }
+    }
+    public String notificaPedidoEmRota(Entregador entregador){
+        String saida = "";
+        saida = ("Nome do entregador responsável pela entrega: "+ entregador.getNome()
+                +"/nPlaca do veículo de"+ entregador.getNome()+": " + entregador.getPlacaVeiculo());
+        return saida;
     }
 
     public void update(SaborPizza saborPizza) {
