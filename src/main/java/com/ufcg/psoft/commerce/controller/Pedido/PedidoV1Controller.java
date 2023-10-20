@@ -85,23 +85,16 @@ public class PedidoV1Controller {
                 .body(pedidoService.confirmarPagamento(id, metodoPagamento, clienteCodigoAcesso));
     }
 
-    @DeleteMapping("/cancelar/{id}")
+    @DeleteMapping("/{id}/cancelar-pedido")
     public ResponseEntity<?> cancelarPedido(
             @PathVariable("id") Long id,
             @RequestParam("clienteCodigoAcesso") String clienteCodigoAcesso
-    ) {
-        try {
-            pedidoService.cancelarPedido(id, clienteCodigoAcesso);
-            return ResponseEntity
-                    .status(HttpStatus.NO_CONTENT)
-                    .build();
-        } catch (PedidoNaoEncontradoException | PedidoCodigoAcessoIncorretoException | PedidoNaoCancelavelException e) {
-            return ResponseEntity
-                    .status(HttpStatus.BAD_REQUEST)
-                    .body(e.getMessage());
-        }
+    ) throws PedidoNaoCancelavelException {
+        pedidoService.cancelarPedido(id, clienteCodigoAcesso);
+        return ResponseEntity
+                .status(HttpStatus.NO_CONTENT)
+                .build();
     }
-
 
     @ExceptionHandler(PedidoNaoEncontradoException.class)
     ResponseEntity<?> handlePedidoNaoEncontradoException(PedidoNaoEncontradoException ex) {

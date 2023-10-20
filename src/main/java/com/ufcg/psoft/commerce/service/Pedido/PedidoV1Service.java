@@ -221,7 +221,7 @@ public class PedidoV1Service implements PedidoService{
     }
 
     @Override
-    public void cancelarPedido(Long pedidoId, String clienteCodigoAcesso) throws PedidoNaoEncontradoException, PedidoCodigoAcessoIncorretoException {
+    public void cancelarPedido(Long pedidoId, String clienteCodigoAcesso) throws PedidoNaoEncontradoException, PedidoCodigoAcessoIncorretoException, PedidoNaoCancelavelException {
         Pedido pedidoExistente = pedidoRepository.findById(pedidoId).orElseThrow(() -> new PedidoNaoEncontradoException());
 
         if (pedidoExistente.getStatus() == StatusPedido.PEDIDO_PRONTO) {
@@ -232,10 +232,8 @@ public class PedidoV1Service implements PedidoService{
             throw new PedidoCodigoAcessoIncorretoException();
         }
 
+        pedidoExistente.setStatus(StatusPedido.CANCELADO);
         pedidoRepository.delete(pedidoExistente);
     }
-
-
-
 
 }

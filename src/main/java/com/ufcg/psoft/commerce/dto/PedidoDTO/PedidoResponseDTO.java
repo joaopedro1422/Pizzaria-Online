@@ -48,6 +48,7 @@ public class PedidoResponseDTO {
 
     @JsonProperty("entregador")
     private Entregador entregador;
+
     public Long getId() {
         return id;
     }
