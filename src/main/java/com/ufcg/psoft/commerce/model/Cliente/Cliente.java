@@ -38,7 +38,7 @@ public class Cliente {
     @JsonBackReference
     @ManyToOne
     @JoinColumn(name = "saborPizza_pk_id")
-    private SaborPizza subject = null; // instância dessa classe pode estar associada a uma única instância de SaborPizza
+    private SaborPizza subject; // instância dessa classe pode estar associada a uma única instância de SaborPizza
 
    /* verifica se o objeto atual (representado pela instância da classe que contém esse método)
    está inscrito (ou seja, observando) uma instância específica de SaborPizza.
