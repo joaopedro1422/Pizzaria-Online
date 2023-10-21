@@ -41,9 +41,9 @@ public class ClienteV1Controller {
             @PathVariable("id") Long id
     ){
         clienteService.removerCliente(id);
-            return ResponseEntity
-                    .status(HttpStatus.NO_CONTENT)
-                    .build();
+        return ResponseEntity
+                .status(HttpStatus.NO_CONTENT)
+                .build();
 
     }
 

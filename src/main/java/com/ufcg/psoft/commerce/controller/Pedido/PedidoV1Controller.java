@@ -2,8 +2,6 @@ package com.ufcg.psoft.commerce.controller.Pedido;
 
 import com.ufcg.psoft.commerce.dto.PedidoDTO.PedidoDTO;
 import com.ufcg.psoft.commerce.enums.MetodoPagamento;
-import com.ufcg.psoft.commerce.exception.Pedido.PedidoCodigoAcessoIncorretoException;
-import com.ufcg.psoft.commerce.exception.Pedido.PedidoNaoCancelavelException;
 import com.ufcg.psoft.commerce.exception.Pedido.PedidoNaoEncontradoException;
 import com.ufcg.psoft.commerce.model.Pedido.Pedido;
 import com.ufcg.psoft.commerce.service.Pedido.PedidoService;
@@ -83,17 +81,6 @@ public class PedidoV1Controller {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(pedidoService.confirmarPagamento(id, metodoPagamento, clienteCodigoAcesso));
-    }
-
-    @DeleteMapping("/{id}/cancelar-pedido")
-    public ResponseEntity<?> cancelarPedido(
-            @PathVariable("id") Long id,
-            @RequestParam("clienteCodigoAcesso") String clienteCodigoAcesso
-    ) throws PedidoNaoCancelavelException {
-        pedidoService.cancelarPedido(id, clienteCodigoAcesso);
-        return ResponseEntity
-                .status(HttpStatus.NO_CONTENT)
-                .build();
     }
 
     @ExceptionHandler(PedidoNaoEncontradoException.class)

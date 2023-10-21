@@ -40,11 +40,11 @@ public class Cliente {
     @JoinColumn(name = "saborPizza_pk_id")
     private SaborPizza subject; // instância dessa classe pode estar associada a uma única instância de SaborPizza
 
-   /* verifica se o objeto atual (representado pela instância da classe que contém esse método)
-   está inscrito (ou seja, observando) uma instância específica de SaborPizza.
-   Ele faz isso verificando se a variável subject não é nula e se o sabor da pizza associada
-   ao subject atual é igual ao sabor da pizza passado como argumento
-    */
+    /* verifica se o objeto atual (representado pela instância da classe que contém esse método)
+    está inscrito (ou seja, observando) uma instância específica de SaborPizza.
+    Ele faz isso verificando se a variável subject não é nula e se o sabor da pizza associada
+    ao subject atual é igual ao sabor da pizza passado como argumento
+     */
     public boolean isSubscribed(SaborPizza subject){
         if(this.subject != null){
             return this.subject.getSaborDaPizza().equals(subject.getSaborDaPizza());
@@ -52,13 +52,13 @@ public class Cliente {
         return false;
     }
 
-   /*permite que a instância atual se inscreva (ou seja, observe) uma instância específica de SaborPizza.
-   Ele faz isso chamando o método register no subject passado como argumento
-   (esse método não está presente no código que você forneceu) e atribuindo o subject passado como argumento
-   à variável subject desta instância
-    */
+    /*permite que a instância atual se inscreva (ou seja, observe) uma instância específica de SaborPizza.
+    Ele faz isso chamando o método register no subject passado como argumento
+    (esse método não está presente no código que você forneceu) e atribuindo o subject passado como argumento
+    à variável subject desta instância
+     */
     public void subscribeTo(SaborPizza subject) {
-        if(!isSubscribed(subject) && subject.getDisponibilidadeSabor()==false){
+        if(!isSubscribed(subject) && !subject.getDisponibilidadeSabor()){
             subject.register(this);
             this.subject = subject;
 

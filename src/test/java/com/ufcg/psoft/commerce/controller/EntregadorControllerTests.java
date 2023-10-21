@@ -523,7 +523,7 @@ public class EntregadorControllerTests {
             // Assert
             assertAll(
                     () -> assertEquals("Tipo de veiculo deve ser carro ou moto", resultado.getMessage())
-                    
+
             );
         }
 

@@ -47,9 +47,6 @@ public class EstabelecimentoV1Service {
     private PedidoRepository pedidoRepository;
 
     @Autowired
-    ClienteService clienteService;
-
-    @Autowired
     private AssociacaoRepository associacaoRepository;
 
     @Autowired
@@ -308,9 +305,10 @@ public class EstabelecimentoV1Service {
         } else {
             throw new CodigoAcessoEstabelecimentoException();
         }
+
+
+
     }
-
-
 }
 
 

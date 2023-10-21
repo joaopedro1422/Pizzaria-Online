@@ -193,7 +193,7 @@ class AssociacaoControllerTests {
             associacaoRepository.save(Associacao.builder()
                     .entregadorId(entregador.getId())
                     .estabelecimentoId(estabelecimento.getId())
-                            .codigoAcesso(entregador.getCodigoAcesso())
+                    .codigoAcesso(entregador.getCodigoAcesso())
                     .status(false)
                     .build()
             );
@@ -209,9 +209,9 @@ class AssociacaoControllerTests {
                             .contentType(MediaType.APPLICATION_JSON)
                             .param("codigoAcesso", estabelecimento.getCodigoAcesso())
                             .param("idAssociacao", String.valueOf(1)))
-                            .andExpect(status().isOk())
-                            .andDo(print())
-                            .andReturn().getResponse().getContentAsString();
+                    .andExpect(status().isOk())
+                    .andDo(print())
+                    .andReturn().getResponse().getContentAsString();
 
             Associacao resultado = objectMapper.readValue(responseJsonString, Associacao.AssociacaoBuilder.class).build();
 
@@ -244,7 +244,7 @@ class AssociacaoControllerTests {
             // Assert
             assertAll(
                     () -> assertEquals(1, associacaoRepository.count()),
-                    () -> assertEquals("Codigo de acesso invalido!", resultado.getMessage())
+                    () -> assertEquals("Associacao inexistente!", resultado.getMessage())
             );
         }
 

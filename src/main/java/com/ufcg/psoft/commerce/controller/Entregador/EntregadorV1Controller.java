@@ -70,9 +70,9 @@ public class EntregadorV1Controller {
 
     @PutMapping("/{id}/disponibilidade")
     ResponseEntity<?> updateDisponibilidade(
-        @Valid @PathVariable("id") Long id,
-        @Valid @RequestParam("codigoAcesso") String codigoAcessoEntregador,
-        @Valid @RequestParam("disponibilidade") boolean disponibilidade
+            @Valid @PathVariable("id") Long id,
+            @Valid @RequestParam("codigoAcesso") String codigoAcessoEntregador,
+            @Valid @RequestParam("disponibilidade") boolean disponibilidade
     ){
         return ResponseEntity
                 .status(HttpStatus.OK)

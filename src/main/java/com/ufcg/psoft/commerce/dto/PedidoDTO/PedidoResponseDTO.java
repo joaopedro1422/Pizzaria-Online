@@ -20,10 +20,6 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PedidoResponseDTO {
-
-    @JsonProperty("id")
-    private Long id;
-
     @CodigoAcessoConstraint
     @JsonProperty("codigoAcesso")
     private String codigoAcesso;
@@ -48,8 +44,4 @@ public class PedidoResponseDTO {
 
     @JsonProperty("entregador")
     private Entregador entregador;
-
-    public Long getId() {
-        return id;
-    }
 }

@@ -18,21 +18,21 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/pizza/v1/")
 @CrossOrigin
 public class PizzaV1Controller {
-    
+
     @Autowired
     SaborService saborService;
     @Autowired
     EstabelecimentoV1Service estabelecimentoV1Service;
-    
+
     @PostMapping
     public ResponseEntity<?> criarSaborPizza (
             @Valid @RequestParam ("codigoAcessoEstabelecimento")String codigoAcessoEstabelecimento,
             @Valid @RequestParam  ("idEstabelecimento")Long idEstabelecimento,
             @Valid @RequestBody SaborPostPutDTO sabor) throws EstabelecimentoNaoEncontradoException, CodigoAcessoEstabelecimentoException {
 
-           return ResponseEntity
-                   .status(HttpStatus.CREATED)
-                   .body(saborService.criarSabor(idEstabelecimento,codigoAcessoEstabelecimento,sabor));
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(saborService.criarSabor(idEstabelecimento,codigoAcessoEstabelecimento,sabor));
 
     }
 
@@ -42,10 +42,10 @@ public class PizzaV1Controller {
             @Valid @RequestParam("codigoAcessoEstabelecimento")String codigoAcessoEstabelecimento,
             @Valid @PathVariable("idPizza") Long idPizza,
             @Valid @RequestBody SaborPostPutDTO sabor) throws EstabelecimentoNaoEncontradoException, CodigoAcessoEstabelecimentoException {
-                return ResponseEntity
-                        .status(HttpStatus.OK)
-                        .body(saborService.atualizarSaborPizza(idEstabelecimento,codigoAcessoEstabelecimento,idPizza,sabor));
-            }
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(saborService.atualizarSaborPizza(idEstabelecimento,codigoAcessoEstabelecimento,idPizza,sabor));
+    }
 
     @PutMapping(value = "/{idPizza}/disponibilidade")
     public ResponseEntity<?> atualizarSaborPizzaDisponibilidade(

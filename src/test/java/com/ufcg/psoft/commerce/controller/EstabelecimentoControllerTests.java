@@ -1,5 +1,6 @@
 package com.ufcg.psoft.commerce.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -23,7 +24,6 @@ import com.ufcg.psoft.commerce.repository.Entregador.EntregadorRepository;
 import com.ufcg.psoft.commerce.repository.Estabelecimento.EstabelecimentoRepository;
 import com.ufcg.psoft.commerce.repository.Pedido.PedidoRepository;
 import com.ufcg.psoft.commerce.repository.Pizza.SaborRepository;
-import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -31,12 +31,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -58,11 +54,10 @@ public class EstabelecimentoControllerTests {
 
     @Autowired
     EstabelecimentoRepository estabelecimentoRepository;
-
-    @Autowired
-    EntregadorRepository entregadorRepository;
     @Autowired
     SaborRepository saborRepository;
+    @Autowired
+    EntregadorRepository entregadorRepository;
 
     @Autowired
     ClienteRepository clienteRepository;
@@ -249,6 +244,15 @@ public class EstabelecimentoControllerTests {
         void quandoBuscarCardapioEstabelecimento() throws Exception {
             // Arrange
 
+            Entregador entregador = entregadorRepository.save(Entregador.builder()
+                    .nome("Lana Del Rey")
+                    .placaVeiculo("ABC-1234")
+                    .corVeiculo("Azul")
+                    .tipoVeiculo("moto")
+                    .codigoAcesso("123456")
+                    .build()
+            );
+
             SaborPizza sabor1 = saborRepository.save(SaborPizza.builder()
                     .saborDaPizza("Calabresa")
                     .valorMedia(25.0)
@@ -283,6 +287,7 @@ public class EstabelecimentoControllerTests {
                     .disponibilidadeSabor(true)
                     .estabelecimento(estabelecimento)
                     .build());
+
 
             estabelecimento.setSaboresPizza(Set.of(sabor1, sabor2, sabor3, sabor4));
             estabelecimentoRepository.save(estabelecimento);
@@ -393,6 +398,15 @@ public class EstabelecimentoControllerTests {
         @DisplayName("Quando buscamos o cardapio de um estabelecimento por saborDaPizza (doce)")
         void quandoBuscarCardapioEstabelecimentoPorsaborDaPizzaDoce() throws Exception {
             // Arrange
+
+            Entregador entregador = entregadorRepository.save(Entregador.builder()
+                    .nome("Lana Del Rey")
+                    .placaVeiculo("ABC-1234")
+                    .corVeiculo("Azul")
+                    .tipoVeiculo("moto")
+                    .codigoAcesso("123456")
+                    .build()
+            );
 
             SaborPizza sabor1 = saborRepository.save(SaborPizza.builder()
                     .saborDaPizza("Calabresa")
@@ -992,6 +1006,7 @@ public class EstabelecimentoControllerTests {
                     .observers(new ArrayList<>())
                     .build());
 
+
             estabelecimento.setSaboresPizza(Set.of(sabor1));
             estabelecimentoRepository.save(estabelecimento);
 
@@ -1003,7 +1018,7 @@ public class EstabelecimentoControllerTests {
                             .contentType(MediaType.APPLICATION_JSON)
                             .param("idSaborPizza", sabor1.getIdPizza().toString())
                             .param("codigoAcesso", estabelecimento.getCodigoAcesso())
-                            .param("disponibilidade", objectMapper.writeValueAsString(true))
+                            .param("disponibilidade", objectMapper.writeValueAsString(sabor1.getDisponibilidadeSabor()))
                             .content(objectMapper.writeValueAsString(sabor1)))
                     .andExpect(status().isOk())
                     .andDo(print())

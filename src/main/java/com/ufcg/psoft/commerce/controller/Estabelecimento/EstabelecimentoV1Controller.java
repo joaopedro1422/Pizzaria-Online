@@ -268,7 +268,7 @@ public class EstabelecimentoV1Controller {
             @Param("codigoAcesso") String codigoAcesso,
             @PathVariable("id") Long id,
             @Param("disponibilidade") Boolean disponibilidade
-            ){
+    ){
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(estabelecimentov1Service.getCardapioDisponibilidade(id,codigoAcesso,disponibilidade));
@@ -289,7 +289,7 @@ public class EstabelecimentoV1Controller {
             @Param("codigoAcesso") String codigoAcesso,
             @PathVariable("id") Long id,
             @Param("tipo") String tipo
-            ){
+    ){
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(estabelecimentov1Service.listarCardapioPorTipoDePizza(id,codigoAcesso,tipo));
