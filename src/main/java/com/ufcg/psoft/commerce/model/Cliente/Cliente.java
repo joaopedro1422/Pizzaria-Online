@@ -77,12 +77,6 @@ public class Cliente {
             this.subject = null;
         }
     }
-    public String notificaPedidoEmRota(Entregador entregador){
-        String saida = "";
-        saida = ("Nome do entregador responsável pela entrega: "+ entregador.getNome()
-                +"/nPlaca do veículo de"+ entregador.getNome()+": " + entregador.getPlacaVeiculo());
-        return saida;
-    }
 
     public void update(SaborPizza saborPizza) {
         if(this.subject == null) {

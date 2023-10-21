@@ -304,25 +304,13 @@ public class EstabelecimentoV1Service {
             pedidoAtual.setStatus(StatusPedido.PEDIDO_EM_ROTA);
             pedidoAtual.getEntregador().setDisponibilidade(false);
             pedidoRepository.save(pedidoAtual);
-
-            notificaPedidoEmRota(pedidoAtual, entregadorPedido);
-
             return pedidoAtual;
         } else {
             throw new CodigoAcessoEstabelecimentoException();
         }
     }
 
-    // metodo auxiliar
-    private void notificaPedidoEmRota(Pedido pedido, Entregador entregador){
-        Cliente cliente = clienteService.getCliente(pedido.getCliente());
-        System.out.println(" - PEDIDO EM ROTA - \n" +
-                "Cliente: " + cliente.getNome() + "\n" +
-                "Entregador: " + entregador.getNome() + "\n" +
-                "Tipo do Veiculo: " + entregador.getTipoVeiculo() + "\n" +
-                "Cor do Veiculo: " + entregador.getCorVeiculo() + "\n" +
-                "Placa do Veiculo: " + entregador.getPlacaVeiculo() + "\n");
-    }
+
 }
 
 
