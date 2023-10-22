@@ -8,10 +8,7 @@ import com.ufcg.psoft.commerce.model.Entregador.Entregador;
 import com.ufcg.psoft.commerce.model.SaborPizza.Pizza;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.List;
 
@@ -20,6 +17,11 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PedidoResponseDTO {
+
+    @Getter
+    @JsonProperty("id")
+    private Long id;
+
     @CodigoAcessoConstraint
     @JsonProperty("codigoAcesso")
     private String codigoAcesso;
@@ -44,4 +46,5 @@ public class PedidoResponseDTO {
 
     @JsonProperty("entregador")
     private Entregador entregador;
+
 }

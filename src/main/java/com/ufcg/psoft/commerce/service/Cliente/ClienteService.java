@@ -21,8 +21,8 @@ public interface ClienteService {
     List<Cliente> getClientes();
 
     boolean validarCodigoAcesso(Long id, String codigoAcesso) throws ClienteCodigoAcessoIncorretoException, ClienteNaoEncontradoException;
-    void demonstrarInteressePizza(Long id, String codigoAcesso, Long idPizza);
+     void demonstrarInteressePizza(Long id, String codigoAcesso, Long idPizza);
 
-    public Pedido confirmarEntrega(Long id, String codigoAcesso, Long idPedido);
+     public Pedido confirmarEntrega(Long id, String codigoAcesso, Long idPedido);
 
 }

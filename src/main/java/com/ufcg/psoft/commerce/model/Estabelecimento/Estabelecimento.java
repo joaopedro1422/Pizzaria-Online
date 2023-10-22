@@ -40,19 +40,15 @@ public class Estabelecimento {
     @Column(name = "nome_estabelecimento")
     private String nome;
 
-    @JsonIgnore
-    @JoinColumn(name = "saboresPizza")
-    @OneToMany(cascade=CascadeType.PERSIST, fetch = FetchType.EAGER)
+    @OneToMany(cascade=CascadeType.PERSIST)
     private Set<SaborPizza> saboresPizza;
 
-    @JsonIgnore
-    @JoinColumn(name = "clientes")
-    @OneToMany(cascade=CascadeType.PERSIST, fetch = FetchType.EAGER)
+    @OneToMany(cascade=CascadeType.PERSIST)
     private Set<Cliente> clientes;
 
 
     @JsonIgnore
-    @JoinColumn(name = "entregadores")
+    @JoinColumn(name = "estabelecimento_id")
     @OneToMany(cascade= CascadeType.PERSIST, fetch = FetchType.EAGER)
     private Set<Entregador> entregadores;
 

@@ -1,6 +1,5 @@
 package com.ufcg.psoft.commerce.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -13,7 +12,6 @@ import com.ufcg.psoft.commerce.dto.PizzaDTO.SaborResponseDTO;
 import com.ufcg.psoft.commerce.enums.MetodoPagamento;
 import com.ufcg.psoft.commerce.enums.TamanhoPizza;
 import com.ufcg.psoft.commerce.exception.CustomErrorType;
-import com.ufcg.psoft.commerce.exception.Pedido.PedidoCodigoAcessoIncorretoException;
 import com.ufcg.psoft.commerce.model.Cliente.Cliente;
 import com.ufcg.psoft.commerce.model.Entregador.Entregador;
 import com.ufcg.psoft.commerce.model.Estabelecimento.Estabelecimento;
@@ -25,6 +23,7 @@ import com.ufcg.psoft.commerce.repository.Entregador.EntregadorRepository;
 import com.ufcg.psoft.commerce.repository.Estabelecimento.EstabelecimentoRepository;
 import com.ufcg.psoft.commerce.repository.Pedido.PedidoRepository;
 import com.ufcg.psoft.commerce.repository.Pizza.SaborRepository;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -32,8 +31,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -55,10 +58,11 @@ public class EstabelecimentoControllerTests {
 
     @Autowired
     EstabelecimentoRepository estabelecimentoRepository;
-    @Autowired
-    SaborRepository saborRepository;
+
     @Autowired
     EntregadorRepository entregadorRepository;
+    @Autowired
+    SaborRepository saborRepository;
 
     @Autowired
     ClienteRepository clienteRepository;
@@ -245,15 +249,6 @@ public class EstabelecimentoControllerTests {
         void quandoBuscarCardapioEstabelecimento() throws Exception {
             // Arrange
 
-            Entregador entregador = entregadorRepository.save(Entregador.builder()
-                    .nome("Lana Del Rey")
-                    .placaVeiculo("ABC-1234")
-                    .corVeiculo("Azul")
-                    .tipoVeiculo("moto")
-                    .codigoAcesso("123456")
-                    .build()
-            );
-
             SaborPizza sabor1 = saborRepository.save(SaborPizza.builder()
                     .saborDaPizza("Calabresa")
                     .valorMedia(25.0)
@@ -288,7 +283,6 @@ public class EstabelecimentoControllerTests {
                     .disponibilidadeSabor(true)
                     //.estabelecimento(estabelecimento)
                     .build());
-
 
             estabelecimento.setSaboresPizza(Set.of(sabor1, sabor2, sabor3, sabor4));
             estabelecimentoRepository.save(estabelecimento);
@@ -399,15 +393,6 @@ public class EstabelecimentoControllerTests {
         @DisplayName("Quando buscamos o cardapio de um estabelecimento por saborDaPizza (doce)")
         void quandoBuscarCardapioEstabelecimentoPorsaborDaPizzaDoce() throws Exception {
             // Arrange
-
-            Entregador entregador = entregadorRepository.save(Entregador.builder()
-                    .nome("Lana Del Rey")
-                    .placaVeiculo("ABC-1234")
-                    .corVeiculo("Azul")
-                    .tipoVeiculo("moto")
-                    .codigoAcesso("123456")
-                    .build()
-            );
 
             SaborPizza sabor1 = saborRepository.save(SaborPizza.builder()
                     .saborDaPizza("Calabresa")
@@ -893,144 +878,39 @@ public class EstabelecimentoControllerTests {
     @Nested
     @DisplayName("Métodos pagamento")
     class testesMetodoPagamento {
-        final String URL_METODOPAGAMENTO = "/estabelecimentos/disponibilidadePagamento";
-
-        @BeforeEach
-        public void setup(){
-
-            pizzaM = Pizza.builder()
-                    .sabor1(sabor)
-                    .tamanho(TamanhoPizza.MEDIA)
-                    .build();
-
-
-            List<Pizza> pizzas = List.of(pizzaM);
-
-            Entregador entregador = Entregador.builder()
-                    .nome("Tico")
-                    .codigoAcesso("742819")
-                    .corVeiculo("Vermelho")
-                    .tipoVeiculo("Moto")
-                    .placaVeiculo("312312")
-                    .build();
-
-            Pedido pedido1 = Pedido.builder()
-                    .codigoAcesso("123456")
-                    .cliente(1L)
-                    .estabelecimento(1L)
-                    .metodoPagamento(MetodoPagamento.PIX)
-                    .enderecoEntrega("Rua nova,123")
-                    .pizzas(pizzas)
-                    .valorTotal(55)
-                    .status(com.ufcg.psoft.commerce.enums.StatusPedido.PEDIDO_RECEBIDO)
-                    .build();
-
-            Estabelecimento estabelecimento1 = Estabelecimento.builder()
-                            .nome("Tenda do Tiquin")
-                            .codigoAcesso("123456")
-                    .build();
-
-
-            pedidoRepository.save(pedido1);
-            estabelecimentoRepository.save(estabelecimento1);
-
-        }
 
         @Test
         @DisplayName("Teste do pagamento por pix")
-        public void porPixTest() throws Exception {
+        public void porPixTest(){
 
-            String responseJsonString = driver.perform(post(URL_METODOPAGAMENTO)
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .param("MetodoPagamento", "PIX")
-                            .param("CodigoAcessoEstabelecimento", "123456")
-                            .param("CodigoAcessoPedido", "654321"))
-                    .andExpect(status().isOk())
-                    .andDo(print())
-                    .andReturn().getResponse().getContentAsString();
+            assertTrue(false);
 
-            Pedido resultado = objectMapper.readValue(responseJsonString, Pedido.PedidoBuilder.class).build();
-
-
-            assertEquals(MetodoPagamento.PIX, pedido.getMetodoPagamento());
-            assertEquals(52.25, pedido.getValorTotal());
         }
 
 
         @Test
         @DisplayName("Teste do pagamento por cartao de credito")
-        public void porCreditoTest() throws Exception {
-
-            String responseJsonString = driver.perform(post(URL_METODOPAGAMENTO)
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .param("MetodoPagamento", "CREDITO")
-                            .param("CodigoAcessoEstabelecimento", "123456")
-                            .param("CodigoAcessoPedido", "654321"))
-                    .andExpect(status().isOk())
-                    .andDo(print())
-                    .andReturn().getResponse().getContentAsString();
-
-            Pedido resultado = objectMapper.readValue(responseJsonString, Pedido.PedidoBuilder.class).build();
-
-
-            assertEquals(MetodoPagamento.CARTAO_CREDITO, pedido.getMetodoPagamento());
-            assertEquals(55.0, pedido.getValorTotal());
+        public void porCreditoTest(){
+            assertTrue(false);
         }
 
         @Test
         @DisplayName("Teste do pagamento por debito")
-        public void porDebitoTest() throws Exception {
-            String responseJsonString = driver.perform(post(URL_METODOPAGAMENTO)
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .param("MetodoPagamento", "DEBITO")
-                            .param("CodigoAcessoEstabelecimento", "123456")
-                            .param("CodigoAcessoPedido", "654321"))
-                    .andExpect(status().isOk())
-                    .andDo(print())
-                    .andReturn().getResponse().getContentAsString();
-
-            Pedido resultado = objectMapper.readValue(responseJsonString, Pedido.PedidoBuilder.class).build();
-
-
-            assertEquals(MetodoPagamento.PIX, pedido.getMetodoPagamento());
-            assertEquals(53.625, pedido.getValorTotal());
+        public void porDebitoTest(){
+            assertTrue(false);
         }
 
         @Test
-        @DisplayName("Teste codigo de acesso passado errado")
-        public void codigoAcessoPedidoInvalidoTest() throws Exception {
-            String responseJsonString = driver.perform(post(URL_METODOPAGAMENTO)
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .param("MetodoPagamento", "DEBITO")
-                            .param("CodigoAcessoEstabelecimento", "123456")
-                            .param("CodigoAcessoPedido", "654221"))
-                    .andExpect(status().isBadRequest())
-                    .andDo(print())
-                    .andReturn().getResponse().getContentAsString();
-
-            CustomErrorType resultado = objectMapper.readValue(responseJsonString, CustomErrorType.class);
-
-
-            assertEquals("Codigo Incorreto", resultado.getMessage());
+        @DisplayName("Teste codigo de acesso passado indevidamente")
+        public void codigoAcessoPedidoInvalidoTest(){
+            assertTrue(false);
         }
 
 
         @Test
         @DisplayName("Teste codigo de acesso estabelecimento passado indevidamente")
-        public void codigoAcessoEstabelecimentoInvalidoTest() throws Exception {
-            String responseJsonString = driver.perform(post(URL_METODOPAGAMENTO)
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .param("MetodoPagamento", "DEBITO")
-                            .param("CodigoAcessoEstabelecimento", "133455")
-                            .param("CodigoAcessoPedido", "654321"))
-                    .andExpect(status().isBadRequest())
-                    .andDo(print())
-                    .andReturn().getResponse().getContentAsString();
-
-            CustomErrorType resultado = objectMapper.readValue(responseJsonString, CustomErrorType.class);
-
-
-            assertEquals("Codigo de acesso invalido!", resultado.getMessage());
+        public void codigoAcessoEstabelecimentoInvalidoTest(){
+            assertTrue(false);
         }
 
         @Test
@@ -1112,7 +992,6 @@ public class EstabelecimentoControllerTests {
                     .observers(new ArrayList<>())
                     .build());
 
-
             estabelecimento.setSaboresPizza(Set.of(sabor1));
             estabelecimentoRepository.save(estabelecimento);
 
@@ -1124,7 +1003,7 @@ public class EstabelecimentoControllerTests {
                             .contentType(MediaType.APPLICATION_JSON)
                             .param("idSaborPizza", sabor1.getIdPizza().toString())
                             .param("codigoAcesso", estabelecimento.getCodigoAcesso())
-                            .param("disponibilidade", objectMapper.writeValueAsString(sabor1.getDisponibilidadeSabor()))
+                            .param("disponibilidade", objectMapper.writeValueAsString(true))
                             .content(objectMapper.writeValueAsString(sabor1)))
                     .andExpect(status().isOk())
                     .andDo(print())
@@ -1147,6 +1026,120 @@ public class EstabelecimentoControllerTests {
         public void pedidoRecebido() throws Exception {
 
 
+        }
+    }
+
+    @Nested
+    @DisplayName("Testes para notificar o cliente sobre o pedido em rota")
+    class notificarCliente{
+        @Test
+        @DisplayName("Quando atribuo um entregador existente a um pedido existente")
+        @Transactional
+        public void test01() throws Exception {
+            //arrange
+            ClienteDTO clienteDTO = ClienteDTO.builder()
+                    .nome("Cliente de Exemplo")
+                    .endereco("Rua Exemplo, 123")
+                    .codigoAcesso("123456")
+                    .build();
+
+            cliente = clienteRepository.save(objectMapper.convertValue(clienteDTO, Cliente.class));
+
+            Set<SaborPizza> cardapio = new HashSet<>();
+            Set<Entregador> entregadores = new HashSet<>();
+
+            objectMapper.registerModule(new JavaTimeModule());
+            estabelecimento = estabelecimentoRepository.save(Estabelecimento.builder()
+                    .nome("bia")
+                    .saboresPizza(cardapio)
+                    .entregadores(entregadores)
+                    .codigoAcesso("654311")
+                    .build());
+            sabor = saborRepository.save(SaborPizza.builder()
+                    .saborDaPizza("Calabresa")
+                    .tipoDeSabor("salgado")
+                    .valorMedia(10.0)
+                    .valorGrande(15.0)
+                    .disponibilidadeSabor(true)
+                    //.estabelecimento(estabelecimento)
+                    .build());
+            saborPostPutDTO = SaborPostPutDTO.builder()
+                    .saborDaPizza(sabor.getSaborDaPizza())
+                    .tipoDeSabor(sabor.getTipoDeSabor())
+                    .valorMedia(sabor.getValorMedia())
+                    .valorGrande(sabor.getValorGrande())
+                    .disponibilidadeSabor(sabor.getDisponibilidadeSabor())
+                    .build();
+
+            pizzaM = Pizza.builder()
+                    .sabor1(sabor)
+                    .tamanho(TamanhoPizza.MEDIA)
+                    .build();
+
+
+            List<Pizza> pizzas = List.of(pizzaM);
+
+            pedido = pedidoRepository.save(Pedido.builder()
+                    .codigoAcesso("123456")
+                    .cliente(cliente.getId())
+                    .estabelecimento(estabelecimento.getId())
+                    .metodoPagamento(MetodoPagamento.CARTAO_CREDITO)
+                    .enderecoEntrega("Rua nova,123")
+                    .pizzas(pizzas)
+                    .status(com.ufcg.psoft.commerce.enums.StatusPedido.PEDIDO_RECEBIDO)
+                    .build());
+
+            pedidoDTO = PedidoDTO.builder()
+                    .codigoAcesso(pedido.getCodigoAcesso())
+                    .clienteId(pedido.getCliente())
+                    .estabelecimentoId(pedido.getEstabelecimento())
+                    .metodoPagamento(pedido.getMetodoPagamento())
+                    .enderecoEntrega(pedido.getEnderecoEntrega())
+                    .pizzas(pedido.getPizzas())
+                    .build();
+
+            Entregador entregador = entregadorRepository.save(Entregador.builder()
+                    .nome("Entregador Um")
+                    .placaVeiculo("ABC-1234")
+                    .corVeiculo("Branco")
+                    .tipoVeiculo("Carro")
+                    .codigoAcesso("123456")
+                    .isDisponibilidade(true)
+                    .build());
+
+            // act
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            PrintStream printStream = new PrintStream(outputStream);
+            PrintStream originalSystemOut = System.out;
+            System.setOut(printStream);
+
+
+            String resultadoStr = driver.perform(MockMvcRequestBuilders.put(URI_ESTABELECIMENTOS + "/" + estabelecimento.getId()  + "/notificarCliente")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .param("idPedido", String.valueOf(pedido.getId()))
+                            .param("codigoAcesso", entregador.getCodigoAcesso())
+                            .param("id", estabelecimento.getId().toString()))
+                    .andExpect(status().isOk())
+                    .andDo(MockMvcResultHandlers.print())
+                    .andReturn().getResponse().getContentAsString();
+
+            Pedido pedidoAtualizado = objectMapper.readValue(resultadoStr, Pedido.class);
+
+            assertEquals(pedidoAtualizado.getStatus(), com.ufcg.psoft.commerce.enums.StatusPedido.PEDIDO_EM_ROTA);
+            assertNotNull(pedidoAtualizado.getEntregador());
+
+            System.setOut(originalSystemOut); // Restaurar a saída do System.out
+
+            String resultadoPrint = outputStream.toString().trim();
+
+            String notificacaoEsperada = " - PEDIDO EM ROTA - \n" +
+                    "Cliente: " + cliente.getNome() + "\n" +
+                    "Entregador: " + entregador.getNome() + "\n" +
+                    "Tipo do Veiculo: " + entregador.getTipoVeiculo() + "\n" +
+                    "Cor do Veiculo: " + entregador.getCorVeiculo() + "\n" +
+                    "Placa do Veiculo: " + entregador.getPlacaVeiculo();
+
+            assertTrue(resultadoPrint.contains(notificacaoEsperada));
         }
     }
 }

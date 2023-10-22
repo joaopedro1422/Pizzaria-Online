@@ -47,6 +47,7 @@ public class EstabelecimentoV1Service {
     @Autowired
     private PedidoRepository pedidoRepository;
 
+    ClienteService clienteService;
     @Autowired
     private AssociacaoRepository associacaoRepository;
 
@@ -367,9 +368,15 @@ public class EstabelecimentoV1Service {
 
         return resultado;
     }
+
+    // metodo auxiliar
+    private void notificaPedidoEmRota(Pedido pedido, Entregador entregador){
+        Cliente cliente = clienteService.getCliente(pedido.getCliente());
+        System.out.println(" - PEDIDO EM ROTA - \n" +
+                "Cliente: " + cliente.getNome() + "\n" +
+                "Entregador: " + entregador.getNome() + "\n" +
+                "Tipo do Veiculo: " + entregador.getTipoVeiculo() + "\n" +
+                "Cor do Veiculo: " + entregador.getCorVeiculo() + "\n" +
+                "Placa do Veiculo: " + entregador.getPlacaVeiculo() + "\n");
+    }
 }
-
-
-
-
-
