@@ -43,7 +43,7 @@ public class SaborV1Service implements SaborService {
                 .valorMedia(saborDTO.getValorMedia())
                 .valorGrande(saborDTO.getValorGrande())
                 .disponibilidadeSabor(saborDTO.getDisponibilidadeSabor())
-                .estabelecimento(estabelecimento)
+                //.estabelecimento(estabelecimento)
                 .build();
 
         saborRepository.save(saborPizza);

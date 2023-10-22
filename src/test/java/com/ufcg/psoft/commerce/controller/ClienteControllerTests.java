@@ -109,7 +109,7 @@ public class ClienteControllerTests {
                 .valorMedia(10.0)
                 .valorGrande(15.0)
                 .disponibilidadeSabor(true)
-                .estabelecimento(estabelecimento)
+                //.estabelecimento(estabelecimento)
                 .build());
         saborPostPutDTO = SaborPostPutDTO.builder()
                 .saborDaPizza(sabor.getSaborDaPizza())

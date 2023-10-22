@@ -76,6 +76,10 @@ public class Pedido {
     @Column(nullable = false, name = "enum_status_pedido")
     private StatusPedido status;
 
+    @JsonProperty("codigoAcessoEstabelecimento")
+    @Column(name = "desc_codigo_acesso_estabelecimento")
+    private String codigoAcessoEstabelecimento;
+
 }
 
 

@@ -76,7 +76,7 @@ public class SaborPizzaControllerTests {
                 .valorMedia(10.0)
                 .valorGrande(15.0)
                 .disponibilidadeSabor(true)
-//				.estabelecimento(estabelecimento)
+//				//.estabelecimento(estabelecimento)
                 .build());
         saborPostPutDTO = SaborPostPutDTO.builder()
                 .saborDaPizza(sabor.getSaborDaPizza())
@@ -198,7 +198,7 @@ public class SaborPizzaControllerTests {
                     .valorMedia(10.0)
                     .valorGrande(15.0)
                     .disponibilidadeSabor(false)
-                    .estabelecimento(estabelecimento)
+                    //.estabelecimento(estabelecimento)
                     .build();
             SaborPizza sabor2 = SaborPizza.builder()
                     .saborDaPizza("Frango")
@@ -206,7 +206,7 @@ public class SaborPizzaControllerTests {
                     .valorMedia(10.0)
                     .valorGrande(15.0)
                     .disponibilidadeSabor(false)
-                    .estabelecimento(estabelecimento)
+                    //.estabelecimento(estabelecimento)
                     .build();
             saborRepository.saveAll(Arrays.asList(sabor1, sabor2));
 
@@ -622,7 +622,7 @@ public class SaborPizzaControllerTests {
                     .valorMedia(10.0)
                     .valorGrande(15.0)
                     .disponibilidadeSabor(false)
-                    .estabelecimento(estabelecimento)
+                    //.estabelecimento(estabelecimento)
                     .build());
             sabor.setDisponibilidadeSabor(true);
             saborRepository.save(sabor);

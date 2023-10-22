@@ -52,12 +52,14 @@ public class SaborPizza {
 
     private Boolean disponibilidadeSabor;
 
-
+    /*
     @JsonIgnore
-    @ManyToOne
-    @JoinColumn(name = "estabelecimento_pk_id")
+    @OneToOne
+    @JoinColumn(name = "estabelecimento_id_pk")
     private Estabelecimento estabelecimento;
 
+
+     */
     @JsonIgnore
     @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL)
     private List<Cliente> observers;

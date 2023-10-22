@@ -12,6 +12,7 @@ import com.ufcg.psoft.commerce.exception.Cliente.ClienteCodigoAcessoInvalidoExce
 import com.ufcg.psoft.commerce.exception.Estabelecimento.CodigoAcessoEstabelecimentoException;
 import com.ufcg.psoft.commerce.exception.Estabelecimento.CodigoAcessoInvalidoException;
 import com.ufcg.psoft.commerce.exception.Estabelecimento.EstabelecimentoNaoEncontradoException;
+import com.ufcg.psoft.commerce.exception.Pedido.MetodoPagamentoInvalidoException;
 import com.ufcg.psoft.commerce.exception.Pedido.PedidoCodigoAcessoIncorretoException;
 import com.ufcg.psoft.commerce.exception.Pedido.PedidoNaoEncontradoException;
 import com.ufcg.psoft.commerce.exception.Pizza.TipoDeSaborNaoExisteException;
@@ -308,6 +309,63 @@ public class EstabelecimentoV1Service {
 
 
 
+    }
+
+    public Pedido disponibilizarMetodoPagamento(String metodoPagamento,
+                                                String codigoAcessoEstabelecimento,
+                                                String codigoAcessoPedido){
+
+        if(!pedidoRepository.existsByCodigoAcesso(codigoAcessoPedido)){
+
+            throw new PedidoCodigoAcessoIncorretoException();
+
+        }
+
+        Pedido pedido = pedidoRepository.findByCodigoAcesso(codigoAcessoPedido).get();
+
+        if(!pedido.getCodigoAcessoEstabelecimento().equals(codigoAcessoEstabelecimento)){
+
+            throw new CodigoAcessoEstabelecimentoException();
+
+        }
+
+
+        double valor = calculaValor(pedido.getValorTotal(), metodoPagamento);
+
+        MetodoPagamento metodoPAG;
+
+        if(metodoPagamento.equals("PIX")) metodoPAG = MetodoPagamento.PIX;
+        else if(metodoPagamento.equals("DEBITO")) metodoPAG = MetodoPagamento.CARTAO_DEBITO;
+        else if (metodoPagamento.equals("CREDITO")) metodoPAG = MetodoPagamento.CARTAO_CREDITO;
+        else throw new MetodoPagamentoInvalidoException();
+
+        pedido.setMetodoPagamento(metodoPAG);
+        pedido.setValorTotal(valor);
+
+        return pedidoRepository.saveAndFlush(pedido);
+
+    }
+
+    private Double calculaValor(Double valor, String metodoPagamento){
+
+        Double resultado;
+
+        if(metodoPagamento.equals("PIX")){
+
+            resultado = valor * 0.95;
+
+        }else if (metodoPagamento.equals("DEBITO")){
+
+            resultado = valor * 0.975;
+
+        }else{
+
+            resultado = valor;
+
+        }
+
+
+        return resultado;
     }
 }
 

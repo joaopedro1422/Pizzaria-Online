@@ -13,6 +13,7 @@ import com.ufcg.psoft.commerce.dto.PizzaDTO.SaborResponseDTO;
 import com.ufcg.psoft.commerce.enums.MetodoPagamento;
 import com.ufcg.psoft.commerce.enums.TamanhoPizza;
 import com.ufcg.psoft.commerce.exception.CustomErrorType;
+import com.ufcg.psoft.commerce.exception.Pedido.PedidoCodigoAcessoIncorretoException;
 import com.ufcg.psoft.commerce.model.Cliente.Cliente;
 import com.ufcg.psoft.commerce.model.Entregador.Entregador;
 import com.ufcg.psoft.commerce.model.Estabelecimento.Estabelecimento;
@@ -259,7 +260,7 @@ public class EstabelecimentoControllerTests {
                     .valorGrande(35.0)
                     .tipoDeSabor("salgado")
                     .disponibilidadeSabor(true)
-                    .estabelecimento(estabelecimento)
+                    //.estabelecimento(estabelecimento)
                     .build());
 
             SaborPizza sabor2 = saborRepository.save(SaborPizza.builder()
@@ -268,7 +269,7 @@ public class EstabelecimentoControllerTests {
                     .valorGrande(30.0)
                     .tipoDeSabor("salgado")
                     .disponibilidadeSabor(true)
-                    .estabelecimento(estabelecimento)
+                    //.estabelecimento(estabelecimento)
                     .build());
             SaborPizza sabor3 = saborRepository.save(SaborPizza.builder()
                     .saborDaPizza("Chocolate")
@@ -276,7 +277,7 @@ public class EstabelecimentoControllerTests {
                     .valorGrande(35.0)
                     .tipoDeSabor("doce")
                     .disponibilidadeSabor(true)
-                    .estabelecimento(estabelecimento)
+                    //.estabelecimento(estabelecimento)
                     .build());
 
             SaborPizza sabor4 = saborRepository.save(SaborPizza.builder()
@@ -285,7 +286,7 @@ public class EstabelecimentoControllerTests {
                     .valorGrande(30.0)
                     .tipoDeSabor("doce")
                     .disponibilidadeSabor(true)
-                    .estabelecimento(estabelecimento)
+                    //.estabelecimento(estabelecimento)
                     .build());
 
 
@@ -343,7 +344,7 @@ public class EstabelecimentoControllerTests {
                     .valorGrande(35.0)
                     .tipoDeSabor("salgado")
                     .disponibilidadeSabor(true)
-                    .estabelecimento(estabelecimento)
+                    //.estabelecimento(estabelecimento)
                     .build());
 
             SaborPizza sabor2 = saborRepository.save(SaborPizza.builder()
@@ -352,7 +353,7 @@ public class EstabelecimentoControllerTests {
                     .valorGrande(30.0)
                     .tipoDeSabor("salgado")
                     .disponibilidadeSabor(true)
-                    .estabelecimento(estabelecimento)
+                    //.estabelecimento(estabelecimento)
                     .build());
             SaborPizza sabor3 = saborRepository.save(SaborPizza.builder()
                     .saborDaPizza("Chocolate")
@@ -360,7 +361,7 @@ public class EstabelecimentoControllerTests {
                     .valorGrande(35.0)
                     .tipoDeSabor("doce")
                     .disponibilidadeSabor(true)
-                    .estabelecimento(estabelecimento)
+                    //.estabelecimento(estabelecimento)
                     .build());
 
             SaborPizza sabor4 = saborRepository.save(SaborPizza.builder()
@@ -369,7 +370,7 @@ public class EstabelecimentoControllerTests {
                     .valorGrande(30.0)
                     .tipoDeSabor("doce")
                     .disponibilidadeSabor(true)
-                    .estabelecimento(estabelecimento)
+                    //.estabelecimento(estabelecimento)
                     .build());
 
             estabelecimento.setSaboresPizza(Set.of(sabor1, sabor2, sabor3, sabor4));
@@ -414,7 +415,7 @@ public class EstabelecimentoControllerTests {
                     .valorGrande(35.0)
                     .tipoDeSabor("salgado")
                     .disponibilidadeSabor(true)
-                    .estabelecimento(estabelecimento)
+                    //.estabelecimento(estabelecimento)
                     .build());
 
             SaborPizza sabor2 = saborRepository.save(SaborPizza.builder()
@@ -423,7 +424,7 @@ public class EstabelecimentoControllerTests {
                     .valorGrande(30.0)
                     .tipoDeSabor("salgado")
                     .disponibilidadeSabor(true)
-                    .estabelecimento(estabelecimento)
+                    //.estabelecimento(estabelecimento)
                     .build());
             SaborPizza sabor3 = saborRepository.save(SaborPizza.builder()
                     .saborDaPizza("Chocolate")
@@ -431,7 +432,7 @@ public class EstabelecimentoControllerTests {
                     .valorGrande(35.0)
                     .tipoDeSabor("doce")
                     .disponibilidadeSabor(true)
-                    .estabelecimento(estabelecimento)
+                    //.estabelecimento(estabelecimento)
                     .build());
 
             SaborPizza sabor4 = saborRepository.save(SaborPizza.builder()
@@ -440,7 +441,7 @@ public class EstabelecimentoControllerTests {
                     .valorGrande(30.0)
                     .tipoDeSabor("doce")
                     .disponibilidadeSabor(true)
-                    .estabelecimento(estabelecimento)
+                    //.estabelecimento(estabelecimento)
                     .build());
 
             estabelecimento.setSaboresPizza(Set.of(sabor1,sabor2,sabor3,sabor4));
@@ -474,7 +475,7 @@ public class EstabelecimentoControllerTests {
                     .valorGrande(35.0)
                     .tipoDeSabor("salgado")
                     .disponibilidadeSabor(true)
-                    .estabelecimento(estabelecimento)
+                    //.estabelecimento(estabelecimento)
                     .build());
 
             SaborPizza sabor2 = saborRepository.save(SaborPizza.builder()
@@ -483,7 +484,7 @@ public class EstabelecimentoControllerTests {
                     .valorGrande(30.0)
                     .tipoDeSabor("salgado")
                     .disponibilidadeSabor(true)
-                    .estabelecimento(estabelecimento)
+                    //.estabelecimento(estabelecimento)
                     .build());
             SaborPizza sabor3 = saborRepository.save(SaborPizza.builder()
                     .saborDaPizza("Chocolate")
@@ -491,7 +492,7 @@ public class EstabelecimentoControllerTests {
                     .valorGrande(35.0)
                     .tipoDeSabor("doce")
                     .disponibilidadeSabor(true)
-                    .estabelecimento(estabelecimento)
+                    //.estabelecimento(estabelecimento)
                     .build());
 
             SaborPizza sabor4 = saborRepository.save(SaborPizza.builder()
@@ -500,7 +501,7 @@ public class EstabelecimentoControllerTests {
                     .valorGrande(30.0)
                     .tipoDeSabor("doce")
                     .disponibilidadeSabor(true)
-                    .estabelecimento(estabelecimento)
+                    //.estabelecimento(estabelecimento)
                     .build());
 
             estabelecimentoRepository.save(estabelecimento);
@@ -534,7 +535,7 @@ public class EstabelecimentoControllerTests {
                     .valorGrande(35.0)
                     .tipoDeSabor("salgado")
                     .disponibilidadeSabor(true)
-                    .estabelecimento(estabelecimento)
+                    //.estabelecimento(estabelecimento)
                     .build());
 
             SaborPizza sabor02 = saborRepository.save(SaborPizza.builder()
@@ -543,7 +544,7 @@ public class EstabelecimentoControllerTests {
                     .valorGrande(30.0)
                     .tipoDeSabor("salgado")
                     .disponibilidadeSabor(true)
-                    .estabelecimento(estabelecimento)
+                    //.estabelecimento(estabelecimento)
                     .build());
             SaborPizza sabor03 = saborRepository.save(SaborPizza.builder()
                     .saborDaPizza("Chocolate")
@@ -551,7 +552,7 @@ public class EstabelecimentoControllerTests {
                     .valorGrande(35.0)
                     .tipoDeSabor("doce")
                     .disponibilidadeSabor(true)
-                    .estabelecimento(estabelecimento)
+                    //.estabelecimento(estabelecimento)
                     .build());
 
             SaborPizza sabor04 = saborRepository.save(SaborPizza.builder()
@@ -560,7 +561,7 @@ public class EstabelecimentoControllerTests {
                     .valorGrande(30.0)
                     .tipoDeSabor("doce")
                     .disponibilidadeSabor(true)
-                    .estabelecimento(estabelecimento)
+                    //.estabelecimento(estabelecimento)
                     .build());
 
 
@@ -594,7 +595,7 @@ public class EstabelecimentoControllerTests {
                     .valorGrande(35.0)
                     .tipoDeSabor("salgado")
                     .disponibilidadeSabor(true)
-                    .estabelecimento(estabelecimento)
+                    //.estabelecimento(estabelecimento)
                     .build());
 
             SaborPizza sabor2 = saborRepository.save(SaborPizza.builder()
@@ -603,7 +604,7 @@ public class EstabelecimentoControllerTests {
                     .valorGrande(30.0)
                     .tipoDeSabor("salgado")
                     .disponibilidadeSabor(true)
-                    .estabelecimento(estabelecimento)
+                    //.estabelecimento(estabelecimento)
                     .build());
             SaborPizza sabor3 = saborRepository.save(SaborPizza.builder()
                     .saborDaPizza("Chocolate")
@@ -611,7 +612,7 @@ public class EstabelecimentoControllerTests {
                     .valorGrande(35.0)
                     .tipoDeSabor("doce")
                     .disponibilidadeSabor(true)
-                    .estabelecimento(estabelecimento)
+                    //.estabelecimento(estabelecimento)
                     .build());
 
             SaborPizza sabor4 = saborRepository.save(SaborPizza.builder()
@@ -620,7 +621,7 @@ public class EstabelecimentoControllerTests {
                     .valorGrande(30.0)
                     .tipoDeSabor("doce")
                     .disponibilidadeSabor(true)
-                    .estabelecimento(estabelecimento)
+                    //.estabelecimento(estabelecimento)
                     .build());
             estabelecimento.setSaboresPizza(Set.of(sabor1, sabor2, sabor3, sabor4));
             estabelecimentoRepository.save(estabelecimento);
@@ -655,7 +656,7 @@ public class EstabelecimentoControllerTests {
                     .valorGrande(35.0)
                     .tipoDeSabor("salgado")
                     .disponibilidadeSabor(true)
-                    .estabelecimento(estabelecimento)
+                    //.estabelecimento(estabelecimento)
                     .build());
 
             SaborPizza sabor2 = saborRepository.save(SaborPizza.builder()
@@ -664,7 +665,7 @@ public class EstabelecimentoControllerTests {
                     .valorGrande(30.0)
                     .tipoDeSabor("salgado")
                     .disponibilidadeSabor(true)
-                    .estabelecimento(estabelecimento)
+                    //.estabelecimento(estabelecimento)
                     .build());
             SaborPizza sabor3 = saborRepository.save(SaborPizza.builder()
                     .saborDaPizza("Chocolate")
@@ -672,7 +673,7 @@ public class EstabelecimentoControllerTests {
                     .valorGrande(35.0)
                     .tipoDeSabor("doce")
                     .disponibilidadeSabor(true)
-                    .estabelecimento(estabelecimento)
+                    //.estabelecimento(estabelecimento)
                     .build());
 
             SaborPizza sabor4 = saborRepository.save(SaborPizza.builder()
@@ -681,7 +682,7 @@ public class EstabelecimentoControllerTests {
                     .valorGrande(30.0)
                     .tipoDeSabor("doce")
                     .disponibilidadeSabor(true)
-                    .estabelecimento(estabelecimento)
+                    //.estabelecimento(estabelecimento)
                     .build());
 
 
@@ -718,7 +719,7 @@ public class EstabelecimentoControllerTests {
                     .valorGrande(35.0)
                     .tipoDeSabor("salgado")
                     .disponibilidadeSabor(true)
-                    .estabelecimento(estabelecimento)
+                    //.estabelecimento(estabelecimento)
                     .build());
 
             SaborPizza sabor2 = saborRepository.save(SaborPizza.builder()
@@ -727,7 +728,7 @@ public class EstabelecimentoControllerTests {
                     .valorGrande(30.0)
                     .tipoDeSabor("salgado")
                     .disponibilidadeSabor(true)
-                    .estabelecimento(estabelecimento)
+                    //.estabelecimento(estabelecimento)
                     .build());
             SaborPizza sabor3 = saborRepository.save(SaborPizza.builder()
                     .saborDaPizza("Chocolate")
@@ -735,7 +736,7 @@ public class EstabelecimentoControllerTests {
                     .valorGrande(35.0)
                     .tipoDeSabor("doce")
                     .disponibilidadeSabor(true)
-                    .estabelecimento(estabelecimento)
+                    //.estabelecimento(estabelecimento)
                     .build());
 
             SaborPizza sabor4 = saborRepository.save(SaborPizza.builder()
@@ -744,7 +745,7 @@ public class EstabelecimentoControllerTests {
                     .valorGrande(30.0)
                     .tipoDeSabor("doce")
                     .disponibilidadeSabor(true)
-                    .estabelecimento(estabelecimento)
+                    //.estabelecimento(estabelecimento)
                     .build());
 
             estabelecimento.setSaboresPizza(Set.of(sabor1, sabor2, sabor3, sabor4));
@@ -778,7 +779,7 @@ public class EstabelecimentoControllerTests {
                     .valorGrande(35.0)
                     .tipoDeSabor("salgado")
                     .disponibilidadeSabor(true)
-                    .estabelecimento(estabelecimento)
+                    //.estabelecimento(estabelecimento)
                     .build());
 
             SaborPizza sabor2 = saborRepository.save(SaborPizza.builder()
@@ -787,7 +788,7 @@ public class EstabelecimentoControllerTests {
                     .valorGrande(30.0)
                     .tipoDeSabor("salgado")
                     .disponibilidadeSabor(true)
-                    .estabelecimento(estabelecimento)
+                    //.estabelecimento(estabelecimento)
                     .build());
             SaborPizza sabor3 = saborRepository.save(SaborPizza.builder()
                     .saborDaPizza("Chocolate")
@@ -795,7 +796,7 @@ public class EstabelecimentoControllerTests {
                     .valorGrande(35.0)
                     .tipoDeSabor("doce")
                     .disponibilidadeSabor(true)
-                    .estabelecimento(estabelecimento)
+                    //.estabelecimento(estabelecimento)
                     .build());
 
             SaborPizza sabor4 = saborRepository.save(SaborPizza.builder()
@@ -804,7 +805,7 @@ public class EstabelecimentoControllerTests {
                     .valorGrande(30.0)
                     .tipoDeSabor("doce")
                     .disponibilidadeSabor(true)
-                    .estabelecimento(estabelecimento)
+                    //.estabelecimento(estabelecimento)
                     .build());
 
             estabelecimento.setSaboresPizza(Set.of(sabor1, sabor2, sabor3, sabor4));
@@ -837,7 +838,7 @@ public class EstabelecimentoControllerTests {
                     .valorGrande(35.0)
                     .tipoDeSabor("salgado")
                     .disponibilidadeSabor(true)
-                    .estabelecimento(estabelecimento)
+                    //.estabelecimento(estabelecimento)
                     .build());
 
             SaborPizza sabor2 = saborRepository.save(SaborPizza.builder()
@@ -846,7 +847,7 @@ public class EstabelecimentoControllerTests {
                     .valorGrande(30.0)
                     .tipoDeSabor("salgado")
                     .disponibilidadeSabor(true)
-                    .estabelecimento(estabelecimento)
+                    //.estabelecimento(estabelecimento)
                     .build());
             SaborPizza sabor3 = saborRepository.save(SaborPizza.builder()
                     .saborDaPizza("Chocolate")
@@ -854,7 +855,7 @@ public class EstabelecimentoControllerTests {
                     .valorGrande(35.0)
                     .tipoDeSabor("doce")
                     .disponibilidadeSabor(false)
-                    .estabelecimento(estabelecimento)
+                    //.estabelecimento(estabelecimento)
                     .build());
 
             SaborPizza sabor4 = saborRepository.save(SaborPizza.builder()
@@ -863,7 +864,7 @@ public class EstabelecimentoControllerTests {
                     .valorGrande(30.0)
                     .tipoDeSabor("doce")
                     .disponibilidadeSabor(false)
-                    .estabelecimento(estabelecimento)
+                    //.estabelecimento(estabelecimento)
                     .build());
 
             estabelecimento.setSaboresPizza(Set.of(sabor1, sabor2, sabor3, sabor4));
@@ -892,39 +893,144 @@ public class EstabelecimentoControllerTests {
     @Nested
     @DisplayName("Métodos pagamento")
     class testesMetodoPagamento {
+        final String URL_METODOPAGAMENTO = "/estabelecimentos/disponibilidadePagamento";
+
+        @BeforeEach
+        public void setup(){
+
+            pizzaM = Pizza.builder()
+                    .sabor1(sabor)
+                    .tamanho(TamanhoPizza.MEDIA)
+                    .build();
+
+
+            List<Pizza> pizzas = List.of(pizzaM);
+
+            Entregador entregador = Entregador.builder()
+                    .nome("Tico")
+                    .codigoAcesso("742819")
+                    .corVeiculo("Vermelho")
+                    .tipoVeiculo("Moto")
+                    .placaVeiculo("312312")
+                    .build();
+
+            Pedido pedido1 = Pedido.builder()
+                    .codigoAcesso("123456")
+                    .cliente(1L)
+                    .estabelecimento(1L)
+                    .metodoPagamento(MetodoPagamento.PIX)
+                    .enderecoEntrega("Rua nova,123")
+                    .pizzas(pizzas)
+                    .valorTotal(55)
+                    .status(com.ufcg.psoft.commerce.enums.StatusPedido.PEDIDO_RECEBIDO)
+                    .build();
+
+            Estabelecimento estabelecimento1 = Estabelecimento.builder()
+                            .nome("Tenda do Tiquin")
+                            .codigoAcesso("123456")
+                    .build();
+
+
+            pedidoRepository.save(pedido1);
+            estabelecimentoRepository.save(estabelecimento1);
+
+        }
 
         @Test
         @DisplayName("Teste do pagamento por pix")
-        public void porPixTest(){
+        public void porPixTest() throws Exception {
 
-            assertTrue(false);
+            String responseJsonString = driver.perform(post(URL_METODOPAGAMENTO)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .param("MetodoPagamento", "PIX")
+                            .param("CodigoAcessoEstabelecimento", "123456")
+                            .param("CodigoAcessoPedido", "654321"))
+                    .andExpect(status().isOk())
+                    .andDo(print())
+                    .andReturn().getResponse().getContentAsString();
 
+            Pedido resultado = objectMapper.readValue(responseJsonString, Pedido.PedidoBuilder.class).build();
+
+
+            assertEquals(MetodoPagamento.PIX, pedido.getMetodoPagamento());
+            assertEquals(52.25, pedido.getValorTotal());
         }
 
 
         @Test
         @DisplayName("Teste do pagamento por cartao de credito")
-        public void porCreditoTest(){
-            assertTrue(false);
+        public void porCreditoTest() throws Exception {
+
+            String responseJsonString = driver.perform(post(URL_METODOPAGAMENTO)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .param("MetodoPagamento", "CREDITO")
+                            .param("CodigoAcessoEstabelecimento", "123456")
+                            .param("CodigoAcessoPedido", "654321"))
+                    .andExpect(status().isOk())
+                    .andDo(print())
+                    .andReturn().getResponse().getContentAsString();
+
+            Pedido resultado = objectMapper.readValue(responseJsonString, Pedido.PedidoBuilder.class).build();
+
+
+            assertEquals(MetodoPagamento.CARTAO_CREDITO, pedido.getMetodoPagamento());
+            assertEquals(55.0, pedido.getValorTotal());
         }
 
         @Test
         @DisplayName("Teste do pagamento por debito")
-        public void porDebitoTest(){
-            assertTrue(false);
+        public void porDebitoTest() throws Exception {
+            String responseJsonString = driver.perform(post(URL_METODOPAGAMENTO)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .param("MetodoPagamento", "DEBITO")
+                            .param("CodigoAcessoEstabelecimento", "123456")
+                            .param("CodigoAcessoPedido", "654321"))
+                    .andExpect(status().isOk())
+                    .andDo(print())
+                    .andReturn().getResponse().getContentAsString();
+
+            Pedido resultado = objectMapper.readValue(responseJsonString, Pedido.PedidoBuilder.class).build();
+
+
+            assertEquals(MetodoPagamento.PIX, pedido.getMetodoPagamento());
+            assertEquals(53.625, pedido.getValorTotal());
         }
 
         @Test
-        @DisplayName("Teste codigo de acesso passado indevidamente")
-        public void codigoAcessoPedidoInvalidoTest(){
-            assertTrue(false);
+        @DisplayName("Teste codigo de acesso passado errado")
+        public void codigoAcessoPedidoInvalidoTest() throws Exception {
+            String responseJsonString = driver.perform(post(URL_METODOPAGAMENTO)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .param("MetodoPagamento", "DEBITO")
+                            .param("CodigoAcessoEstabelecimento", "123456")
+                            .param("CodigoAcessoPedido", "654221"))
+                    .andExpect(status().isBadRequest())
+                    .andDo(print())
+                    .andReturn().getResponse().getContentAsString();
+
+            CustomErrorType resultado = objectMapper.readValue(responseJsonString, CustomErrorType.class);
+
+
+            assertEquals("Codigo Incorreto", resultado.getMessage());
         }
 
 
         @Test
         @DisplayName("Teste codigo de acesso estabelecimento passado indevidamente")
-        public void codigoAcessoEstabelecimentoInvalidoTest(){
-            assertTrue(false);
+        public void codigoAcessoEstabelecimentoInvalidoTest() throws Exception {
+            String responseJsonString = driver.perform(post(URL_METODOPAGAMENTO)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .param("MetodoPagamento", "DEBITO")
+                            .param("CodigoAcessoEstabelecimento", "133455")
+                            .param("CodigoAcessoPedido", "654321"))
+                    .andExpect(status().isBadRequest())
+                    .andDo(print())
+                    .andReturn().getResponse().getContentAsString();
+
+            CustomErrorType resultado = objectMapper.readValue(responseJsonString, CustomErrorType.class);
+
+
+            assertEquals("Codigo de acesso invalido!", resultado.getMessage());
         }
 
         @Test
@@ -948,7 +1054,7 @@ public class EstabelecimentoControllerTests {
                     .valorGrande(35.0)
                     .tipoDeSabor("salgado")
                     .disponibilidadeSabor(true)
-                    .estabelecimento(estabelecimento)
+                    //.estabelecimento(estabelecimento)
                     .build());
 
             SaborPizza sabor2 = saborRepository.save(SaborPizza.builder()
@@ -957,7 +1063,7 @@ public class EstabelecimentoControllerTests {
                     .valorGrande(30.0)
                     .tipoDeSabor("salgado")
                     .disponibilidadeSabor(true)
-                    .estabelecimento(estabelecimento)
+                    //.estabelecimento(estabelecimento)
                     .build());
             estabelecimento.setSaboresPizza(Set.of(sabor1,sabor2));
             estabelecimentoRepository.save(estabelecimento);
@@ -1002,7 +1108,7 @@ public class EstabelecimentoControllerTests {
                     .valorGrande(35.0)
                     .tipoDeSabor("salgado")
                     .disponibilidadeSabor(false)
-                    .estabelecimento(estabelecimento)
+                    //.estabelecimento(estabelecimento)
                     .observers(new ArrayList<>())
                     .build());
 
