@@ -10,10 +10,7 @@ import com.ufcg.psoft.commerce.model.SaborPizza.Pizza;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Data
 @Builder
@@ -21,6 +18,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class PedidoDTO {
 
+    @Getter
+    @JsonProperty("id")
+    private Long id;
 
     @CodigoAcessoConstraint
     @JsonProperty("codigoAcesso")

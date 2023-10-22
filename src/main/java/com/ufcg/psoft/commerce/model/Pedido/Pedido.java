@@ -1,13 +1,12 @@
 package com.ufcg.psoft.commerce.model.Pedido;
 
+import java.util.Date;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ufcg.psoft.commerce.enums.MetodoPagamento;
 import com.ufcg.psoft.commerce.enums.StatusPedido;
-import com.ufcg.psoft.commerce.model.Cliente.Cliente;
 import com.ufcg.psoft.commerce.model.Entregador.Entregador;
-import com.ufcg.psoft.commerce.model.Estabelecimento.Estabelecimento;
 import com.ufcg.psoft.commerce.model.SaborPizza.Pizza;
 
 import jakarta.persistence.Column;
@@ -20,10 +19,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+
 @Data
 @Builder
 @NoArgsConstructor
@@ -79,6 +76,11 @@ public class Pedido {
     @JsonProperty("codigoAcessoEstabelecimento")
     @Column(name = "desc_codigo_acesso_estabelecimento")
     private String codigoAcessoEstabelecimento;
+
+    @Getter
+    @JsonProperty("dataPedido")
+    @Column(name = "data_pedido")
+    private Date dataPedido;
 
 }
 

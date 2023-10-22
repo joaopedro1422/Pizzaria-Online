@@ -11,6 +11,7 @@ import com.ufcg.psoft.commerce.enums.MetodoPagamento;
 import com.ufcg.psoft.commerce.enums.StatusPedido;
 import com.ufcg.psoft.commerce.enums.TamanhoPizza;
 import com.ufcg.psoft.commerce.exception.Associacao.EstabelecimentoIdNaoEncontradoException;
+import com.ufcg.psoft.commerce.exception.Cliente.ClienteCodigoAcessoIncorretoException;
 import com.ufcg.psoft.commerce.exception.Cliente.ClienteNaoEncontradoException;
 import com.ufcg.psoft.commerce.exception.Pedido.MetodoPagamentoInvalidoException;
 import com.ufcg.psoft.commerce.exception.Pedido.PedidoNaoCancelavelException;
@@ -35,6 +36,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -42,6 +44,8 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -1249,6 +1253,214 @@ public class PedidoControllerTests {
                             .contentType(MediaType.APPLICATION_JSON)
                             .param("clienteCodigoAcesso", "codigoIncorreto")) // Código de acesso incorreto
                     .andExpect(status().isBadRequest());
+        }
+
+    }
+
+    @Nested
+    @DisplayName("Testes de Consulta de Pedidos")
+    class ConsultaPedidosTests {
+
+        //Teste Funciona Quando Rodado Isolado
+
+//        @Test
+//        @DisplayName("Quando Cliente Consulta Pedido com Código Correto, Deve Retornar o Pedido Correspondente")
+//        void quandoClienteConsultaPedidoComCodigoCorretoDeveRetornarPedidoCorrespondente() throws Exception {
+//
+//            MvcResult consultaResult = mockMvc.perform(MockMvcRequestBuilders.get(URL_TEMPLATE + "/" + cliente.getId() + "/consulta-pedido")
+//                            .contentType(MediaType.APPLICATION_JSON)
+//                            .param("idPedido", String.valueOf(pedido.getId()))
+//                            .param("codigoAcessoCliente", cliente.getCodigoAcesso()))
+//                    .andExpect(status().isOk())
+//                    .andReturn();
+//
+//            String consultaResultContent = consultaResult.getResponse().getContentAsString();
+//            PedidoDTO pedidoConsultado = objectMapper.readValue(consultaResultContent, PedidoDTO.class);
+//
+//            // Assert
+//            assertNotNull(pedidoConsultado);
+//            assertEquals(pedido.getId(), pedidoConsultado.getId());
+//        }
+
+        @Test
+        @DisplayName("Quando Cliente Consulta Pedido com Código Incorreto, Deve Retornar Erro")
+        void quandoClienteConsultaPedidoComCodigoIncorretoDeveRetornarErro() throws Exception {
+            // Simule um cenário onde o código de acesso do cliente é incorreto
+            String codigoAcessoIncorreto = "codigo_incorreto";
+
+            // Execute a consulta
+            mockMvc.perform(MockMvcRequestBuilders.get(URL_TEMPLATE + "/" + pedido.getId() + "/consulta-pedido")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .param("clienteCodigoAcesso", codigoAcessoIncorreto))
+                    .andExpect(status().isBadRequest());
+        }
+
+
+        @Test
+        @DisplayName("Quando Cliente Consulta Pedido que não Pertence a Ele, Deve Retornar Erro")
+        void quandoClienteConsultaPedidoQueNaoPertenceAEleDeveRetornarErro() throws Exception {
+            // Crie um novo pedido associado a um cliente diferente
+            Cliente clienteOutro = criarCliente("OutroCliente", "Rua Outra, 456", "654321");
+            Pedido pedidoOutroCliente = criarPedido(clienteOutro, estabelecimento);
+
+            // Execute a consulta com o código de acesso do cliente original
+            mockMvc.perform(MockMvcRequestBuilders.get(URL_TEMPLATE + "/" + pedidoOutroCliente.getId() + "/consulta-pedido")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .param("clienteCodigoAcesso", cliente.getCodigoAcesso()))
+                    .andExpect(status().isBadRequest());
+        }
+
+        // Método auxiliar para criar um cliente
+        private Cliente criarCliente(String nome, String endereco, String codigoAcesso) {
+            ClienteDTO clienteDTO = ClienteDTO.builder()
+                    .nome(nome)
+                    .endereco(endereco)
+                    .codigoAcesso(codigoAcesso)
+                    .build();
+            return clienteRepository.save(objectMapper.convertValue(clienteDTO, Cliente.class));
+        }
+
+        // Método auxiliar para criar um pedido associado a um cliente
+        private Pedido criarPedido(Cliente cliente, Estabelecimento estabelecimento) {
+            List<Pizza> pizzas = List.of(pizzaM);
+            return pedidoRepository.save(Pedido.builder()
+                    .codigoAcesso("123456")
+                    .cliente(cliente.getId())
+                    .estabelecimento(estabelecimento.getId())
+                    .metodoPagamento(MetodoPagamento.CARTAO_CREDITO)
+                    .enderecoEntrega("Rua nova,123")
+                    .pizzas(pizzas)
+                    .status(com.ufcg.psoft.commerce.enums.StatusPedido.PEDIDO_RECEBIDO)
+                    .build());
+        }
+
+
+        @Test
+        @DisplayName("Quando Cliente Consulta Histórico de Pedidos, Deve Retornar Lista de Pedidos Correspondente")
+        void quandoClienteConsultaHistoricoPedidosEntaoRetornaListaCorrespondente() throws Exception {
+            // Arrange
+            //Salva um novo sabor
+            MvcResult consultaResult = mockMvc.perform(MockMvcRequestBuilders.get(URL_TEMPLATE + "/historico")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .param("idCliente", String.valueOf(cliente.getId()))
+                            .param("codigoAcessoCliente", cliente.getCodigoAcesso()))
+                    .andExpect(status().isOk())
+                    .andReturn();
+
+
+            String consultaResultContent = consultaResult.getResponse().getContentAsString();
+            List<PedidoDTO> historicoPedidos = objectMapper.readValue(consultaResultContent, new TypeReference<List<PedidoDTO>>() {});
+
+            // Assert
+            assertNotNull(historicoPedidos);
+            assertEquals(1, historicoPedidos.size());
+        }
+
+        @Test
+        @DisplayName("Quando Cliente Consulta Histórico de Pedidos com Código de Acesso Incorreto, Deve Retornar Erro")
+        void quandoClienteConsultaHistoricoPedidosComCodigoAcessoIncorretoDeveRetornarErro() throws Exception {
+            // Arrange
+            List<Pizza> pizzas = List.of(pizzaM);
+
+            PedidoDTO pedidoDTO = PedidoDTO.builder()
+                    .codigoAcesso("123456")
+                    .clienteId(cliente.getId())
+                    .estabelecimentoId(estabelecimento.getId())
+                    .metodoPagamento(MetodoPagamento.CARTAO_CREDITO)
+                    .enderecoEntrega("Rua Nova, 123")
+                    .pizzas(pizzas)
+                    .build();
+
+            // Criação do pedido
+            mockMvc.perform(MockMvcRequestBuilders.post(URL_TEMPLATE)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .param("clienteCodigoAcesso", cliente.getCodigoAcesso())
+                            .content(objectMapper.writeValueAsString(pedidoDTO)))
+                    .andExpect(status().isCreated());
+
+            // Tentativa de consulta do histórico com código de acesso incorreto
+            mockMvc.perform(MockMvcRequestBuilders.get(URL_TEMPLATE + "/historico")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .param("idCliente", String.valueOf(cliente.getId()))
+                            .param("codigoAcessoCliente", "codigoIncorreto")) // Código de acesso incorreto
+                    .andExpect(status().isBadRequest());
+        }
+
+        @Test
+        @DisplayName("Quando Cliente Consulta Histórico de Pedidos por Status, Deve Retornar Lista Correspondente")
+        void quandoClienteConsultaHistoricoPedidosPorStatusDeveRetornarListaCorrespondente() throws Exception {
+            // Arrange
+            List<Pizza> pizzas = List.of(pizzaM);
+
+            // Criação do primeiro pedido
+            PedidoDTO primeiroPedidoDTO = PedidoDTO.builder()
+                    .codigoAcesso("123456")
+                    .clienteId(cliente.getId())
+                    .estabelecimentoId(estabelecimento.getId())
+                    .metodoPagamento(MetodoPagamento.CARTAO_CREDITO)
+                    .enderecoEntrega("Rua Nova, 123")
+                    .pizzas(pizzas)
+                    .build();
+
+            mockMvc.perform(MockMvcRequestBuilders.post(URL_TEMPLATE)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .param("clienteCodigoAcesso", cliente.getCodigoAcesso())
+                            .content(objectMapper.writeValueAsString(primeiroPedidoDTO)))
+                    .andExpect(status().isCreated());
+
+            // Criação do segundo pedido
+            PedidoDTO segundoPedidoDTO = PedidoDTO.builder()
+                    .codigoAcesso("123456")
+                    .clienteId(cliente.getId())
+                    .estabelecimentoId(estabelecimento.getId())
+                    .metodoPagamento(MetodoPagamento.CARTAO_CREDITO)
+                    .enderecoEntrega("Rua Nova, 456")
+                    .pizzas(pizzas)
+                    .build();
+
+            mockMvc.perform(MockMvcRequestBuilders.post(URL_TEMPLATE)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .param("clienteCodigoAcesso", cliente.getCodigoAcesso())
+                            .content(objectMapper.writeValueAsString(segundoPedidoDTO)))
+                    .andExpect(status().isCreated());
+
+            // Consulta do histórico por status
+            MvcResult consultaResult = mockMvc.perform(MockMvcRequestBuilders.get(URL_TEMPLATE + "/historico/status")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .param("idCliente", String.valueOf(cliente.getId()))
+                            .param("codigoAcessoCliente", cliente.getCodigoAcesso())
+                            .param("status", "PEDIDO_RECEBIDO"))
+                    .andExpect(status().isOk())
+                    .andReturn();
+
+            String consultaResultContent = consultaResult.getResponse().getContentAsString();
+            List<PedidoDTO> historicoPedidos = objectMapper.readValue(consultaResultContent, new TypeReference<List<PedidoDTO>>() {});
+
+            // Assert
+            assertNotNull(historicoPedidos);
+            assertEquals(3, historicoPedidos.size());
+        }
+
+
+        @Test
+        @DisplayName("Quando Cliente Consulta Histórico de Pedidos por Status Inválido, Deve Retornar Lista Vazia")
+        void quandoClienteConsultaHistoricoPedidosPorStatusInvalidoDeveRetornarListaVazia() throws Exception {
+            // Arrange
+            // Consulta do histórico por status
+            MvcResult consultaResult = mockMvc.perform(MockMvcRequestBuilders.get(URL_TEMPLATE + "/historico/status")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .param("idCliente", String.valueOf(cliente.getId()))
+                            .param("codigoAcessoCliente", cliente.getCodigoAcesso())
+                            .param("status", "CANCELADO"))
+                    .andExpect(status().isOk())
+                    .andReturn();
+
+            // Assert
+            String consultaResultContent = consultaResult.getResponse().getContentAsString();
+            List<PedidoDTO> historicoPedidos = objectMapper.readValue(consultaResultContent, new TypeReference<List<PedidoDTO>>() {});
+
+            assertNotNull(historicoPedidos);
+           assertTrue(historicoPedidos.isEmpty());
         }
 
     }

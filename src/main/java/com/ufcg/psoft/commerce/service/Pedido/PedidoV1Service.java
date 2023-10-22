@@ -1,7 +1,9 @@
 package com.ufcg.psoft.commerce.service.Pedido;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
+import com.ufcg.psoft.commerce.exception.Cliente.ClienteCodigoAcessoIncorretoException;
 import com.ufcg.psoft.commerce.exception.Pedido.*;
 import com.ufcg.psoft.commerce.exception.Pizza.PizzaSemSaboresException;
 import org.modelmapper.ModelMapper;
@@ -234,6 +236,56 @@ public class PedidoV1Service implements PedidoService{
 
         pedidoExistente.setStatus(StatusPedido.CANCELADO);
         pedidoRepository.delete(pedidoExistente);
+    }
+
+    @Override
+    public PedidoDTO clienteConsultaPedido(Long idPedido, Long idCliente, String codigoAcesso)
+            throws PedidoNaoEncontradoException, ClienteCodigoAcessoIncorretoException, ClienteNaoEncontradoException {
+        Pedido pedido = getPedido(idPedido);
+
+        // Verifica se o pedido pertence ao cliente
+        if (!pedido.getCliente().equals(idCliente)) {
+            throw new ClienteCodigoAcessoIncorretoException();
+        }
+
+        // Verifica se o código de acesso do cliente é válido
+        if (!pedido.getCodigoAcesso().equals(codigoAcesso)) {
+            throw new ClienteCodigoAcessoIncorretoException();
+        }
+
+        return modelMapper.map(pedido, PedidoDTO.class);
+    }
+
+    @Override
+    public List<PedidoDTO> consultarHistoricoPedidosCliente(Long idCliente, String codigoAcessoCliente) {
+        Cliente cliente = clienteRepository.findById(idCliente).orElseThrow(() -> new ClienteNaoEncontradoException());
+
+        List<Pedido> pedidos = pedidoRepository.findByClienteOrderByDataPedidoDescStatusAsc(cliente.getId());
+
+        return pedidos.stream()
+                .map(pedido -> {
+                    if (!pedido.getCodigoAcesso().equals(codigoAcessoCliente)) {
+                        throw new ClienteCodigoAcessoIncorretoException();
+                    }
+                    return modelMapper.map(pedido, PedidoDTO.class);
+                })
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<PedidoDTO> consultarHistoricoPedidosClientePorStatus(Long idCliente, String codigoAcessoCliente, StatusPedido status) {
+        Cliente cliente = clienteRepository.findById(idCliente).orElseThrow(() -> new ClienteNaoEncontradoException());
+
+        List<Pedido> pedidos = pedidoRepository.findByClienteAndStatusOrderByDataPedidoDescStatusAsc(cliente.getId(), status);
+
+        return pedidos.stream()
+                .map(pedido -> {
+                    if (!pedido.getCodigoAcesso().equals(codigoAcessoCliente)) {
+                        throw new ClienteCodigoAcessoIncorretoException();
+                    }
+                    return modelMapper.map(pedido, PedidoDTO.class);
+                })
+                .collect(Collectors.toList());
     }
 
 }

@@ -2,11 +2,16 @@ package com.ufcg.psoft.commerce.service.Pedido;
 
 import com.ufcg.psoft.commerce.dto.PedidoDTO.PedidoDTO;
 import com.ufcg.psoft.commerce.enums.MetodoPagamento;
+import com.ufcg.psoft.commerce.enums.StatusPedido;
+import com.ufcg.psoft.commerce.exception.Cliente.ClienteCodigoAcessoIncorretoException;
+import com.ufcg.psoft.commerce.exception.Cliente.ClienteNaoEncontradoException;
 import com.ufcg.psoft.commerce.exception.Pedido.PedidoCodigoAcessoIncorretoException;
 import com.ufcg.psoft.commerce.exception.Pedido.PedidoNaoEncontradoException;
+import com.ufcg.psoft.commerce.exception.Pedido.PedidoNaoPertenceAoClienteException;
 import com.ufcg.psoft.commerce.model.Pedido.Pedido;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface PedidoService {
     Pedido criarPedido(String clienteCodigoAcesso, PedidoDTO pedido);
@@ -25,4 +30,12 @@ public interface PedidoService {
 
     void cancelarPedido(Long pedidoId, String clienteCodigoAcesso) throws PedidoNaoEncontradoException, PedidoCodigoAcessoIncorretoException;
 
+    PedidoDTO clienteConsultaPedido(Long idPedido, Long idCliente, String codigoAcessoCliente)
+            throws PedidoNaoEncontradoException, ClienteCodigoAcessoIncorretoException, ClienteNaoEncontradoException;
+
+    List<PedidoDTO> consultarHistoricoPedidosCliente(Long idCliente, String codigoAcessoCliente);
+
+    List<PedidoDTO> consultarHistoricoPedidosClientePorStatus(Long idCliente, String codigoAcesso, StatusPedido status);
+
 }
+

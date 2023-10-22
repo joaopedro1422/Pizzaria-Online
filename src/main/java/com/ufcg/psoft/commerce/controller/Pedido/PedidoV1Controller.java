@@ -2,18 +2,19 @@ package com.ufcg.psoft.commerce.controller.Pedido;
 
 import com.ufcg.psoft.commerce.dto.PedidoDTO.PedidoDTO;
 import com.ufcg.psoft.commerce.enums.MetodoPagamento;
-import com.ufcg.psoft.commerce.exception.Pedido.PedidoCodigoAcessoIncorretoException;
+import com.ufcg.psoft.commerce.enums.StatusPedido;
+import com.ufcg.psoft.commerce.exception.Cliente.ClienteCodigoAcessoIncorretoException;
 import com.ufcg.psoft.commerce.exception.Pedido.PedidoNaoCancelavelException;
 import com.ufcg.psoft.commerce.exception.Pedido.PedidoNaoEncontradoException;
 import com.ufcg.psoft.commerce.model.Pedido.Pedido;
 import com.ufcg.psoft.commerce.service.Pedido.PedidoService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import jakarta.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -95,6 +96,42 @@ public class PedidoV1Controller {
                 .status(HttpStatus.NO_CONTENT)
                 .build();
     }
+
+    @GetMapping("/{id}/consulta-pedido")
+    ResponseEntity<PedidoDTO> consultarPedidoEspecifico(
+            @PathVariable("id") Long id,
+            @RequestParam("codigoAcessoCliente") String codigoAcessoCliente
+    ) throws PedidoNaoEncontradoException, ClienteCodigoAcessoIncorretoException {
+        PedidoDTO pedidoDTO = pedidoService.clienteConsultaPedido(id, id, codigoAcessoCliente);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(pedidoDTO);
+    }
+
+
+    @GetMapping("/historico")
+    ResponseEntity<List<PedidoDTO>> consultarHistoricoPedidosCliente(
+            @RequestParam("idCliente") Long idCliente,
+            @RequestParam("codigoAcessoCliente") String codigoAcessoCliente
+    ) {
+        List<PedidoDTO> pedidos = pedidoService.consultarHistoricoPedidosCliente(idCliente, codigoAcessoCliente);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(pedidos);
+    }
+
+    @GetMapping("/historico/status")
+    ResponseEntity<List<PedidoDTO>> consultarHistoricoPedidosClientePorStatus(
+            @RequestParam("idCliente") Long idCliente,
+            @RequestParam("codigoAcessoCliente") String codigoAcessoCliente,
+            @RequestParam("status") StatusPedido status
+    ) {
+        List<PedidoDTO> pedidos = pedidoService.consultarHistoricoPedidosClientePorStatus(idCliente, codigoAcessoCliente, status);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(pedidos);
+    }
+
 
     @ExceptionHandler(PedidoNaoEncontradoException.class)
     ResponseEntity<?> handlePedidoNaoEncontradoException(PedidoNaoEncontradoException ex) {
