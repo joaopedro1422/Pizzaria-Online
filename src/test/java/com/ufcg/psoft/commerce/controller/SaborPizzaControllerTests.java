@@ -551,26 +551,39 @@ public class SaborPizzaControllerTests {
 
         @Test
         @DisplayName("Quando alteramos a disponibilidade de um sabor para false")
-        void quandoAlteramosDisponibilidadeSaborFalse() throws Exception {
+        void quandoAlteramosDisponibilidadeSaborFlase() throws Exception {
             // Arrange
+            SaborPizza sabor = saborRepository.save(SaborPizza.builder()
+                    .saborDaPizza("Calabresa")
+                    .tipoDeSabor("salgado")
+                    .valorMedia(10.0)
+                    .valorGrande(15.0)
+                    .disponibilidadeSabor(true) // Defina a disponibilidade inicial como true
+                    .build());
+
             sabor.setDisponibilidadeSabor(false);
             saborRepository.save(sabor);
+
             // Act
             String responseJsonString = driver
-                    .perform(put(URI_SABORES + "/" + sabor.getIdPizza() + "/disponibilidade" )
-                            .contentType(MediaType.APPLICATION_JSON).param("idPizza", sabor.getIdPizza().toString())
+                    .perform(put(URI_SABORES + "/" + sabor.getIdPizza() + "/disponibilidade")
+                            .contentType(MediaType.APPLICATION_JSON)
                             .param("idEstabelecimento", estabelecimento.getId().toString())
-                            .param("disponibilidade","false")
                             .param("codigoAcessoEstabelecimento", estabelecimento.getCodigoAcesso())
+                            .param("disponibilidade", "false") // Altere para false
                             .content(objectMapper.writeValueAsString(sabor)))
-                    .andExpect(status().isOk()) // Codigo 200
-                    .andDo(print()).andReturn().getResponse().getContentAsString();
+                    .andExpect(status().isOk())
+                    .andDo(print())
+                    .andReturn()
+                    .getResponse()
+                    .getContentAsString();
 
             SaborResponseDTO resultado = objectMapper.readValue(responseJsonString, SaborResponseDTO.class);
 
             // Assert
-            assertFalse(resultado.getDisponibilidadeSabor());
+            assertFalse(resultado.getDisponibilidadeSabor()); // Verifique se a disponibilidade mudou para false
         }
+
 
         @Test
         @DisplayName("Quando alteramos a disponibilidade de um sabor para true")
@@ -590,7 +603,6 @@ public class SaborPizzaControllerTests {
             String responseJsonString = driver
                     .perform(put(URI_SABORES + "/" + sabor.getIdPizza() + "/disponibilidade")
                             .contentType(MediaType.APPLICATION_JSON).param("idPizza", sabor.getIdPizza().toString())
-                            .param("idEstabelecimento", estabelecimento.getId().toString())
                             .param("disponibilidade","true")
                             .param("codigoAcessoEstabelecimento", estabelecimento.getCodigoAcesso())
                             .content(objectMapper.writeValueAsString(sabor)))

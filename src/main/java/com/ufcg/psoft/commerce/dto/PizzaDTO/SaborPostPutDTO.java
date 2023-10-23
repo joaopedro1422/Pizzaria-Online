@@ -28,7 +28,6 @@ public class SaborPostPutDTO {
 
     @JsonProperty("saborDaPizza")
     @NotBlank(message = "O sabor da pizza não pode estar em branco")
-//    @NotNull(message = "O sabor da pizza não pode estar nulo")
     private String saborDaPizza;
 
     @JsonProperty("valorMedia")
