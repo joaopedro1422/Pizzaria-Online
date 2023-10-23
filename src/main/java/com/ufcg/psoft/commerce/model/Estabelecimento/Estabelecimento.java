@@ -179,7 +179,7 @@ public class Estabelecimento {
         if(pedido != null){
             resultado = this.subjectPedido.getEstabelecimento().equals(pedido.getEstabelecimento());
         }
-        return resultado;   
+        return resultado;
     }
 
 
