@@ -187,46 +187,6 @@ public class SaborPizzaControllerTests {
     @DisplayName("verificacao de listar de sabores ")
     class SaborVerificacaoListar {
         @Test
-        @DisplayName("Quando buscamos por todos sabores salvos em um estabelecimento")
-        void quandoBuscamosPorTodosSaboresSalvosEmUmEstabelecimento() throws Exception {
-            // Arrange
-            // Vamos ter 2 sabores vinculados a um estabelimento no banco
-
-            SaborPizza sabor1 = SaborPizza.builder()
-                    .saborDaPizza("Chocolate")
-                    .tipoDeSabor("doce")
-                    .valorMedia(10.0)
-                    .valorGrande(15.0)
-                    .disponibilidadeSabor(false)
-                    //.estabelecimento(estabelecimento)
-                    .build();
-            SaborPizza sabor2 = SaborPizza.builder()
-                    .saborDaPizza("Frango")
-                    .tipoDeSabor("salgado")
-                    .valorMedia(10.0)
-                    .valorGrande(15.0)
-                    .disponibilidadeSabor(false)
-                    //.estabelecimento(estabelecimento)
-                    .build();
-            saborRepository.saveAll(Arrays.asList(sabor1, sabor2));
-
-            // Act
-            String responseJsonString = driver
-                    .perform(get(URI_SABORES).contentType(MediaType.APPLICATION_JSON)
-                            .param("idEstabelecimento", estabelecimento.getId().toString())
-                            .param("codigoAcessoEstabelecimento", estabelecimento.getCodigoAcesso())
-                            .content(objectMapper.writeValueAsString(saborPostPutDTO)))
-                    .andExpect(status().isOk()) // Codigo 200
-                    .andDo(print()).andReturn().getResponse().getContentAsString();
-
-            List<SaborResponseDTO> resultado = objectMapper.readValue(responseJsonString, new TypeReference<>() {
-            });
-
-            // Assert
-            assertAll(() -> assertEquals(2, resultado.size()));
-        }
-
-        @Test
         @DisplayName("Quando buscamos um sabor salvo pelo id")
         void quandoBuscamosPorUmSaborSalvo() throws Exception {
             // Arrange

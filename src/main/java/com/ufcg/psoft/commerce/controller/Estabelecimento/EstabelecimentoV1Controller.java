@@ -337,7 +337,7 @@ public class EstabelecimentoV1Controller {
     ){
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(estabelecimentov1Service.atribuirPedidoAEntregador(id,codigoAcesso,idPedido));
+                .body(estabelecimentov1Service.atribuirEntregadorNotificarCliente(id,codigoAcesso,idPedido));
     }
 
 

@@ -23,9 +23,11 @@ import com.ufcg.psoft.commerce.model.Estabelecimento.Estabelecimento;
 import com.ufcg.psoft.commerce.model.Pedido.Pedido;
 import com.ufcg.psoft.commerce.model.SaborPizza.SaborPizza;
 import com.ufcg.psoft.commerce.repository.Associacao.AssociacaoRepository;
+import com.ufcg.psoft.commerce.repository.Cliente.ClienteRepository;
 import com.ufcg.psoft.commerce.repository.Entregador.EntregadorRepository;
 import com.ufcg.psoft.commerce.repository.Estabelecimento.EstabelecimentoRepository;
 import com.ufcg.psoft.commerce.repository.Pedido.PedidoRepository;
+import com.ufcg.psoft.commerce.service.Associacao.AssociacaoService;
 import com.ufcg.psoft.commerce.service.Cliente.ClienteService;
 import com.ufcg.psoft.commerce.service.Cliente.ClienteV1Service;
 import com.ufcg.psoft.commerce.util.GerarCodigoAcessoEstabelecimento;
@@ -47,7 +49,11 @@ public class EstabelecimentoV1Service {
     @Autowired
     private PedidoRepository pedidoRepository;
 
+    @Autowired
+    private ClienteRepository clienteRepository;
+
     ClienteService clienteService;
+    AssociacaoService associacaoService;
     @Autowired
     private AssociacaoRepository associacaoRepository;
 
@@ -299,6 +305,7 @@ public class EstabelecimentoV1Service {
         }
         if (estabelecimento.getCodigoAcesso().equals(codigoAcesso)) {
             Entregador entregadorPedido = estabelecimento.getEntregadorDisponivel();
+            Cliente clientePedido = clienteRepository.findById(pedidoAtual.getCliente()).get();
             pedidoAtual.setEntregador(entregadorPedido);
             pedidoAtual.setStatus(StatusPedido.PEDIDO_EM_ROTA);
             pedidoAtual.getEntregador().setDisponibilidade(false);
@@ -369,14 +376,23 @@ public class EstabelecimentoV1Service {
         return resultado;
     }
 
-    // metodo auxiliar
-    private void notificaPedidoEmRota(Pedido pedido, Entregador entregador){
-        Cliente cliente = clienteService.getCliente(pedido.getCliente());
-        System.out.println(" - PEDIDO EM ROTA - \n" +
-                "Cliente: " + cliente.getNome() + "\n" +
-                "Entregador: " + entregador.getNome() + "\n" +
-                "Tipo do Veiculo: " + entregador.getTipoVeiculo() + "\n" +
-                "Cor do Veiculo: " + entregador.getCorVeiculo() + "\n" +
-                "Placa do Veiculo: " + entregador.getPlacaVeiculo() + "\n");
+    public Pedido atribuirEntregadorNotificarCliente(Long id, String codigoAcesso, Long idPedido) {
+        Estabelecimento estabelecimento = estabelecimentoRepository.findById(id).get();
+        Pedido pedidoAtual = pedidoRepository.findById(idPedido).get();
+
+        if (estabelecimento.getCodigoAcesso().equals(codigoAcesso)) {
+            Cliente clientePedido = clienteRepository.findById(pedidoAtual.getCliente()).get();
+            Entregador entregadorPedido = estabelecimento.getEntregadorDisponivel();
+
+            if(pedidoAtual.getStatus().equals(StatusPedido.PEDIDO_PRONTO)){
+                pedidoAtual.setEntregador(entregadorPedido);
+                pedidoAtual.setStatus(StatusPedido.PEDIDO_EM_ROTA);
+                clientePedido.notificaPedidoEmRota(entregadorPedido);
+                return pedidoRepository.save(pedidoAtual);
+            }
+
+        }
+        throw new CodigoAcessoEstabelecimentoException();
+
     }
 }

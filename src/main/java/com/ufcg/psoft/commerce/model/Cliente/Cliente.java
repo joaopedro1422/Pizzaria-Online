@@ -3,6 +3,7 @@ package com.ufcg.psoft.commerce.model.Cliente;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ufcg.psoft.commerce.model.Entregador.Entregador;
+import com.ufcg.psoft.commerce.model.Pedido.Pedido;
 import com.ufcg.psoft.commerce.model.SaborPizza.SaborPizza;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -38,7 +39,7 @@ public class Cliente {
     @JsonBackReference
     @ManyToOne
     @JoinColumn(name = "saborPizza_pk_id")
-    private SaborPizza subject = null; // instância dessa classe pode estar associada a uma única instância de SaborPizza
+    private SaborPizza subject ; // instância dessa classe pode estar associada a uma única instância de SaborPizza
 
    /* verifica se o objeto atual (representado pela instância da classe que contém esse método)
    está inscrito (ou seja, observando) uma instância específica de SaborPizza.
@@ -77,12 +78,7 @@ public class Cliente {
             this.subject = null;
         }
     }
-    public String notificaPedidoEmRota(Entregador entregador){
-        String saida = "";
-        saida = ("Nome do entregador responsável pela entrega: "+ entregador.getNome()
-                +"/nPlaca do veículo de"+ entregador.getNome()+": " + entregador.getPlacaVeiculo());
-        return saida;
-    }
+
 
     public void update(SaborPizza saborPizza) {
         if(this.subject == null) {
@@ -90,6 +86,15 @@ public class Cliente {
             return;
         }
         System.out.println(this.nome + ", a pizza de " + saborPizza.getSaborDaPizza() + " agora está disponivel" );
+    }
+
+    public void notificaPedidoEmRota(Entregador entregador){
+        System.out.println(" - PEDIDO EM ROTA - \n" +
+                "Cliente: " + this.getNome() + "\n" +
+                "Entregador: " + entregador.getNome() + "\n" +
+                "Tipo do Veiculo: " + entregador.getTipoVeiculo() + "\n" +
+                "Cor do Veiculo: " + entregador.getCorVeiculo() + "\n" +
+                "Placa do Veiculo: " + entregador.getPlacaVeiculo() + "\n");
     }
 
 }
