@@ -2,6 +2,7 @@ package com.ufcg.psoft.commerce.model.Estabelecimento;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ufcg.psoft.commerce.exception.Entregador.NaoHaEntregadoresDisponiveisException;
 import com.ufcg.psoft.commerce.exception.Pedido.PedidoNaoEncontradoException;
@@ -25,6 +26,7 @@ import java.util.Set;
 @AllArgsConstructor
 @Entity
 @Table(name = "Estabelecimento")
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Estabelecimento {
 
     @Id
