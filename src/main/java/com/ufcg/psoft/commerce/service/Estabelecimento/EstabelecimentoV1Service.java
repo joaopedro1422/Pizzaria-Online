@@ -324,6 +324,7 @@ public class EstabelecimentoV1Service {
                                                 String codigoAcessoEstabelecimento,
                                                 String codigoAcessoPedido){
 
+
         if(!pedidoRepository.existsByCodigoAcesso(codigoAcessoPedido)){
 
             throw new PedidoCodigoAcessoIncorretoException();

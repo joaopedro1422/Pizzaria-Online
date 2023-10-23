@@ -880,45 +880,160 @@ public class EstabelecimentoControllerTests {
     @DisplayName("Métodos pagamento")
     class testesMetodoPagamento {
 
+
+        final String URL_DISPONIBILIZARPAGAMENTO = "/estabelecimentos/disponibilidadePagamento";
+
+
+        @BeforeEach
+        public void setup(){
+
+            pizzaM = Pizza.builder()
+                    .sabor1(sabor)
+                    .tamanho(TamanhoPizza.MEDIA)
+                    .build();
+
+            ClienteDTO clienteDTO = ClienteDTO.builder()
+                    .nome("Cliente de Exemplo")
+                    .endereco("Rua Exemplo, 123")
+                    .codigoAcesso("123456")
+                    .build();
+
+            cliente = clienteRepository.save(objectMapper.convertValue(clienteDTO, Cliente.class));
+
+            List<Pizza> pizzas = List.of(pizzaM);
+
+            Pedido pedido1 = pedidoRepository.save(Pedido.builder()
+                    .codigoAcesso("123456")
+                    .cliente(cliente.getId())
+                    .estabelecimento(estabelecimento.getId())
+                    .metodoPagamento(MetodoPagamento.CARTAO_CREDITO)
+                    .enderecoEntrega("Rua nova,123")
+                    .codigoAcessoEstabelecimento("654321")
+                    .pizzas(pizzas)
+                    .valorTotal(55.0)
+                    .status(com.ufcg.psoft.commerce.enums.StatusPedido.PEDIDO_RECEBIDO)
+                    .build());
+
+
+            Estabelecimento estabelecimento = Estabelecimento.builder()
+                    .codigoAcesso("654321")
+                    .build();
+
+            pedidoRepository.save(pedido1);
+            estabelecimentoRepository.save(estabelecimento);
+
+        }
+
+
         @Test
         @DisplayName("Teste do pagamento por pix")
-        public void porPixTest(){
+        public void porPixTest() throws Exception {
 
-            assertTrue(false);
+            String responseJsonString = driver.perform(post(URL_DISPONIBILIZARPAGAMENTO)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .param("MetodoPagamento","PIX")
+                            .param("CodigoAcessoEstabelecimento","654321")
+                            .param("CodigoAcessoPedido","123456"))
+                    .andExpect(status().isOk()) // Codigo 200
+                    .andDo(print())
+                    .andReturn().getResponse().getContentAsString();
 
+            Pedido resultado = objectMapper.readValue(responseJsonString, Pedido.PedidoBuilder.class).build();
+
+
+            assertEquals(52.25, resultado.getValorTotal());
+            assertEquals(MetodoPagamento.PIX, resultado.getMetodoPagamento());
         }
 
 
         @Test
         @DisplayName("Teste do pagamento por cartao de credito")
-        public void porCreditoTest(){
-            assertTrue(false);
+        public void porCreditoTest() throws Exception {
+
+            String responseJsonString = driver.perform(post(URL_DISPONIBILIZARPAGAMENTO)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .param("MetodoPagamento","CREDITO")
+                            .param("CodigoAcessoEstabelecimento","654321")
+                            .param("CodigoAcessoPedido","123456"))
+                    .andExpect(status().isOk()) // Codigo 200
+                    .andDo(print())
+                    .andReturn().getResponse().getContentAsString();
+
+            Pedido resultado = objectMapper.readValue(responseJsonString, Pedido.PedidoBuilder.class).build();
+
+
+            assertEquals(55, resultado.getValorTotal());
+            assertEquals(MetodoPagamento.CARTAO_CREDITO, resultado.getMetodoPagamento());
+
+
         }
 
         @Test
         @DisplayName("Teste do pagamento por debito")
-        public void porDebitoTest(){
-            assertTrue(false);
+        public void porDebitoTest() throws Exception {
+
+            String responseJsonString = driver.perform(post(URL_DISPONIBILIZARPAGAMENTO)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .param("MetodoPagamento","DEBITO")
+                            .param("CodigoAcessoEstabelecimento","654321")
+                            .param("CodigoAcessoPedido","123456"))
+                    .andExpect(status().isOk()) // Codigo 200
+                    .andDo(print())
+                    .andReturn().getResponse().getContentAsString();
+
+            Pedido resultado = objectMapper.readValue(responseJsonString, Pedido.PedidoBuilder.class).build();
+
+
+            assertEquals(53.625, resultado.getValorTotal());
+            assertEquals(MetodoPagamento.CARTAO_DEBITO, resultado.getMetodoPagamento());
+
         }
 
         @Test
         @DisplayName("Teste codigo de acesso passado indevidamente")
-        public void codigoAcessoPedidoInvalidoTest(){
-            assertTrue(false);
+        public void codigoAcessoPedidoInvalidoTest() throws Exception {
+
+            String responseJsonString = driver.perform(post(URL_DISPONIBILIZARPAGAMENTO)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .param("MetodoPagamento","DEBITO")
+                            .param("CodigoAcessoEstabelecimento","654321")
+                            .param("CodigoAcessoPedido","124456"))
+                    .andExpect(status().isBadRequest()) // Codigo 200
+                    .andDo(print())
+                    .andReturn().getResponse().getContentAsString();
+
+            CustomErrorType resultado = objectMapper.readValue(responseJsonString, CustomErrorType.class);
+
+            System.out.println(resultado.getMessage());
+            assertEquals("Codigo Incorreto", resultado.getMessage());
+
+
         }
 
 
         @Test
         @DisplayName("Teste codigo de acesso estabelecimento passado indevidamente")
-        public void codigoAcessoEstabelecimentoInvalidoTest(){
-            assertTrue(false);
+        public void codigoAcessoEstabelecimentoInvalidoTest() throws Exception {
+
+
+            String responseJsonString = driver.perform(post(URL_DISPONIBILIZARPAGAMENTO)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .param("MetodoPagamento","DEBITO")
+                            .param("CodigoAcessoEstabelecimento","653321")
+                            .param("CodigoAcessoPedido","123456"))
+                    .andExpect(status().isBadRequest()) // Codigo 200
+                    .andDo(print())
+                    .andReturn().getResponse().getContentAsString();
+
+            CustomErrorType resultado = objectMapper.readValue(responseJsonString, CustomErrorType.class);
+
+            System.out.println(resultado.getMessage());
+            assertEquals("Codigo de acesso invalido!", resultado.getMessage());
+
+
         }
 
-        @Test
-        @DisplayName("Teste pedido não existe")
-        public void pedidoInexistenteTest(){
-            assertTrue(false);
-        }
+
 
     }
 

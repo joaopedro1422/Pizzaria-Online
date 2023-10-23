@@ -352,7 +352,6 @@ public class EstabelecimentoV1Controller {
             @RequestParam("CodigoAcessoPedido") String codigoAcessoPedido
     ){
         ResponseEntity<?> response;
-
         try{
 
             Pedido resultado = estabelecimentov1Service.disponibilizarMetodoPagamento(metodoPagamento,
