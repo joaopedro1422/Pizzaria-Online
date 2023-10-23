@@ -1,5 +1,6 @@
 package com.ufcg.psoft.commerce.model.Estabelecimento;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ufcg.psoft.commerce.exception.Entregador.NaoHaEntregadoresDisponiveisException;
@@ -51,6 +52,12 @@ public class Estabelecimento {
     @JoinColumn(name = "estabelecimento_id")
     @OneToMany(cascade= CascadeType.PERSIST, fetch = FetchType.EAGER)
     private Set<Entregador> entregadores;
+
+    @JsonBackReference
+    @ManyToOne
+    @JoinColumn(name = "saborPizza_pk_id")
+    private Pedido subjectPedido;
+
 
 
     //Funcoes de Estabelecimento, toda operação feita em estabelecimento tem que ser forneciado o codigo de acesso
@@ -150,6 +157,29 @@ public class Estabelecimento {
             entregadores.add(entregador);
         }
 
+    }
+
+    public void update(Pedido pedido){
+
+        if(pedido == null){
+
+            System.out.println("Você não tem nenhuma notificação.");
+
+        }else{
+
+            System.out.println("Pedido Entregue!");
+
+        }
+
+    }
+
+    public boolean isSubcribe(Pedido pedido){
+        Boolean resultado = false;
+
+        if(pedido != null){
+            resultado = this.subjectPedido.getEstabelecimento().equals(pedido.getEstabelecimento());
+        }
+        return resultado;   
     }
 
 

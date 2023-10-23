@@ -3,10 +3,12 @@ package com.ufcg.psoft.commerce.model.Pedido;
 import java.util.Date;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ufcg.psoft.commerce.enums.MetodoPagamento;
 import com.ufcg.psoft.commerce.enums.StatusPedido;
 import com.ufcg.psoft.commerce.model.Entregador.Entregador;
+import com.ufcg.psoft.commerce.model.Estabelecimento.Estabelecimento;
 import com.ufcg.psoft.commerce.model.SaborPizza.Pizza;
 
 import jakarta.persistence.Column;
@@ -20,6 +22,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import lombok.*;
+import com.ufcg.psoft.commerce.model.Estabelecimento.Estabelecimento;
 
 @Data
 @Builder
@@ -82,6 +85,39 @@ public class Pedido {
     @Column(name = "data_pedido")
     private Date dataPedido;
 
+    @JsonBackReference
+    @OneToMany
+    @JoinColumn(name = "estabelecimento_pk_id")
+    private List<Estabelecimento> observersEstabelecimento;
+
+
+    public void addObserver(Estabelecimento estabelecimento1) {
+
+        observersEstabelecimento.add(estabelecimento1);
+
+    }
+
+    public int tamanhoObserverEstabelecmento(){
+
+        return observersEstabelecimento.size();
+
+    }
+
+
+    public void removeObserverEstabelecimento(Estabelecimento estabelecimento){
+
+        observersEstabelecimento.remove(estabelecimento);
+
+    }
+
+    public void notificaOsObservers(){
+
+        for (Estabelecimento e : observersEstabelecimento){
+            e.update(this);
+
+        }
+
+    }
 }
 
 
