@@ -9,6 +9,7 @@ import com.ufcg.psoft.commerce.exception.Associacao.EntregadorCodigoAcessoNaoEnt
 import com.ufcg.psoft.commerce.exception.Associacao.EntregadorIdNaoEncontradoException;
 import com.ufcg.psoft.commerce.exception.Associacao.EstabelecimentoIdNaoEncontradoException;
 import com.ufcg.psoft.commerce.exception.Cliente.ClienteCodigoAcessoInvalidoException;
+import com.ufcg.psoft.commerce.exception.Entregador.EntregadorNaoEncontradoException;
 import com.ufcg.psoft.commerce.exception.Estabelecimento.CodigoAcessoEstabelecimentoException;
 import com.ufcg.psoft.commerce.exception.Estabelecimento.CodigoAcessoInvalidoException;
 import com.ufcg.psoft.commerce.exception.Estabelecimento.EstabelecimentoNaoEncontradoException;
@@ -379,14 +380,20 @@ public class EstabelecimentoV1Service {
     }
 
     public Pedido atribuirEntregadorNotificarCliente(Long id, String codigoAcesso, Long idPedido) {
-        Estabelecimento estabelecimento = estabelecimentoRepository.findById(id).get();
-        Pedido pedidoAtual = pedidoRepository.findById(idPedido).get();
+        Estabelecimento estabelecimento = estabelecimentoRepository.findById(id).orElseThrow(EstabelecimentoNaoEncontradoException::new);
+        Pedido pedidoAtual = pedidoRepository.findById(idPedido).orElseThrow(PedidoNaoEncontradoException::new);
 
         if (estabelecimento.getCodigoAcesso().equals(codigoAcesso)) {
-            Cliente clientePedido = clienteRepository.findById(pedidoAtual.getCliente()).get();
-            Entregador entregadorPedido =pedidoAtual.getEntregador();
-            clientePedido.notificaPedidoEmRota(entregadorPedido);
-            return pedidoAtual;
+            if(pedidoAtual.getStatus().equals(StatusPedido.PEDIDO_EM_ROTA)) {
+                Cliente clientePedido = clienteRepository.findById(pedidoAtual.getCliente()).get();
+                Entregador entregadorPedido = pedidoAtual.getEntregador();
+                if (entregadorPedido == null) {
+                    throw new EntregadorNaoEncontradoException();
+                }
+                clientePedido.notificaPedidoEmRota(entregadorPedido);
+                return pedidoAtual;
+            }
+            throw new StatusPedidoInvalidoException();
 
         }
         throw new CodigoAcessoEstabelecimentoException();

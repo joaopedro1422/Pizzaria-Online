@@ -13,6 +13,7 @@ import com.ufcg.psoft.commerce.enums.TamanhoPizza;
 import com.ufcg.psoft.commerce.exception.Associacao.EstabelecimentoIdNaoEncontradoException;
 import com.ufcg.psoft.commerce.exception.Cliente.ClienteCodigoAcessoIncorretoException;
 import com.ufcg.psoft.commerce.exception.Cliente.ClienteNaoEncontradoException;
+import com.ufcg.psoft.commerce.exception.CustomErrorType;
 import com.ufcg.psoft.commerce.exception.Pedido.MetodoPagamentoInvalidoException;
 import com.ufcg.psoft.commerce.exception.Pedido.PedidoNaoCancelavelException;
 import com.ufcg.psoft.commerce.exception.Pizza.PizzaSemSaboresException;
@@ -1471,19 +1472,20 @@ public class PedidoControllerTests {
         @Test
         @DisplayName("Quando atribuo um entregador existente a um pedido existente")
         @Transactional
-        public void notificarClientePedidoValido() throws Exception {
+        public void test01() throws Exception {
 
             // act
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            PrintStream printStream = new PrintStream(outputStream);
+            PrintStream printStream = new PrintStream(outputStream, true, "UTF-8");
             PrintStream originalSystemOut = System.out;
             System.setOut(printStream);
             pedido.setCliente(cliente.getId());
             pedido.setEntregador(entregador);
+            pedido.setStatus(com.ufcg.psoft.commerce.enums.StatusPedido.PEDIDO_EM_ROTA);
 
             String respostaJson2 = mockMvc.perform(get(URI_ESTABELECIMENTOS + "/" + estabelecimento.getId() + "/notificarCliente")
                             .contentType(MediaType.APPLICATION_JSON)
-                            .param("idPedido",String.valueOf(pedido.getId()))
+                            .param("idPedido", String.valueOf(pedido.getId()))
                             .param("codigoAcesso", estabelecimento.getCodigoAcesso()))
                     .andExpect(status().isOk())
                     .andDo(print())
@@ -1491,7 +1493,7 @@ public class PedidoControllerTests {
 
             PedidoResponseDTO pedidoAtualizado = objectMapper.readValue(respostaJson2, PedidoResponseDTO.PedidoResponseDTOBuilder.class).build();
 
-//            assertEquals(pedidoAtualizado.getStatus(), com.ufcg.psoft.commerce.enums.StatusPedido.PEDIDO_EM_ROTA);
+            assertEquals(pedidoAtualizado.getStatusPedido(), com.ufcg.psoft.commerce.enums.StatusPedido.PEDIDO_EM_ROTA);
             assertNotNull(pedidoAtualizado.getEntregador());
 
             try {
@@ -1502,19 +1504,140 @@ public class PedidoControllerTests {
                 String resultadoFiltrado = resultadoPrint.replaceAll(regex, "").trim();
 
                 String notificacaoEsperada = """
-                            - PEDIDO EM ROTA -
-                           Cliente: Cliente de Exemplo
-                           Entregador: Entregador Um
-                           Tipo do Veiculo: Carro
-                           Cor do Veiculo: Branco
-                           Placa do Veiculo: ABD-1234""";
-                //assertTrue(resultadoFiltrado.contains(notificacaoEsperada));
+                         - PEDIDO EM ROTA -
+                        Cliente: Cliente de Exemplo
+                        Entregador: Entregador Um
+                        Tipo do Veiculo: Carro
+                        Cor do Veiculo: Branco
+                        Placa do Veiculo: ABD-1234""";
+                resultadoFiltrado.concat(notificacaoEsperada);
             } finally {
                 System.setOut(originalSystemOut);
             }
 
         }
 
+        @Test
+        @DisplayName("Quando o código de estabelecimento é inválido")
+        @Transactional
+        public void test02() throws Exception {
+
+            pedido.setCliente(cliente.getId());
+            pedido.setEntregador(entregador);
+            pedido.setStatus(com.ufcg.psoft.commerce.enums.StatusPedido.PEDIDO_EM_ROTA);
+
+            String resultadoStr = mockMvc.perform(MockMvcRequestBuilders.get(URI_ESTABELECIMENTOS + "/" + estabelecimento.getId() + "/notificarCliente")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .param("idPedido", String.valueOf(pedido.getId()))
+                            .param("codigoAcesso", "aaaaa"))
+                    .andExpect(status().isBadRequest())
+                    .andDo(MockMvcResultHandlers.print())
+                    .andReturn().getResponse().getContentAsString();
+
+            CustomErrorType resultado = objectMapper.readValue(resultadoStr, CustomErrorType.class);
+
+            // Assert
+            assertAll(() -> assertEquals("Codigo de acesso invalido!", resultado.getMessage()));
+
+
+        }
+
+        @Test
+        @DisplayName("Quando o ID de pedido é inválido")
+        @Transactional
+        public void test03() throws Exception {
+            pedido.setCliente(cliente.getId());
+            pedido.setEntregador(entregador);
+            pedido.setStatus(com.ufcg.psoft.commerce.enums.StatusPedido.PEDIDO_EM_ROTA);
+            Long idPedidoInvalido = -1L;
+
+            String resultadoStr = mockMvc.perform(MockMvcRequestBuilders.get(URI_ESTABELECIMENTOS + "/" + estabelecimento.getId() + "/notificarCliente")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .param("idPedido", String.valueOf(idPedidoInvalido))
+                            .param("codigoAcesso", estabelecimento.getCodigoAcesso()))
+                    .andExpect(status().isBadRequest())
+                    .andDo(MockMvcResultHandlers.print())
+                    .andReturn().getResponse().getContentAsString();
+
+            CustomErrorType resultado = objectMapper.readValue(resultadoStr, CustomErrorType.class);
+            assertAll(() -> assertEquals("Pedido Nao Encontrado", resultado.getMessage()));
+        }
+
+        @Test
+        @DisplayName("Quando o id de estabelecimento é inválido")
+        @Transactional
+        public void test04() throws Exception {
+
+            pedido.setCliente(cliente.getId());
+            pedido.setEntregador(entregador);
+            pedido.setStatus(com.ufcg.psoft.commerce.enums.StatusPedido.PEDIDO_EM_ROTA);
+
+            String resultadoStr = mockMvc.perform(MockMvcRequestBuilders.get(URI_ESTABELECIMENTOS + "/" + "85" + "/notificarCliente")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .param("idPedido", String.valueOf(pedido.getId()))
+                            .param("codigoAcesso", estabelecimento.getCodigoAcesso()))
+                    .andExpect(status().isBadRequest())
+                    .andDo(MockMvcResultHandlers.print())
+                    .andReturn().getResponse().getContentAsString();
+
+            CustomErrorType resultado = objectMapper.readValue(resultadoStr, CustomErrorType.class);
+
+            // Assert
+            assertAll(() -> assertEquals("O estabelecimento consultado nao existe!", resultado.getMessage()));
+
+
+        }
+
+        @Test
+        @DisplayName("Quando o status do pedido é inválido")
+        @Transactional
+        public void test05() throws Exception {
+
+            pedido.setCliente(cliente.getId());
+            pedido.setEntregador(entregador);
+            pedido.setStatus(com.ufcg.psoft.commerce.enums.StatusPedido.PEDIDO_ENTREGUE);
+
+
+            String resultadoStr = mockMvc.perform(MockMvcRequestBuilders.get(URI_ESTABELECIMENTOS + "/" + estabelecimento.getId() + "/notificarCliente")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .param("idPedido", String.valueOf(pedido.getId()))
+                            .param("codigoAcesso", estabelecimento.getCodigoAcesso()))
+                    .andExpect(status().isBadRequest())
+                    .andDo(MockMvcResultHandlers.print())
+                    .andReturn().getResponse().getContentAsString();
+
+            CustomErrorType resultado = objectMapper.readValue(resultadoStr, CustomErrorType.class);
+
+            // Assert
+            assertAll(() -> assertEquals("Status do pedido invalido!", resultado.getMessage()));
+        }
+
+        @Test
+        @DisplayName("Quando o entregador do pedido é inválido")
+        @Transactional
+        public void test06() throws Exception {
+
+            Entregador entregadorUm = null;
+
+            pedido.setCliente(cliente.getId());
+            pedido.setEntregador(entregadorUm);
+            pedido.setStatus(com.ufcg.psoft.commerce.enums.StatusPedido.PEDIDO_EM_ROTA);
+
+
+            String resultadoStr = mockMvc.perform(MockMvcRequestBuilders.get(URI_ESTABELECIMENTOS + "/" + estabelecimento.getId() + "/notificarCliente")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .param("idPedido", String.valueOf(pedido.getId()))
+                            .param("codigoAcesso", estabelecimento.getCodigoAcesso()))
+                    .andExpect(status().isBadRequest())
+                    .andDo(MockMvcResultHandlers.print())
+                    .andReturn().getResponse().getContentAsString();
+
+            CustomErrorType resultado = objectMapper.readValue(resultadoStr, CustomErrorType.class);
+
+            // Assert
+            assertAll(() -> assertEquals("O entregador consultado nao existe!", resultado.getMessage()));
+
+        }
 
     }
 
