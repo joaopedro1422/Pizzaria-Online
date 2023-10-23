@@ -329,7 +329,7 @@ public class EstabelecimentoV1Controller {
                 .body(estabelecimentov1Service.atribuirPedidoAEntregador(id,codigoAcesso,idPedido));
     }
 
-    @GetMapping("{id}/ notificarCliente")
+    @GetMapping("{id}/notificarCliente")
     ResponseEntity<?> notificarClientePedidoRota(
             @Valid @PathVariable("id") Long id,
             @Valid @RequestParam("idPedido") Long idPedido,

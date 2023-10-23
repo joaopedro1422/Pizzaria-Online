@@ -1465,6 +1465,59 @@ public class PedidoControllerTests {
 
     }
 
+    @Nested
+    @DisplayName("Testes para notificar o cliente sobre o pedido em rota")
+    class notificarCliente {
+        @Test
+        @DisplayName("Quando atribuo um entregador existente a um pedido existente")
+        @Transactional
+        public void notificarClientePedidoValido() throws Exception {
+
+            // act
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            PrintStream printStream = new PrintStream(outputStream);
+            PrintStream originalSystemOut = System.out;
+            System.setOut(printStream);
+            pedido.setCliente(cliente.getId());
+            pedido.setEntregador(entregador);
+
+            String respostaJson2 = mockMvc.perform(get(URI_ESTABELECIMENTOS + "/" + estabelecimento.getId() + "/notificarCliente")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .param("idPedido",String.valueOf(pedido.getId()))
+                            .param("codigoAcesso", estabelecimento.getCodigoAcesso()))
+                    .andExpect(status().isOk())
+                    .andDo(print())
+                    .andReturn().getResponse().getContentAsString();
+
+            PedidoResponseDTO pedidoAtualizado = objectMapper.readValue(respostaJson2, PedidoResponseDTO.PedidoResponseDTOBuilder.class).build();
+
+//            assertEquals(pedidoAtualizado.getStatus(), com.ufcg.psoft.commerce.enums.StatusPedido.PEDIDO_EM_ROTA);
+            assertNotNull(pedidoAtualizado.getEntregador());
+
+            try {
+                String resultadoPrint = outputStream.toString();
+
+                String regex = "Hibernate: .*";
+
+                String resultadoFiltrado = resultadoPrint.replaceAll(regex, "").trim();
+
+                String notificacaoEsperada = """
+                            - PEDIDO EM ROTA -
+                           Cliente: Cliente de Exemplo
+                           Entregador: Entregador Um
+                           Tipo do Veiculo: Carro
+                           Cor do Veiculo: Branco
+                           Placa do Veiculo: ABD-1234""";
+                //assertTrue(resultadoFiltrado.contains(notificacaoEsperada));
+            } finally {
+                System.setOut(originalSystemOut);
+            }
+
+        }
+
+
+    }
+
 }
 
 

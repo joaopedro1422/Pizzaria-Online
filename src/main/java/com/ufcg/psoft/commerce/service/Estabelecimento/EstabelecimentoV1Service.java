@@ -15,6 +15,7 @@ import com.ufcg.psoft.commerce.exception.Estabelecimento.EstabelecimentoNaoEncon
 import com.ufcg.psoft.commerce.exception.Pedido.MetodoPagamentoInvalidoException;
 import com.ufcg.psoft.commerce.exception.Pedido.PedidoCodigoAcessoIncorretoException;
 import com.ufcg.psoft.commerce.exception.Pedido.PedidoNaoEncontradoException;
+import com.ufcg.psoft.commerce.exception.Pedido.StatusPedidoInvalidoException;
 import com.ufcg.psoft.commerce.exception.Pizza.TipoDeSaborNaoExisteException;
 import com.ufcg.psoft.commerce.model.Associacao.Associacao;
 import com.ufcg.psoft.commerce.model.Cliente.Cliente;
@@ -382,14 +383,9 @@ public class EstabelecimentoV1Service {
 
         if (estabelecimento.getCodigoAcesso().equals(codigoAcesso)) {
             Cliente clientePedido = clienteRepository.findById(pedidoAtual.getCliente()).get();
-            Entregador entregadorPedido = estabelecimento.getEntregadorDisponivel();
-
-            if(pedidoAtual.getStatus().equals(StatusPedido.PEDIDO_PRONTO)){
-                pedidoAtual.setEntregador(entregadorPedido);
-                pedidoAtual.setStatus(StatusPedido.PEDIDO_EM_ROTA);
-                clientePedido.notificaPedidoEmRota(entregadorPedido);
-                return pedidoRepository.save(pedidoAtual);
-            }
+            Entregador entregadorPedido =pedidoAtual.getEntregador();
+            clientePedido.notificaPedidoEmRota(entregadorPedido);
+            return pedidoAtual;
 
         }
         throw new CodigoAcessoEstabelecimentoException();
