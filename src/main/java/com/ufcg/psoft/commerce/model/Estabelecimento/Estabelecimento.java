@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.ufcg.psoft.commerce.enums.StatusPedido;
 import com.ufcg.psoft.commerce.exception.Entregador.NaoHaEntregadoresDisponiveisException;
 import com.ufcg.psoft.commerce.exception.Pedido.PedidoNaoEncontradoException;
 import com.ufcg.psoft.commerce.exception.Pizza.SaborPizzaNaoEncontradoException;
@@ -55,10 +56,7 @@ public class Estabelecimento {
     @OneToMany(cascade= CascadeType.PERSIST, fetch = FetchType.EAGER)
     private Set<Entregador> entregadores;
 
-    @JsonBackReference
-    @ManyToOne
-    @JoinColumn(name = "saborPizza_pk_id")
-    private Pedido subjectPedido;
+
 
 
 
@@ -175,14 +173,43 @@ public class Estabelecimento {
 
     }
 
-    public boolean isSubcribe(Pedido pedido){
-        Boolean resultado = false;
 
-        if(pedido != null){
+
+    @JsonBackReference
+    @ManyToOne
+    @JoinColumn(name = "pedido_pk_id")
+    private Pedido subjectPedido;
+
+    public boolean isSubcribe(Pedido pedido){
+        boolean resultado = false;
+
+        if(this.subjectPedido != null){
             resultado = this.subjectPedido.getEstabelecimento().equals(pedido.getEstabelecimento());
         }
         return resultado;
     }
+
+    public void subscribeTo(Pedido pedido){
+
+        if(!isSubcribe(pedido) && !pedido.getStatus().equals(StatusPedido.PEDIDO_ENTREGUE)){
+
+            pedido.addObserver(this);
+            this.subjectPedido = pedido;
+
+        }
+
+    }
+
+    public void unsubcriteTo(Pedido pedido){
+        if(pedido != null){
+
+        subjectPedido.removeObserverEstabelecimento(this);
+        this.subjectPedido = null;
+        }
+
+    }
+
+
 
 
 }

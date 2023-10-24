@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ufcg.psoft.commerce.enums.MetodoPagamento;
 import com.ufcg.psoft.commerce.enums.StatusPedido;
@@ -11,16 +12,7 @@ import com.ufcg.psoft.commerce.model.Entregador.Entregador;
 import com.ufcg.psoft.commerce.model.Estabelecimento.Estabelecimento;
 import com.ufcg.psoft.commerce.model.SaborPizza.Pizza;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 import lombok.*;
 import com.ufcg.psoft.commerce.model.Estabelecimento.Estabelecimento;
 
@@ -85,9 +77,9 @@ public class Pedido {
     @Column(name = "data_pedido")
     private Date dataPedido;
 
-    @JsonBackReference
-    @OneToMany
-    @JoinColumn(name = "estabelecimento_pk_id")
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "subjectPedido", cascade = CascadeType.ALL)
     private List<Estabelecimento> observersEstabelecimento;
 
 

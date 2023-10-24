@@ -290,7 +290,14 @@ public class EstabelecimentoV1Service {
             throw new CodigoAcessoInvalidoException();
         }
         if (estabelecimento.getCodigoAcesso().equals(codigoAcesso)) {
+
+            if(!estabelecimento.isSubcribe(pedidoAtual)){
+                estabelecimento.subscribeTo(pedidoAtual); //Notificação de quando o pedido pronto
+
+            }
+
             pedidoAtual.setStatus(StatusPedido.PEDIDO_PRONTO);
+            pedidoAtual.notificaOsObservers(); //Notificação
             pedidoRepository.save(pedidoAtual);
             return pedidoAtual;
         } else {
