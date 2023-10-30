@@ -126,7 +126,7 @@ public class EstabelecimentoControllerTests {
 
         @Test
         @DisplayName("Quando criamos um novo estabelecimento com dados válidos")
-        void quandoCriarEstabelecimentoValido() throws Exception {
+        void  quandoCriarEstabelecimentoValido() throws Exception {
             // Arrange
             // nenhuma necessidade além do setup()
 

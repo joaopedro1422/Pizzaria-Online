@@ -340,11 +340,6 @@ public class EstabelecimentoV1Controller {
                 .body(estabelecimentov1Service.atribuirEntregadorNotificarCliente(id,codigoAcesso,idPedido));
     }
 
-
-
-
-
-
     @PostMapping("/disponibilidadePagamento")
     public ResponseEntity<?> disponibilizarMetodoPagamento(
             @RequestParam("MetodoPagamento") String metodoPagamento,

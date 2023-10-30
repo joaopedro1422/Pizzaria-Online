@@ -43,19 +43,20 @@ import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 
+import static org.hamcrest.Matchers.containsString;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
+import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.jsonPath;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
@@ -1638,6 +1639,101 @@ public class PedidoControllerTests {
             assertAll(() -> assertEquals("O entregador consultado nao existe!", resultado.getMessage()));
 
         }
+
+    }
+
+
+
+    @Nested
+    @DisplayName("Testes para notificar o cliente quando o pedido não pode ser entregue")
+    class notificarClienteQuandoPedidoNaoPodeSerEntregue {
+        @Test
+        @DisplayName("Quando notifico cliente sobre a indisponibilidade de entregadores")
+        @Transactional
+        public void testNotificarClienteIndisponibilidadeEntregadores() throws Exception {
+            pedido.setCliente(cliente.getId());
+            pedido.setStatus(com.ufcg.psoft.commerce.enums.StatusPedido.PEDIDO_EM_ROTA);
+
+            String responseBody = mockMvc.perform(put(URL_TEMPLATE + "/{id}/notificar-indisponibilidade-entregadores", pedido.getId())
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .param("codigoAcesso", estabelecimento.getCodigoAcesso()))
+                    .andExpect(status().isOk())
+                    .andReturn().getResponse().getContentAsString();
+
+            String expectedResponse = "Cliente notificado sobre a indisponibilidade de entregadores.";
+            assertEquals(expectedResponse, responseBody);
+
+        }
+
+        @Test
+        @DisplayName("Quando notificar cliente sobre a indisponibilidade de entregadores - Pedido não encontrado")
+        @Transactional
+        public void testNotificarClienteIndisponibilidadeEntregadoresPedidoNaoEncontrado() throws Exception {
+            mockMvc.perform(put(URL_TEMPLATE + "/{id}/notificar-indisponibilidade-entregadores", -1L)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .param("codigoAcesso", estabelecimento.getCodigoAcesso()))
+                    .andExpect(status().isNotFound());
+        }
+
+
+        @Test
+        @DisplayName("Quando notificar cliente sobre a indisponibilidade de entregadores - Status do pedido não é PEDIDO_EM_ROTA")
+        @Transactional
+        public void testNotificarClienteIndisponibilidadeEntregadoresStatusInvalido() throws Exception {
+            pedido.setStatus(com.ufcg.psoft.commerce.enums.StatusPedido.PEDIDO_ENTREGUE);
+            mockMvc.perform(put(URL_TEMPLATE + "/{id}/notificar-indisponibilidade-entregadores", pedido.getId())
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .param("codigoAcesso", estabelecimento.getCodigoAcesso()))
+                    .andExpect(status().isBadRequest());
+        }
+
+        @Test
+        @DisplayName("Quando notificar cliente sobre a indisponibilidade de entregadores - Cliente não encontrado")
+        @Transactional
+        public void testNotificarClienteIndisponibilidadeEntregadoresClienteNaoEncontrado() throws Exception {
+            mockMvc.perform(put(URL_TEMPLATE + "/{id}/notificar-indisponibilidade-entregadores", pedido.getId())
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .param("codigoAcesso", estabelecimento.getCodigoAcesso()))
+                    .andExpect(status().isBadRequest());
+        }
+
+
+        @Test
+        @DisplayName("Quando notificar cliente sobre a indisponibilidade de entregadores - Pedido não está em rota")
+        @Transactional
+        public void testNotificarClienteIndisponibilidadeEntregadoresPedidoNaoEmRota() throws Exception {
+            pedido.setStatus(com.ufcg.psoft.commerce.enums.StatusPedido.PEDIDO_RECEBIDO);
+            mockMvc.perform(put(URL_TEMPLATE + "/{id}/notificar-indisponibilidade-entregadores", pedido.getId())
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .param("codigoAcesso", estabelecimento.getCodigoAcesso()))
+                    .andExpect(status().isBadRequest());
+        }
+
+        @Test
+        @DisplayName("Quando notificar cliente sobre a indisponibilidade de entregadores - Entregador já existe")
+        @Transactional
+        public void testNotificarClienteIndisponibilidadeEntregadoresEntregadorExistente() throws Exception {
+            pedido.setEntregador(entregador);
+            mockMvc.perform(put(URL_TEMPLATE + "/{id}/notificar-indisponibilidade-entregadores", pedido.getId())
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .param("codigoAcesso", estabelecimento.getCodigoAcesso()))
+                    .andExpect(status().isBadRequest());
+        }
+
+
+        @Test
+        @DisplayName("Quando notificar cliente sobre a indisponibilidade de entregadores - Pedido em rota e entregador atribuído")
+        @Transactional
+        public void testNotificarClientePedidoEmRotaComEntregador() throws Exception {
+            pedido.setStatus(com.ufcg.psoft.commerce.enums.StatusPedido.PEDIDO_EM_ROTA);
+            pedido.setEntregador(entregador);
+            mockMvc.perform(put(URL_TEMPLATE + "/{id}/notificar-indisponibilidade-entregadores", pedido.getId())
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .param("codigoAcesso", estabelecimento.getCodigoAcesso()))
+                    .andExpect(status().isOk());
+        }
+
+
 
     }
 

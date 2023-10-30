@@ -132,6 +132,16 @@ public class PedidoV1Controller {
                 .body(pedidos);
     }
 
+    @PutMapping("/{id}/notificar-indisponibilidade-entregadores")
+    public ResponseEntity<?> notificarIndisponibilidadeEntregadores(
+            @PathVariable("id") Long id
+    ) throws PedidoNaoEncontradoException {
+        pedidoService.notificarClienteIndisponibilidadeEntregadores(id);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body("Cliente notificado sobre a indisponibilidade de entregadores.");
+    }
+
 
     @ExceptionHandler(PedidoNaoEncontradoException.class)
     ResponseEntity<?> handlePedidoNaoEncontradoException(PedidoNaoEncontradoException ex) {

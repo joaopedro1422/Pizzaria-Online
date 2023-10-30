@@ -37,5 +37,7 @@ public interface PedidoService {
 
     List<PedidoDTO> consultarHistoricoPedidosClientePorStatus(Long idCliente, String codigoAcesso, StatusPedido status);
 
+    void notificarClienteIndisponibilidadeEntregadores(Long idPedido) throws PedidoNaoEncontradoException;
+
 }
 

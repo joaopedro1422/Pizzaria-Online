@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import com.ufcg.psoft.commerce.exception.Cliente.ClienteCodigoAcessoIncorretoException;
 import com.ufcg.psoft.commerce.exception.Pedido.*;
 import com.ufcg.psoft.commerce.exception.Pizza.PizzaSemSaboresException;
+import com.ufcg.psoft.commerce.model.Entregador.Entregador;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -286,6 +287,33 @@ public class PedidoV1Service implements PedidoService{
                     return modelMapper.map(pedido, PedidoDTO.class);
                 })
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public void notificarClienteIndisponibilidadeEntregadores(Long idPedido) throws PedidoNaoEncontradoException {
+        Pedido pedido = getPedido(idPedido);
+
+        if (pedido == null) {
+            throw new PedidoNaoEncontradoException();
+        }
+
+        if (pedido.getStatus() == StatusPedido.PEDIDO_EM_ROTA) {
+            Cliente clientePedido = clienteRepository.findById(pedido.getCliente()).orElseThrow(ClienteNaoEncontradoException::new);
+            Entregador entregadorPedido = pedido.getEntregador();
+
+            if (entregadorPedido == null) {
+                // Realizar a notificação do cliente no caso de indisponibilidade de entregadores
+                notificaClienteIndisponibilidade(clientePedido);
+            } else {
+                // O pedido já tem um entregador atribuído, nada a fazer
+            }
+        } else {
+            throw new StatusPedidoInvalidoException();
+        }
+    }
+
+    private void notificaClienteIndisponibilidade(Cliente cliente) {
+        System.out.println("Notificação: Não há entregadores disponíveis para o seu pedido.");
     }
 
 }
