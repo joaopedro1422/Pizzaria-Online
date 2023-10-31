@@ -313,18 +313,26 @@ public class EstabelecimentoV1Service {
             throw new CodigoAcessoInvalidoException();
         }
         if (estabelecimento.getCodigoAcesso().equals(codigoAcesso)) {
-            Entregador entregadorPedido = estabelecimento.getEntregadorDisponivel();
-            Cliente clientePedido = clienteRepository.findById(pedidoAtual.getCliente()).get();
-            pedidoAtual.setEntregador(entregadorPedido);
-            pedidoAtual.setStatus(StatusPedido.PEDIDO_EM_ROTA);
-            pedidoAtual.getEntregador().setDisponibilidade(false);
-            pedidoRepository.save(pedidoAtual);
-            return pedidoAtual;
-        } else {
-            throw new CodigoAcessoEstabelecimentoException();
-        }
 
+            //List<Entregador> entregadoresDisponiveis = estabelecimento.getEntregadoresDisponiveis();
+            //entregadoresDisponiveis.sort(Comparator.comparing(Entregador::getTempoDeEspera));
 
+            //if (!entregadoresDisponiveis.isEmpty()) {
+
+                Entregador entregadorPedido = estabelecimento.getEntregadorDisponivel();
+                Cliente clientePedido = clienteRepository.findById(pedidoAtual.getCliente()).get();
+                pedidoAtual.setEntregador(entregadorPedido);
+                pedidoAtual.setStatus(StatusPedido.PEDIDO_EM_ROTA);
+                pedidoAtual.getEntregador().setDisponibilidade(false);
+                pedidoRepository.save(pedidoAtual);
+                return pedidoAtual;
+            } else {
+                // Não há entregadores disponíveis
+                throw new EntregadorNaoEncontradoException();
+            }
+        //} else {
+          //  throw new CodigoAcessoEstabelecimentoException();
+        //}
 
     }
 

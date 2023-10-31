@@ -558,7 +558,7 @@ public class SaborPizzaControllerTests {
                     .tipoDeSabor("salgado")
                     .valorMedia(10.0)
                     .valorGrande(15.0)
-                    .disponibilidadeSabor(true) // Defina a disponibilidade inicial como true
+                    .disponibilidadeSabor(true)
                     .build());
 
             sabor.setDisponibilidadeSabor(false);
