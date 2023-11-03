@@ -47,4 +47,7 @@ public class EntregadorPostPutRequestDTO {
 
     @JsonProperty("isDisponibilidade")
     public boolean isDisponibilidade;
+
+    @JsonProperty("EstadodeDisponibilidade")
+    public String EstadoDeDisponibilidade;
 }

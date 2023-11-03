@@ -151,11 +151,9 @@ public class Estabelecimento {
 //    }
 
 
-    public void aprovarEntregador(String codigoAcessoEstabelecimento, Entregador entregador){
+    public void aprovarEntregador(Entregador entregador){
 
-        if (codigoAcessoEstabelecimento.equals(this.codigoAcesso)){
-            entregadores.add(entregador);
-        }
+        entregadores.add(entregador);
 
     }
 

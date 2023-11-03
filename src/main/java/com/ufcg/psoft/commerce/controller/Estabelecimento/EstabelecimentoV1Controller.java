@@ -5,6 +5,7 @@ import com.ufcg.psoft.commerce.dto.Estabelecimento.EstabelecimentoPostPutRequest
 import com.ufcg.psoft.commerce.dto.PizzaDTO.SaborResponseDTO;
 import com.ufcg.psoft.commerce.enums.MetodoPagamento;
 import com.ufcg.psoft.commerce.enums.TipoDeSabor;
+import com.ufcg.psoft.commerce.exception.Entregador.EntregadorNaoEncontradoException;
 import com.ufcg.psoft.commerce.exception.Estabelecimento.CodigoAcessoEstabelecimentoException;
 import com.ufcg.psoft.commerce.exception.Estabelecimento.CodigoAcessoInvalidoException;
 import com.ufcg.psoft.commerce.exception.Estabelecimento.EstabelecimentoNaoEncontradoException;
@@ -14,6 +15,7 @@ import com.ufcg.psoft.commerce.model.Entregador.Entregador;
 import com.ufcg.psoft.commerce.model.Estabelecimento.Estabelecimento;
 import com.ufcg.psoft.commerce.model.Pedido.Pedido;
 import com.ufcg.psoft.commerce.service.Estabelecimento.EstabelecimentoV1Service;
+import jakarta.persistence.Id;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
@@ -371,5 +373,41 @@ public class EstabelecimentoV1Controller {
 
 
     }
+
+    @PostMapping("aprovarEntregador/{IdEntregador}/{CodigoAcessoEstabelecimento}")
+    public ResponseEntity<?> aprovaEntregador(
+
+            @PathVariable("IdEntregador") Long IdEntregador,
+            @PathVariable("CodigoAcessoEstabelecimento") String codigoAcesso
+
+
+    ){
+
+        ResponseEntity<?> response;
+
+        try{
+
+            Entregador entregador = estabelecimentov1Service
+                    .aprovarEntregador(IdEntregador, codigoAcesso);
+
+            response = ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(entregador);
+
+        }catch (EntregadorNaoEncontradoException ca){
+
+            throw new EntregadorNaoEncontradoException();
+
+        }catch (CodigoAcessoEstabelecimentoException e){
+
+            throw new CodigoAcessoEstabelecimentoException();
+
+        }
+
+
+        return response;
+
+    }
+
 
 }

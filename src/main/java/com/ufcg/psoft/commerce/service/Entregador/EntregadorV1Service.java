@@ -6,6 +6,7 @@ import com.ufcg.psoft.commerce.dto.Estabelecimento.EstabelecimentoPostPutRequest
 import com.ufcg.psoft.commerce.exception.Cliente.ClienteCodigoAcessoIncorretoException;
 import com.ufcg.psoft.commerce.exception.Cliente.ClienteNaoEncontradoException;
 import com.ufcg.psoft.commerce.exception.Entregador.CodigoAcessoEntregadorException;
+import com.ufcg.psoft.commerce.exception.Entregador.DadosDeDisponibiliadadeInvalidosException;
 import com.ufcg.psoft.commerce.exception.Entregador.EntregadorNaoEncontradoException;
 import com.ufcg.psoft.commerce.exception.Entregador.TipoDeVeiculoInvalidoException;
 import com.ufcg.psoft.commerce.exception.Estabelecimento.CodigoAcessoInvalidoException;
@@ -152,5 +153,31 @@ public class EntregadorV1Service implements EntregadorService{
 
         return entregador;
 
+    }
+
+
+    public Entregador alterarDiponibilidade(String codigoAcesso, String disponibilidade) throws CodigoAcessoEntregadorException {
+        Entregador entregador;
+
+        if (!entregadorRepository.existsByCodigoAcesso(codigoAcesso)){
+
+            throw new CodigoAcessoEntregadorException();
+
+        }
+
+        if(!(disponibilidade.equals("Descanso") || disponibilidade.equals("Ativo"))){
+
+            throw new DadosDeDisponibiliadadeInvalidosException();
+
+
+        }
+
+        entregador = entregadorRepository.findByCodigoAcesso(codigoAcesso).get();
+
+        entregador.setEstadoDeDisposicao(disponibilidade);
+
+        entregador = entregadorRepository.save(entregador);
+
+        return entregador;
     }
 }

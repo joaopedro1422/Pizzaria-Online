@@ -1,6 +1,8 @@
 package com.ufcg.psoft.commerce.controller.Entregador;
 
 import com.ufcg.psoft.commerce.dto.Entregador.EntregadorPostPutRequestDTO;
+import com.ufcg.psoft.commerce.exception.Entregador.CodigoAcessoEntregadorException;
+import com.ufcg.psoft.commerce.exception.Entregador.DadosDeDisponibiliadadeInvalidosException;
 import com.ufcg.psoft.commerce.model.Entregador.Entregador;
 import com.ufcg.psoft.commerce.dto.Entregador.EntregadorPostPutRequestDTO;
 import com.ufcg.psoft.commerce.service.Entregador.EntregadorService;
@@ -88,6 +90,42 @@ public class EntregadorV1Controller {
         return ResponseEntity
                 .status(HttpStatus.NO_CONTENT)
                 .build();
+
+    }
+
+
+    @PutMapping("/DisponibilidadeEntregador/")
+    ResponseEntity<?> alterarDisponibilidade(
+            @RequestParam("CodigoAcesso") String codigoAcesso,
+            @RequestParam("NovaDisponibilidade") String disponibilidade
+    ){
+
+        ResponseEntity<?> response;
+
+
+        try{
+
+            Entregador entregador = entregadorService
+                    .alterarDiponibilidade(codigoAcesso, disponibilidade);
+
+            response = ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(entregador);
+
+        }catch (CodigoAcessoEntregadorException codigoAcessoEntregadorException){
+
+            throw new CodigoAcessoEntregadorException();
+
+        }catch (DadosDeDisponibiliadadeInvalidosException e){
+
+            throw new DadosDeDisponibiliadadeInvalidosException();
+
+        }
+
+
+
+        return response;
+
 
     }
 

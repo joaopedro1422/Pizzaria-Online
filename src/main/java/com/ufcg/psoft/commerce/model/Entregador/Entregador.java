@@ -51,6 +51,8 @@ public class Entregador {
     @Column(nullable = false, name = "desc_disponibilidade_entregador")
     private boolean isDisponibilidade;
 
-
+    @JsonProperty("EstadodeDisponibilidade")
+    @Column(name = "desc_estado_diponibilidade")
+    private String estadoDeDisposicao;
 
 }

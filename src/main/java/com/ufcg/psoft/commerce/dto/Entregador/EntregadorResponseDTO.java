@@ -36,4 +36,8 @@ public class EntregadorResponseDTO {//
 
     @JsonProperty("isDisponibilidade")
     public boolean isDisponibilidade;
+
+
+    @JsonProperty("EstadodeDisponibilidade")
+    public String EstadoDeDisponibilidade;
 }

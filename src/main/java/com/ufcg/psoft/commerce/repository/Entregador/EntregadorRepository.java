@@ -4,8 +4,12 @@ import com.ufcg.psoft.commerce.model.Entregador.Entregador;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 public interface EntregadorRepository extends JpaRepository<Entregador, Long> {
 
     public Boolean existsByCodigoAcesso(String codigoAcesso);
 
+
+    public Optional<Entregador> findByCodigoAcesso(String codigoAcesso);
 }

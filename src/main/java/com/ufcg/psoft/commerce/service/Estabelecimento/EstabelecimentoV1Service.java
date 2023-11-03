@@ -414,4 +414,37 @@ public class EstabelecimentoV1Service {
         throw new CodigoAcessoEstabelecimentoException();
 
     }
+
+
+    public Entregador aprovarEntregador(Long id, String codigoAcesso){
+        Entregador entregador;
+
+        if(!estabelecimentoRepository.existsByCodigoAcesso(codigoAcesso)){
+
+            throw new CodigoAcessoEstabelecimentoException();
+
+
+        }
+
+        if(!entregadorRepository.existsById(id)) {
+
+            throw new EntregadorNaoEncontradoException();
+
+        }
+
+        Estabelecimento estabelecimento = estabelecimentoRepository
+                .findByCodigoAcesso(codigoAcesso).get();
+
+        entregador = entregadorRepository.findById(id).get();
+
+        entregador.setEstadoDeDisposicao("Descanso");
+
+        estabelecimento.aprovarEntregador(entregador);
+
+        entregador = entregadorRepository.save(entregador);
+
+        estabelecimentoRepository.save(estabelecimento);
+
+        return entregador;
+    }
 }
