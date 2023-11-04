@@ -1,5 +1,6 @@
 package com.ufcg.psoft.commerce.model.Entregador;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import com.ufcg.psoft.commerce.model.Estabelecimento.Estabelecimento;
@@ -9,12 +10,14 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity(name= "entregadores")
-public class Entregador {
+public class Entregador implements Comparable<Entregador> {
 
     @JsonProperty("id")
     @Id
@@ -55,4 +58,20 @@ public class Entregador {
     @Column(name = "desc_estado_diponibilidade")
     private String estadoDeDisposicao;
 
+    @JsonIgnore
+    @JsonProperty("tempoDisponivel")
+    @Column(name = "desc_tempo_disponivel")
+    private LocalDateTime tempoDisponivel;
+
+
+    @Override
+    public int compareTo(Entregador outroEntregador) {
+        if (this.tempoDisponivel.isBefore(outroEntregador.getTempoDisponivel())) {
+            return -1; // Retorna um número negativo se this for menor que outroEntregador
+        } else if (this.tempoDisponivel.isAfter(outroEntregador.getTempoDisponivel())) {
+            return 1; // Retorna um número positivo se this for maior que outroEntregador
+        } else {
+            return 0; // Retorna 0 se this for igual a outroEntregador
+        }
+    }
 }

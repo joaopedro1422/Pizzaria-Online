@@ -97,4 +97,9 @@ public class Cliente {
                 "Placa do Veiculo: " + entregador.getPlacaVeiculo() + "\n");
     }
 
+    public void notificaSemEntregadores(){
+        System.out.println(" Nao ha entregadores disponiveis no momento...\n" +
+                            "- Seu pedido sera enviado assim que possivel!");
+    }
+
 }

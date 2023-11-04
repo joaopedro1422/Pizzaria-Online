@@ -38,6 +38,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -293,12 +295,12 @@ public class EstabelecimentoV1Service {
 
             if(!estabelecimento.isSubcribe(pedidoAtual)){
                 estabelecimento.subscribeTo(pedidoAtual); //Notificação de quando o pedido pronto
-
             }
-
             pedidoAtual.setStatus(StatusPedido.PEDIDO_PRONTO);
             pedidoAtual.notificaOsObservers(); //Notificação
             pedidoRepository.save(pedidoAtual);
+            // atribui um pedido a um entregador de forma automatica, conforme a US19
+            pedidoAtual=atribuirPedidoAEntregador(estabelecimento.getId(),estabelecimento.getCodigoAcesso(),pedidoAtual.getId());
             return pedidoAtual;
         } else {
             throw new CodigoAcessoEstabelecimentoException();
@@ -309,31 +311,43 @@ public class EstabelecimentoV1Service {
     public Pedido atribuirPedidoAEntregador(Long id, String codigoAcesso, Long idPedido) {
         Estabelecimento estabelecimento = estabelecimentoRepository.findById(id).get();
         Pedido pedidoAtual = pedidoRepository.findById(idPedido).get();
+        Cliente clientePedido= clienteRepository.findById(pedidoAtual.getCliente()).get();
         if (!isValidCodigoAcesso(codigoAcesso)) {
             throw new CodigoAcessoInvalidoException();
         }
         if (estabelecimento.getCodigoAcesso().equals(codigoAcesso)) {
-
-            //List<Entregador> entregadoresDisponiveis = estabelecimento.getEntregadoresDisponiveis();
-            //entregadoresDisponiveis.sort(Comparator.comparing(Entregador::getTempoDeEspera));
-
-            //if (!entregadoresDisponiveis.isEmpty()) {
-
-                Entregador entregadorPedido = estabelecimento.getEntregadorDisponivel();
-                Cliente clientePedido = clienteRepository.findById(pedidoAtual.getCliente()).get();
-                pedidoAtual.setEntregador(entregadorPedido);
-                pedidoAtual.setStatus(StatusPedido.PEDIDO_EM_ROTA);
-                pedidoAtual.getEntregador().setDisponibilidade(false);
-                pedidoRepository.save(pedidoAtual);
-                return pedidoAtual;
-            } else {
-                // Não há entregadores disponíveis
-                throw new EntregadorNaoEncontradoException();
+                List<Entregador> entregadores= ordenarEntregadoresPorTempoDisponivel(estabelecimento.getEntregadoresDisponiveis());
+                //Quando nao houver entregadores disponiveis, o pedido será incluido na lista dos pedidos em espera do estabelecimento
+                if(entregadores.isEmpty()){
+                    estabelecimento.getPedidosEspera().add(pedidoAtual);
+                    estabelecimentoRepository.save(estabelecimento);
+                    clientePedido.notificaSemEntregadores();
+                }
+                else{
+                    Entregador entregadorPedido = entregadores.get(0);
+                    entregadorPedido.setDisponibilidade(false);
+                    pedidoAtual.setEntregador(entregadorPedido);
+                    entregadorRepository.save(entregadorPedido);
+                    pedidoAtual.setStatus(StatusPedido.PEDIDO_EM_ROTA);
+                    pedidoRepository.save(pedidoAtual);
+                    return pedidoAtual;
+                }
             }
-        //} else {
-          //  throw new CodigoAcessoEstabelecimentoException();
-        //}
+         else {
+            throw new CodigoAcessoEstabelecimentoException();
+        }
+         return pedidoAtual;
 
+    }
+
+    public List<Entregador> ordenarEntregadoresPorTempoDisponivel(List<Entregador> entregadores) {
+        List<Entregador> entregadoresRetorno =entregadores;
+
+        entregadoresRetorno.sort((entregador1, entregador2) -> {
+            return entregador1.compareTo(entregador2);
+        });
+
+        return entregadoresRetorno;
     }
 
     public Pedido disponibilizarMetodoPagamento(String metodoPagamento,

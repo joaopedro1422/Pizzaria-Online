@@ -8,14 +8,10 @@ import com.ufcg.psoft.commerce.dto.PedidoDTO.PedidoDTO;
 import com.ufcg.psoft.commerce.dto.PedidoDTO.PedidoResponseDTO;
 import com.ufcg.psoft.commerce.dto.PizzaDTO.SaborPostPutDTO;
 import com.ufcg.psoft.commerce.enums.MetodoPagamento;
-import com.ufcg.psoft.commerce.enums.StatusPedido;
 import com.ufcg.psoft.commerce.enums.TamanhoPizza;
 import com.ufcg.psoft.commerce.exception.Associacao.EstabelecimentoIdNaoEncontradoException;
-import com.ufcg.psoft.commerce.exception.Cliente.ClienteCodigoAcessoIncorretoException;
 import com.ufcg.psoft.commerce.exception.Cliente.ClienteNaoEncontradoException;
 import com.ufcg.psoft.commerce.exception.CustomErrorType;
-import com.ufcg.psoft.commerce.exception.Pedido.MetodoPagamentoInvalidoException;
-import com.ufcg.psoft.commerce.exception.Pedido.PedidoNaoCancelavelException;
 import com.ufcg.psoft.commerce.exception.Pizza.PizzaSemSaboresException;
 import com.ufcg.psoft.commerce.model.Associacao.Associacao;
 import com.ufcg.psoft.commerce.model.Cliente.Cliente;
@@ -37,26 +33,21 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 
-import static org.hamcrest.Matchers.containsString;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
-import java.nio.charset.StandardCharsets;
-import java.time.LocalDateTime;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
-import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.jsonPath;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
@@ -65,6 +56,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @DisplayName("Testes da entidade Pedido")
 public class PedidoControllerTests {
 
+    final String URI_ENTREGADORES = "/v1/entregadores";
     final String URL_CLIENTES = "/v1/clientes";
     final String URL_TEMPLATE = "/v1/pedidos";
     final String URI_ASSOCIACAO = "/associacao";
@@ -84,7 +76,7 @@ public class PedidoControllerTests {
     @Autowired
     EntregadorRepository entregadorRepository;
 
-    Entregador entregador;
+    Entregador entregador, entregadorDois;
     @Autowired
     ClienteRepository clienteRepository;
 
@@ -99,7 +91,7 @@ public class PedidoControllerTests {
 
     PedidoDTO pedidoDTO;
 
-    Pedido pedido;
+    Pedido pedido, pedidoDois;
 
     com.ufcg.psoft.commerce.enums.StatusPedido statusPedido;
 
@@ -124,6 +116,8 @@ public class PedidoControllerTests {
 
         Set<SaborPizza> cardapio = new HashSet<>();
         Set<Entregador> entregadores = new HashSet<>();
+        entregadores.add(entregador);
+        entregadores.add(entregadorDois);
 
         objectMapper.registerModule(new JavaTimeModule());
         estabelecimento = estabelecimentoRepository.save(Estabelecimento.builder()
@@ -184,6 +178,17 @@ public class PedidoControllerTests {
                 .tipoVeiculo("Carro")
                 .codigoAcesso("123456")
                 .isDisponibilidade(true)
+                .estadoDeDisposicao("Descanso")
+                .build());
+
+        entregadorDois = entregadorRepository.save(Entregador.builder()
+                .nome("EntregadorDois")
+                .placaVeiculo("ABC-4321")
+                .corVeiculo("Preto")
+                .tipoVeiculo("Moto")
+                .codigoAcesso("234567")
+                .isDisponibilidade(true)
+                .estadoDeDisposicao("Descanso")
                 .build());
 
 
@@ -1049,9 +1054,77 @@ public class PedidoControllerTests {
             assertEquals(pedidoResultado.getStatusPedido(), statusPedido.PEDIDO_EM_PREPARO);
         }
 
+
+        // teste completo e adaptado para a funcionalidade da US19, onde a atribuiaçao de um entregador que está a mais tempo esperando e o envio do pedido sao feitos de forma automatica
         @Test
         @DisplayName("Quando o funcionario do estabelecimento confirmar que o pedido está pronto, o status devera ser PEDIDO_PRONTO")
         public void confirmaPedidoPronto() throws Exception{
+
+            //entregador 1 se associa ao estabelecimento
+            String responseJsonString1 = mockMvc.perform(post(URI_ASSOCIACAO)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .param("entregadorId", entregador.getId().toString())
+                            .param("codigoAcesso", entregador.getCodigoAcesso())
+                            .param("estabelecimentoId", estabelecimento.getId().toString()))
+                    .andExpect(status().isCreated())
+                    .andDo(print())
+                    .andReturn().getResponse().getContentAsString();
+
+            Associacao resultadoAssociaçao = objectMapper.readValue(responseJsonString1, Associacao.AssociacaoBuilder.class).build();
+
+            //Entregador 1 é aprovado
+            String responseJsonString2 = mockMvc.perform(put(URI_ASSOCIACAO)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .param("codigoAcesso", estabelecimento.getCodigoAcesso())
+                            .param("idAssociacao", String.valueOf(resultadoAssociaçao.getId())))
+                    .andExpect(status().isOk())
+                    .andDo(print())
+                    .andReturn().getResponse().getContentAsString();
+
+            // Entregador 2 se associa ao estabelecimento
+            String responseJsonString3 = mockMvc.perform(post(URI_ASSOCIACAO)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .param("entregadorId", entregadorDois.getId().toString())
+                            .param("codigoAcesso", entregadorDois.getCodigoAcesso())
+                            .param("estabelecimentoId", estabelecimento.getId().toString()))
+                    .andExpect(status().isCreated())
+                    .andDo(print())
+                    .andReturn().getResponse().getContentAsString();
+
+            Associacao resultadoAssociaçao2 = objectMapper.readValue(responseJsonString3, Associacao.AssociacaoBuilder.class).build();
+
+            //Entregador 2 é aprovado
+            String responseJsonString4 = mockMvc.perform(put(URI_ASSOCIACAO)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .param("codigoAcesso", estabelecimento.getCodigoAcesso())
+                            .param("idAssociacao", String.valueOf(resultadoAssociaçao2.getId())))
+                    .andExpect(status().isOk())
+                    .andDo(print())
+                    .andReturn().getResponse().getContentAsString();
+
+            // Entregador dois muda sua disposiçao para 'ativo' (primeiro do que o entregador 1)
+            String responseJsonString5 = mockMvc.perform(put(URI_ENTREGADORES + "/DisponibilidadeEntregador/")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .param("CodigoAcesso", entregadorDois.getCodigoAcesso())
+                            .param("NovaDisponibilidade", "Ativo")
+                    )
+                    .andExpect(status().isOk())
+                    .andDo(print())
+                    .andReturn().getResponse().getContentAsString();
+
+            Thread.sleep(2000);
+
+            //Entregador 1 muda sua disposiçao para 'ativo'
+            String responseJsonString6 = mockMvc.perform(put(URI_ENTREGADORES + "/DisponibilidadeEntregador/")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .param("CodigoAcesso", entregador.getCodigoAcesso())
+                            .param("NovaDisponibilidade", "Ativo")
+                    )
+                    .andExpect(status().isOk())
+                    .andDo(print())
+                    .andReturn().getResponse().getContentAsString();
+
+            //Funcionario confirma que o pedido está pronto e o pedido é enviado e atribuido ao entregador 2 automaticamente
             String ResultadoStr = mockMvc.perform(MockMvcRequestBuilders.put(URI_ESTABELECIMENTOS + "/" + estabelecimento.getId() + "/pedido-pronto")
                             .contentType(MediaType.APPLICATION_JSON)
                             .param("idPedido", String.valueOf(pedido.getId()))
@@ -1062,7 +1135,43 @@ public class PedidoControllerTests {
                     .andReturn().getResponse().getContentAsString();
 
             PedidoResponseDTO pedidoResultado = objectMapper.readValue(ResultadoStr, PedidoResponseDTO.PedidoResponseDTOBuilder.class).build();
-            assertEquals(pedidoResultado.getStatusPedido(), statusPedido.PEDIDO_PRONTO);
+            assertEquals(pedidoResultado.getStatusPedido(), statusPedido.PEDIDO_EM_ROTA);
+        }
+
+        @Test
+        @DisplayName("Quando o pedido a ser dado como finalizado não existir")
+        public void confirmaPedidoProntoInexistente() throws Exception{
+            String responseJsonString = mockMvc.perform(post(URI_ASSOCIACAO)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .param("entregadorId", entregador.getId().toString())
+                            .param("codigoAcesso", entregador.getCodigoAcesso())
+                            .param("estabelecimentoId", estabelecimento.getId().toString()))
+                    .andExpect(status().isCreated())
+                    .andDo(print())
+                    .andReturn().getResponse().getContentAsString();
+
+            Associacao resultado = objectMapper.readValue(responseJsonString, Associacao.AssociacaoBuilder.class).build();
+
+            String responseJsonString2 = mockMvc.perform(put(URI_ASSOCIACAO)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .param("codigoAcesso", estabelecimento.getCodigoAcesso())
+                            .param("idAssociacao", String.valueOf(resultado.getId())))
+                    .andExpect(status().isOk())
+                    .andDo(print())
+                    .andReturn().getResponse().getContentAsString();
+
+            String ResultadoStr = mockMvc.perform(MockMvcRequestBuilders.put(URI_ESTABELECIMENTOS + "/" + estabelecimento.getId() + "/pedido-pronto")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .param("idPedido", String.valueOf(93l))
+                            .param("codigoAcessoEstabelecimento", estabelecimento.getCodigoAcesso())
+                            .content(objectMapper.writeValueAsString(pedidoDTO)))
+                    .andExpect(status().isBadRequest())
+                    .andDo(print())
+                    .andReturn().getResponse().getContentAsString();
+
+            CustomErrorType resultadoErro = objectMapper.readValue(ResultadoStr, CustomErrorType.class);
+
+            assertEquals("Pedido Nao Encontrado", resultadoErro.getMessage());
         }
 
         @Test
@@ -1088,6 +1197,15 @@ public class PedidoControllerTests {
                     .andDo(print())
                     .andReturn().getResponse().getContentAsString();
 
+            String responseJsonString6 = mockMvc.perform(put(URI_ENTREGADORES + "/DisponibilidadeEntregador/")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .param("CodigoAcesso", entregador.getCodigoAcesso())
+                            .param("NovaDisponibilidade", "Ativo")
+                    )
+                    .andExpect(status().isOk())
+                    .andDo(print())
+                    .andReturn().getResponse().getContentAsString();
+
             String ResultadoStr = mockMvc.perform(MockMvcRequestBuilders.put(URI_ESTABELECIMENTOS + "/" + estabelecimento.getId() + "/envia-pedido")
                             .contentType(MediaType.APPLICATION_JSON)
                             .param("codigoAcesso", estabelecimento.getCodigoAcesso())
@@ -1105,30 +1223,42 @@ public class PedidoControllerTests {
         @DisplayName("Quando o cliente confirmar a entrega, o status do pedido devera ser PEDIDO_ENTREGUE")
         public void confirmaEntregaPedido()throws Exception{
 
+
             //cria uma associaçao para um entregador
             String responseJsonString = mockMvc.perform(post(URI_ASSOCIACAO)
                             .contentType(MediaType.APPLICATION_JSON)
                             .param("entregadorId", entregador.getId().toString())
                             .param("codigoAcesso", entregador.getCodigoAcesso())
-                            .param("estabelecimentoId", estabelecimento.getId().toString()))
+                            .param("estabelecimentoId", String.valueOf(estabelecimento.getId())))
                     .andExpect(status().isCreated())
                     .andDo(print())
                     .andReturn().getResponse().getContentAsString();
+
+            Associacao resultadoAssociaçao = objectMapper.readValue(responseJsonString, Associacao.AssociacaoBuilder.class).build();
 
             //aprova o entregador e o adiciona ao estabelecimento
             String responseJsonString2 = mockMvc.perform(put(URI_ASSOCIACAO)
                             .contentType(MediaType.APPLICATION_JSON)
                             .param("codigoAcesso", estabelecimento.getCodigoAcesso())
-                            .param("idAssociacao", String.valueOf(1)))
+                            .param("idAssociacao", String.valueOf(resultadoAssociaçao.getId())))
+                    .andExpect(status().isOk())
+                    .andDo(print())
+                    .andReturn().getResponse().getContentAsString();
+
+            String responseJsonString6 = mockMvc.perform(put(URI_ENTREGADORES + "/DisponibilidadeEntregador/")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .param("CodigoAcesso", entregador.getCodigoAcesso())
+                            .param("NovaDisponibilidade", "Ativo")
+                    )
                     .andExpect(status().isOk())
                     .andDo(print())
                     .andReturn().getResponse().getContentAsString();
 
             // estabelecimento envia o pedido para o cliente atraves deste entregador
-            String ResultadoStr = mockMvc.perform(MockMvcRequestBuilders.put(URI_ESTABELECIMENTOS + "/" + estabelecimento.getId() + "/envia-pedido")
+            String ResultadoStr = mockMvc.perform(MockMvcRequestBuilders.put(URI_ESTABELECIMENTOS + "/" + estabelecimento.getId() + "/pedido-pronto")
                             .contentType(MediaType.APPLICATION_JSON)
-                            .param("codigoAcesso", estabelecimento.getCodigoAcesso())
                             .param("idPedido", String.valueOf(pedido.getId()))
+                            .param("codigoAcessoEstabelecimento", estabelecimento.getCodigoAcesso())
                             .content(objectMapper.writeValueAsString(pedidoDTO)))
                     .andExpect(status().isOk())
                     .andDo(print())
@@ -1200,6 +1330,7 @@ public class PedidoControllerTests {
         public void clienteNaoPodeCancelarPedido() throws Exception {
             List<Pizza> pizzas = List.of(pizzaM);
 
+
             // Cria o pedido
             String resultadoStr = mockMvc.perform(post(URL_TEMPLATE)
                             .contentType(MediaType.APPLICATION_JSON)
@@ -1210,11 +1341,42 @@ public class PedidoControllerTests {
 
             PedidoResponseDTO pedidoResponseDTO = objectMapper.readValue(resultadoStr, PedidoResponseDTO.class);
 
+
+            String responseJsonString1 = mockMvc.perform(post(URI_ASSOCIACAO)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .param("entregadorId", entregador.getId().toString())
+                            .param("codigoAcesso", entregador.getCodigoAcesso())
+                            .param("estabelecimentoId", estabelecimento.getId().toString()))
+                    .andExpect(status().isCreated())
+                    .andDo(print())
+                    .andReturn().getResponse().getContentAsString();
+
+            Associacao resultadoAssociaçao = objectMapper.readValue(responseJsonString1, Associacao.AssociacaoBuilder.class).build();
+
+            //Entregador 1 é aprovado
+            String responseJsonString2 = mockMvc.perform(put(URI_ASSOCIACAO)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .param("codigoAcesso", estabelecimento.getCodigoAcesso())
+                            .param("idAssociacao", String.valueOf(resultadoAssociaçao.getId())))
+                    .andExpect(status().isOk())
+                    .andDo(print())
+                    .andReturn().getResponse().getContentAsString();
+
+            String responseJsonString6 = mockMvc.perform(put(URI_ENTREGADORES + "/DisponibilidadeEntregador/")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .param("CodigoAcesso", entregador.getCodigoAcesso())
+                            .param("NovaDisponibilidade", "Ativo")
+                    )
+                    .andExpect(status().isOk())
+                    .andDo(print())
+                    .andReturn().getResponse().getContentAsString();
+
+
             // Confirma que o pedido está pronto
             mockMvc.perform(put(URI_ESTABELECIMENTOS + "/" + estabelecimento.getId() + "/pedido-pronto")
                             .contentType(MediaType.APPLICATION_JSON)
-                            .param("idPedido", String.valueOf(pedidoResponseDTO.getId()))
                             .param("codigoAcessoEstabelecimento", estabelecimento.getCodigoAcesso())
+                            .param("idPedido", String.valueOf(pedidoResponseDTO.getId()))
                             .content(objectMapper.writeValueAsString(pedidoDTO)))
                     .andExpect(status().isOk());
 
@@ -1734,6 +1896,111 @@ public class PedidoControllerTests {
         }
 
 
+
+    }
+
+
+    //O teste 'confirmaPedidoPronto' (linha 1068) testa as novas funcionalidades da US19, como a atribuiçao
+    //do pedido ao entregador que esta esperando a mais tempo
+    @Test
+    @DisplayName("Teste da Us19: quando nao houverem entregadores disponiveis, o pedido é adicionado aos pedidos em espera" +
+            " e quando uma entrega for confimada o entregador é atribuido a este pedido em espera")
+    public void pedidoSemEntregadoresDisponiveis() throws Exception{
+
+        List<Pizza> pizzas = List.of(pizzaM);
+
+        pedidoDois = pedidoRepository.save(Pedido.builder()
+                .codigoAcesso("234567")
+                .cliente(cliente.getId())
+                .estabelecimento(estabelecimento.getId())
+                .metodoPagamento(MetodoPagamento.CARTAO_CREDITO)
+                .enderecoEntrega("Rua velha,123")
+                .pizzas(pizzas)
+                .status(com.ufcg.psoft.commerce.enums.StatusPedido.PEDIDO_RECEBIDO)
+                .build());
+
+
+        //entregador 1 se associa ao estabelecimento
+        String responseJsonString1 = mockMvc.perform(post(URI_ASSOCIACAO)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .param("entregadorId", entregador.getId().toString())
+                        .param("codigoAcesso", entregador.getCodigoAcesso())
+                        .param("estabelecimentoId", estabelecimento.getId().toString()))
+                .andExpect(status().isCreated())
+                .andDo(print())
+                .andReturn().getResponse().getContentAsString();
+
+        Associacao resultadoAssociaçao = objectMapper.readValue(responseJsonString1, Associacao.AssociacaoBuilder.class).build();
+
+        //Entregador 1 é aprovado
+        String responseJsonString2 = mockMvc.perform(put(URI_ASSOCIACAO)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .param("codigoAcesso", estabelecimento.getCodigoAcesso())
+                        .param("idAssociacao", String.valueOf(resultadoAssociaçao.getId())))
+                .andExpect(status().isOk())
+                .andDo(print())
+                .andReturn().getResponse().getContentAsString();
+
+        //Entregador 1 muda sua disposiçao para 'ativo'
+        String responseJsonString6 = mockMvc.perform(put(URI_ENTREGADORES + "/DisponibilidadeEntregador/")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .param("CodigoAcesso", entregador.getCodigoAcesso())
+                        .param("NovaDisponibilidade", "Ativo")
+                )
+                .andExpect(status().isOk())
+                .andDo(print())
+                .andReturn().getResponse().getContentAsString();
+
+        //Funcionario confirma que o pedido está pronto e o pedido é enviado e atribuido ao entregador 1 automaticamente
+        String ResultadoStr = mockMvc.perform(MockMvcRequestBuilders.put(URI_ESTABELECIMENTOS + "/" + estabelecimento.getId() + "/pedido-pronto")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .param("idPedido", String.valueOf(pedido.getId()))
+                        .param("codigoAcessoEstabelecimento", estabelecimento.getCodigoAcesso())
+                        .content(objectMapper.writeValueAsString(pedidoDTO)))
+                .andExpect(status().isOk())
+                .andDo(print())
+                .andReturn().getResponse().getContentAsString();
+
+        PedidoResponseDTO pedidoResultado = objectMapper.readValue(ResultadoStr, PedidoResponseDTO.PedidoResponseDTOBuilder.class).build();
+
+
+
+        //Funcionario confirma que o pedido está pronto ,
+        // porem nao ha entregadores disponiveis, entao o pedido sera adicionado aos Pedidos em Espera.
+
+        String ResultadoStr2 = mockMvc.perform(MockMvcRequestBuilders.put(URI_ESTABELECIMENTOS + "/" + estabelecimento.getId() + "/pedido-pronto")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .param("idPedido", String.valueOf(pedidoDois.getId()))
+                        .param("codigoAcessoEstabelecimento", estabelecimento.getCodigoAcesso())
+                        .content(objectMapper.writeValueAsString(pedidoDTO)))
+                .andExpect(status().isOk())
+                .andDo(print())
+                .andReturn().getResponse().getContentAsString();
+
+
+        PedidoResponseDTO pedidoResultado2 = objectMapper.readValue(ResultadoStr2, PedidoResponseDTO.PedidoResponseDTOBuilder.class).build();
+        Estabelecimento estab = estabelecimentoRepository.findById(pedidoDois.getEstabelecimento()).get();
+
+        // verifica que o entregador do pedido 2 é nulo, pois nao havia entregadores disponiveis
+        assertNull(pedidoResultado2.getEntregador());
+        // verifica que agora o estabelecimento possui um pedido em espera, que é o pedido Dois
+        assertEquals("234567", estab.getPedidosEspera().get(0).getCodigoAcesso());
+
+        // um cliente confirma entrega, ou seja, o entregador 1 passa a estar disponivel novamente
+        // e é automaticamente atribuido ao pedido Dois, que agora nao estará mais em espera
+        String ResultadoStr3 = mockMvc.perform(MockMvcRequestBuilders.put(URL_CLIENTES + "/" + cliente.getId() + "/confirma-entrega")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .param("codigoAcesso", cliente.getCodigoAcesso())
+                        .param("idPedido", String.valueOf(pedido.getId()))
+                        .content(objectMapper.writeValueAsString(pedidoDTO)))
+                .andExpect(status().isOk())
+                .andDo(print())
+                .andReturn().getResponse().getContentAsString();
+
+        // verifica que agora o pedido 2 possui um entregador e o seu status está como 'PEDIDO_EM_ROTA'.
+        pedidoDois= pedidoRepository.findById(pedidoDois.getId()).get();
+        assertEquals("Entregador Um",pedidoDois.getEntregador().getNome());
+        assertEquals(com.ufcg.psoft.commerce.enums.StatusPedido.PEDIDO_EM_ROTA, pedidoDois.getStatus());
 
     }
 

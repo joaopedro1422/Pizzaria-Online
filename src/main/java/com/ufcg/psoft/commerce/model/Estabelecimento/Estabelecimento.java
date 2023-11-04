@@ -19,6 +19,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.engine.internal.Cascade;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 @Builder
@@ -56,7 +58,10 @@ public class Estabelecimento {
     @OneToMany(cascade= CascadeType.PERSIST, fetch = FetchType.EAGER)
     private Set<Entregador> entregadores;
 
-
+    @JsonIgnore
+    @JoinColumn(name = "estabelecimento_id")
+    @OneToMany(cascade= CascadeType.PERSIST, fetch = FetchType.EAGER)
+    private List<Pedido> pedidosEspera;
 
 
 
@@ -87,8 +92,18 @@ public class Estabelecimento {
             }
         }
         return null;
-
     }
+
+    public List<Entregador> getEntregadoresDisponiveis(){
+        List<Entregador> retorno= new ArrayList<>();
+        for(Entregador entregadorr:entregadores){
+            if(entregadorr.isDisponibilidade() && entregadorr.getEstadoDeDisposicao().equals("Ativo")){
+                retorno.add(entregadorr);
+            }
+        }
+        return  retorno;
+    }
+
 
 
 

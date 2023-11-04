@@ -14,11 +14,13 @@ import com.ufcg.psoft.commerce.model.Cliente.Cliente;
 import com.ufcg.psoft.commerce.model.Entregador.Entregador;
 import com.ufcg.psoft.commerce.model.Estabelecimento.Estabelecimento;
 import com.ufcg.psoft.commerce.repository.Entregador.EntregadorRepository;
+import com.ufcg.psoft.commerce.repository.Estabelecimento.EstabelecimentoRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,6 +31,8 @@ public class EntregadorV1Service implements EntregadorService{
     private EntregadorRepository entregadorRepository;
 
 
+    @Autowired
+    private EstabelecimentoRepository estabelecimentoRepository;
     @Bean
     private ModelMapper mapeadorEntregador(){
 
@@ -158,24 +162,20 @@ public class EntregadorV1Service implements EntregadorService{
 
     public Entregador alterarDiponibilidade(String codigoAcesso, String disponibilidade) throws CodigoAcessoEntregadorException {
         Entregador entregador;
-
         if (!entregadorRepository.existsByCodigoAcesso(codigoAcesso)){
-
             throw new CodigoAcessoEntregadorException();
-
         }
-
         if(!(disponibilidade.equals("Descanso") || disponibilidade.equals("Ativo"))){
-
             throw new DadosDeDisponibiliadadeInvalidosException();
 
-
         }
 
-        entregador = entregadorRepository.findByCodigoAcesso(codigoAcesso).get();
 
+          entregador = entregadorRepository.findByCodigoAcesso(codigoAcesso).get();
+
+        LocalDateTime tempoAtual= LocalDateTime.now();
         entregador.setEstadoDeDisposicao(disponibilidade);
-
+        entregador.setTempoDisponivel(tempoAtual);
         entregador = entregadorRepository.save(entregador);
 
         return entregador;
