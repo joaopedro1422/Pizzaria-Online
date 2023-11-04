@@ -1050,7 +1050,6 @@ public class EstabelecimentoControllerTests {
                     .valorGrande(35.0)
                     .tipoDeSabor("salgado")
                     .disponibilidadeSabor(true)
-                    //.estabelecimento(estabelecimento)
                     .build());
 
             SaborPizza sabor2 = saborRepository.save(SaborPizza.builder()
@@ -1129,17 +1128,6 @@ public class EstabelecimentoControllerTests {
 
             sabor1.notifyObservers();
             assertEquals(2,sabor1.observersSize());
-
-
-        }
-    }
-
-    @Nested
-    @DisplayName("Conjunto de testes para atualizaçoes do status do pedido")
-    class statusPedido {
-        @Test
-        @DisplayName("Quando um pedido for criado, seu status devera indicar que o pedido foi recebido pelo estabelecimento")
-        public void pedidoRecebido() throws Exception {
 
 
         }

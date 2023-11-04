@@ -309,6 +309,7 @@ public class EstabelecimentoV1Service {
     }
 
     public Pedido atribuirPedidoAEntregador(Long id, String codigoAcesso, Long idPedido) {
+        //pegando os ids
         Estabelecimento estabelecimento = estabelecimentoRepository.findById(id).get();
         Pedido pedidoAtual = pedidoRepository.findById(idPedido).get();
         Cliente clientePedido= clienteRepository.findById(pedidoAtual.getCliente()).get();
@@ -324,10 +325,10 @@ public class EstabelecimentoV1Service {
                     clientePedido.notificaSemEntregadores();
                 }
                 else{
-                    Entregador entregadorPedido = entregadores.get(0);
-                    entregadorPedido.setDisponibilidade(false);
-                    pedidoAtual.setEntregador(entregadorPedido);
-                    entregadorRepository.save(entregadorPedido);
+                    Entregador entregadorDisponivelPedido = entregadores.get(0);
+                    entregadorDisponivelPedido.setDisponibilidade(false);
+                    pedidoAtual.setEntregador(entregadorDisponivelPedido);
+                    entregadorRepository.save(entregadorDisponivelPedido);
                     pedidoAtual.setStatus(StatusPedido.PEDIDO_EM_ROTA);
                     pedidoRepository.save(pedidoAtual);
                     return pedidoAtual;
@@ -340,14 +341,13 @@ public class EstabelecimentoV1Service {
 
     }
 
+    // metodo com uma lista de entregadores adiconados e ordenados por tempo disponivel
     public List<Entregador> ordenarEntregadoresPorTempoDisponivel(List<Entregador> entregadores) {
-        List<Entregador> entregadoresRetorno =entregadores;
+        List<Entregador> entregadoresPorTempo = entregadores;
 
-        entregadoresRetorno.sort((entregador1, entregador2) -> {
-            return entregador1.compareTo(entregador2);
-        });
+        entregadoresPorTempo.sort(Entregador::compareTo);
 
-        return entregadoresRetorno;
+        return entregadoresPorTempo;
     }
 
     public Pedido disponibilizarMetodoPagamento(String metodoPagamento,
