@@ -81,6 +81,11 @@ public class EstabelecimentoV1Service {
     public Estabelecimento add(EstabelecimentoPostPutRequestDTO estabelecimentoPostPutRequestDTO) {
         Estabelecimento estabelecimento = converteTDOParaEntidade(estabelecimentoPostPutRequestDTO);
 
+        if(estabelecimento.getEntregadores() == null){
+
+            estabelecimento.setEntregadores(new HashSet<Entregador>());
+
+        }
 
         if (estabelecimento.getCodigoAcesso().length() != 6) {
 

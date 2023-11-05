@@ -37,11 +37,15 @@ public class EstabelecimentoV1Controller {
     final String msgErro = "Nenhum estabelecimento encontrado com esse id";
 
     @PostMapping
-    public ResponseEntity<?> post (@RequestBody EstabelecimentoPostPutRequestDTO estabelecimentoPostPutRequestDTO){
+    public ResponseEntity<?> post (@RequestBody EstabelecimentoPostPutRequestDTO estabelecimentoPostPutRequestDTO,
+                                   @RequestParam String codigoAcesso){
 
         ResponseEntity<?> response;
 
+
+
         try {
+            estabelecimentoPostPutRequestDTO.setCodigoAcesso(codigoAcesso);
             Estabelecimento estabelecimento = estabelecimentov1Service.add(estabelecimentoPostPutRequestDTO);
             response = ResponseEntity
                     .status(HttpStatus.CREATED)

@@ -33,12 +33,4 @@ public class EstabelecimentoPostPutRequestDTO {
     @JsonProperty("entregadores")
     private Set<Entregador> entregadores;
 
-
-    public Set<SaborPizza> getSaborPizzas() {
-        return saboresPizza;
-    }
-
-    public void setSaborPizzas(Set<SaborPizza> saborPizzas) {
-        this.saboresPizza = saborPizzas;
-    }
 }

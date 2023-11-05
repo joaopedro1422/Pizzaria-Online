@@ -85,6 +85,7 @@ public class Estabelecimento {
         return cliente;
     }
 
+    @JsonIgnore
     public Entregador getEntregadorDisponivel() {
         for(Entregador entregador: entregadores){
             if (entregador.isDisponibilidade()){
@@ -94,6 +95,7 @@ public class Estabelecimento {
         return null;
     }
 
+    @JsonIgnore
     public List<Entregador> getEntregadoresDisponiveis(){
         List<Entregador> retorno= new ArrayList<>();
         for(Entregador entregadorr:entregadores){
@@ -152,18 +154,7 @@ public class Estabelecimento {
         throw new SaborPizzaNaoEncontradoException();
     }
 
-//    public Entregador associarEntregador(String codigoAcessoEntregador, String codigoAcessoEstabelecimento){
-//        Entregador entregador = null;
-//
-//        if(codigoAcessoEstabelecimento.equals(this.codigoAcesso)){
-//
-//            //Implementar
-//
-//        }
-//
-//        return entregador;
-//
-//    }
+
 
 
     public void aprovarEntregador(Entregador entregador){
