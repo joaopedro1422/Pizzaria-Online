@@ -101,8 +101,6 @@ public class EntregadorV1Controller {
     ){
 
         ResponseEntity<?> response;
-
-
         try{
 
             Entregador entregador = entregadorService

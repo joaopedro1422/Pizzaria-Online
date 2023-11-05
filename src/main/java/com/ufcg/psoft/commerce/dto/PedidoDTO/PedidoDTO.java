@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ufcg.psoft.commerce.dto.validators.CodigoAcessoConstraint;
 import com.ufcg.psoft.commerce.enums.MetodoPagamento;
 import com.ufcg.psoft.commerce.enums.StatusPedido;
+import com.ufcg.psoft.commerce.model.Entregador.Entregador;
 import com.ufcg.psoft.commerce.model.SaborPizza.Pizza;
 
 import jakarta.validation.constraints.NotBlank;
@@ -47,5 +48,8 @@ public class PedidoDTO {
 
     @JsonProperty("status")
     private StatusPedido statusPedido;
+
+    @JsonProperty("entregador")
+    private Entregador entregador;
 }
 

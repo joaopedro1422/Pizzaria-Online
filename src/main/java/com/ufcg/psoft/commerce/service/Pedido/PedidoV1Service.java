@@ -1,22 +1,15 @@
 package com.ufcg.psoft.commerce.service.Pedido;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
-import com.ufcg.psoft.commerce.exception.Cliente.ClienteCodigoAcessoIncorretoException;
-import com.ufcg.psoft.commerce.exception.Pedido.*;
-import com.ufcg.psoft.commerce.exception.Pizza.PizzaSemSaboresException;
-import com.ufcg.psoft.commerce.model.Entregador.Entregador;
-import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.ufcg.psoft.commerce.dto.PedidoDTO.PedidoDTO;
 import com.ufcg.psoft.commerce.enums.MetodoPagamento;
 import com.ufcg.psoft.commerce.enums.StatusPedido;
 import com.ufcg.psoft.commerce.exception.Associacao.EstabelecimentoIdNaoEncontradoException;
+import com.ufcg.psoft.commerce.exception.Cliente.ClienteCodigoAcessoIncorretoException;
 import com.ufcg.psoft.commerce.exception.Cliente.ClienteNaoEncontradoException;
+import com.ufcg.psoft.commerce.exception.Pedido.*;
+import com.ufcg.psoft.commerce.exception.Pizza.PizzaSemSaboresException;
 import com.ufcg.psoft.commerce.model.Cliente.Cliente;
+import com.ufcg.psoft.commerce.model.Entregador.Entregador;
 import com.ufcg.psoft.commerce.model.Estabelecimento.Estabelecimento;
 import com.ufcg.psoft.commerce.model.Pedido.Pedido;
 import com.ufcg.psoft.commerce.model.SaborPizza.Pizza;
@@ -25,6 +18,12 @@ import com.ufcg.psoft.commerce.repository.Estabelecimento.EstabelecimentoReposit
 import com.ufcg.psoft.commerce.repository.Pedido.PedidoRepository;
 import com.ufcg.psoft.commerce.repository.Pizza.PizzaRepository;
 import com.ufcg.psoft.commerce.repository.Pizza.SaborRepository;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class PedidoV1Service implements PedidoService{
@@ -227,7 +226,7 @@ public class PedidoV1Service implements PedidoService{
     public void cancelarPedido(Long pedidoId, String clienteCodigoAcesso) throws PedidoNaoEncontradoException, PedidoCodigoAcessoIncorretoException, PedidoNaoCancelavelException {
         Pedido pedidoExistente = pedidoRepository.findById(pedidoId).orElseThrow(() -> new PedidoNaoEncontradoException());
 
-        if (pedidoExistente.getStatus() == StatusPedido.PEDIDO_PRONTO) {
+        if (pedidoExistente.getStatus() == StatusPedido.PEDIDO_EM_ROTA) {
             throw new PedidoNaoCancelavelException();
         }
 

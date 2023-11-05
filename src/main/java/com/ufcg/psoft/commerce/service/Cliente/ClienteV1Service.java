@@ -14,6 +14,7 @@ import com.ufcg.psoft.commerce.model.Estabelecimento.Estabelecimento;
 import com.ufcg.psoft.commerce.model.Pedido.Pedido;
 import com.ufcg.psoft.commerce.model.SaborPizza.SaborPizza;
 import com.ufcg.psoft.commerce.repository.Cliente.ClienteRepository;
+import com.ufcg.psoft.commerce.repository.Estabelecimento.EstabelecimentoRepository;
 import com.ufcg.psoft.commerce.repository.Pedido.PedidoRepository;
 import com.ufcg.psoft.commerce.service.Estabelecimento.EstabelecimentoV1Service;
 import com.ufcg.psoft.commerce.service.Pizza.SaborService;
@@ -39,6 +40,8 @@ public class ClienteV1Service implements ClienteService {
     private PedidoRepository pedidoRepository;
 
 
+    @Autowired
+    private EstabelecimentoRepository estabelecimentoRepository;
     @Autowired
     private ModelMapper modelMapper;
 
@@ -168,7 +171,12 @@ public class ClienteV1Service implements ClienteService {
         Pedido pedido = pedidoRepository.findById(idPedido).orElseThrow(PedidoNaoEncontradoException::new);
         pedido.setStatus(StatusPedido.PEDIDO_ENTREGUE);
         pedidoRepository.save(pedido);
+        //entregador fica disponivel novamente
         pedido.getEntregador().setDisponibilidade(true);
+        Estabelecimento estabelecimento= estabelecimentoRepository.findById(pedido.getEstabelecimento()).get();
+        if(estabelecimento.getPedidosEspera().size()>0){
+            estabelecimentoService.atribuirPedidoAEntregador(estabelecimento.getId(),estabelecimento.getCodigoAcesso(),estabelecimento.getPedidosEspera().get(0).getId());
+        }
         return pedido;
 
     }
