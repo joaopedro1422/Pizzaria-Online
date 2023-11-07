@@ -1,6 +1,5 @@
 package com.ufcg.psoft.commerce.service.Cliente;
 
-
 import com.ufcg.psoft.commerce.dto.ClienteDTO.ClienteDTO;
 import com.ufcg.psoft.commerce.exception.Cliente.ClienteCodigoAcessoIncorretoException;
 import com.ufcg.psoft.commerce.exception.Cliente.ClienteNaoEncontradoException;

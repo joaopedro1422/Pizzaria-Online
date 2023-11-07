@@ -1,6 +1,5 @@
 package com.ufcg.psoft.commerce.service.Associacao;
 
-
 import com.ufcg.psoft.commerce.exception.Associacao.AssociacaoNaoEncontradaException;
 import com.ufcg.psoft.commerce.exception.Associacao.EntregadorCodigoAcessoNaoEntradoException;
 import com.ufcg.psoft.commerce.exception.Associacao.EntregadorIdNaoEncontradoException;
@@ -86,11 +85,7 @@ public class AssociacaoService {
             if (!estabelecimento.getCodigoAcesso().equals(codigoAcesso)) throw new EntregadorCodigoAcessoNaoEntradoException();
 
         }
-//        resultado = associacaoRepository.findByEntregadorIdAndEstabelecimentoId(
-//                idNumericoEntregador,
-//                idNumericoEstatabelecimento
-//
-//        ).get();
+
         resultado.setStatus(true);
         estabelecimento.getEntregadores().add(entregador);
         estabelecimentoRepository.save(estabelecimento);

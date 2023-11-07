@@ -18,7 +18,7 @@ import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.Getter; // Adicione a importação para @Getter
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Data

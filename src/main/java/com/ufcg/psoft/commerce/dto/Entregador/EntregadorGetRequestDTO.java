@@ -2,7 +2,6 @@ package com.ufcg.psoft.commerce.dto.Entregador;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import com.ufcg.psoft.commerce.model.Entregador.Entregador;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

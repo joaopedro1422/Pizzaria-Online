@@ -5,8 +5,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ufcg.psoft.commerce.enums.StatusPedido;
-import com.ufcg.psoft.commerce.exception.Entregador.NaoHaEntregadoresDisponiveisException;
-import com.ufcg.psoft.commerce.exception.Pedido.PedidoNaoEncontradoException;
 import com.ufcg.psoft.commerce.exception.Pizza.SaborPizzaNaoEncontradoException;
 import com.ufcg.psoft.commerce.model.Cliente.Cliente;
 import com.ufcg.psoft.commerce.model.Entregador.Entregador;
@@ -17,7 +15,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.engine.internal.Cascade;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -7,11 +7,9 @@ import com.ufcg.psoft.commerce.exception.Cliente.ClienteCodigoAcessoIncorretoExc
 import com.ufcg.psoft.commerce.exception.Cliente.ClienteNaoEncontradoException;
 import com.ufcg.psoft.commerce.exception.Pedido.PedidoCodigoAcessoIncorretoException;
 import com.ufcg.psoft.commerce.exception.Pedido.PedidoNaoEncontradoException;
-import com.ufcg.psoft.commerce.exception.Pedido.PedidoNaoPertenceAoClienteException;
 import com.ufcg.psoft.commerce.model.Pedido.Pedido;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface PedidoService {
     Pedido criarPedido(String clienteCodigoAcesso, PedidoDTO pedido);

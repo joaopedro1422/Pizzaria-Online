@@ -338,71 +338,6 @@ public class PedidoControllerTests {
             assertTrue(responseContent.contains("Código de acesso inválido"));
         }
 
-//        @Test
-//        @DisplayName("quando Criar Pedido com Pagamento em Branco então lança exceções correspondentes")
-//        void quandoCriarPedidoComPagamentoEmBranco() throws Exception {
-//            // Arrange
-//            List<Pizza> pizzas = List.of(pizzaM);
-//
-//            // Configurar PedidoDTO com dados inválidos (método de pagamento em branco)
-//            PedidoDTO pedidoDTO = PedidoDTO.builder()
-//                    .codigoAcesso("123456")
-//                    .clienteId(cliente.getId())
-//                    .estabelecimentoId(estabelecimento.getId())
-//                    .metodoPagamento("")  // Dados inválidos: método de pagamento em branco
-//                    .enderecoEntrega("Rua Nova, 123")
-//                    .pizzas(pizzas)
-//                    .build();
-//
-//            // Act and Assert
-//            MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post(URL_TEMPLATE)
-//                            .contentType(MediaType.APPLICATION_JSON)
-//                            .param("clienteCodigoAcesso", cliente.getCodigoAcesso())
-//                            .content(objectMapper.writeValueAsString(pedidoDTO)))
-//                    .andExpect(status().isBadRequest())
-//                    .andReturn();
-//
-//            // Verificar a exceção lançada
-//            assertTrue(result.getResolvedException() instanceof MethodArgumentNotValidException);
-//
-//            // Verificar a mensagem de erro na resposta
-//            String responseContent = result.getResponse().getContentAsString();
-//            assertTrue(responseContent.contains("O método de pagamento não pode estar em branco/Inválido"));
-//        }
-
-//        @Test
-//        @DisplayName("quando Criar Pedido com Pagamento Invalido então lança exceções correspondentes")
-//        void quandoCriarPedidoComPagamentoInvalido() throws Exception {
-//            // Arrange
-//            List<Pizza> pizzas = List.of(pizzaM);
-//
-//            // Configurar PedidoDTO com dados inválidos (método de pagamento em branco)
-//            PedidoDTO pedidoDTO = PedidoDTO.builder()
-//                    .codigoAcesso("123456")
-//                    .clienteId(cliente.getId())
-//                    .estabelecimentoId(estabelecimento.getId())
-//                    .metodoPagamento(MetodoPagamento.CARTAO_CREDITO)  // Dados inválidos: método de pagamento em branco
-//                    .enderecoEntrega("Rua Nova, 123")
-//                    .pizzas(pizzas)
-//                    .build();
-//
-//            // Act and Assert
-//            MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post(URL_TEMPLATE)
-//                            .contentType(MediaType.APPLICATION_JSON)
-//                            .param("clienteCodigoAcesso", cliente.getCodigoAcesso())
-//                            .content(objectMapper.writeValueAsString(pedidoDTO)))
-//                    .andExpect(status().isBadRequest())
-//                    .andReturn();
-//
-//            // Verificar a exceção lançada
-//            assertTrue(result.getResolvedException() instanceof MetodoPagamentoInvalidoException);
-//
-//            // Verificar a mensagem de erro na resposta
-//            String responseContent = result.getResponse().getContentAsString();
-//            assertTrue(responseContent.contains("Metodo de pagamento incorreto"));
-//        }
-
-
         @Test
         @DisplayName("quando Criar Pedido com Estabelecimento Inválido então lança exceção correspondente")
         void quandoCriarPedidoComEstabelecimentoInvalido() throws Exception {
@@ -722,107 +657,6 @@ public class PedidoControllerTests {
             assertEquals(cliente.getEndereco(), pedidoAtualizado.getEnderecoEntrega());
         }
 
-//        @Test
-//        @DisplayName("quando Atualizar Pedido com Pagamento Em Branco então lança exceções correspondentes")
-//        void quandoAtualizarPedidoComPagamentoEmBranco() throws Exception {
-//            // Arrange
-//            List<Pizza> pizzas = List.of(pizzaM);
-//
-//            // Criar um pedido inicial
-//            pedidoDTO = PedidoDTO.builder()
-//                    .codigoAcesso("123456")
-//                    .clienteId(cliente.getId())
-//                    .estabelecimentoId(estabelecimento.getId())
-//                    .metodoPagamento(null)
-//                    .enderecoEntrega("Rua Nova, 123")
-//                    .pizzas(pizzas)
-//                    .build();
-//
-//            String resultadoStr = mockMvc.perform(MockMvcRequestBuilders.put(URL_TEMPLATE)
-//                            .contentType(MediaType.APPLICATION_JSON)
-//                            .param("clienteCodigoAcesso", cliente.getCodigoAcesso())
-//                            .content(objectMapper.writeValueAsString(pedidoDTO)))
-//                    .andExpect(status().isBadRequest())
-//                    .andReturn().getResponse().getContentAsString();
-//
-//            Pedido pedidoBase = objectMapper.readValue(resultadoStr, Pedido.class);
-//
-//            // Configurar PedidoDTO com dados inválidos (método de pagamento em branco)
-//            PedidoDTO pedidoAtualizadoDTO = PedidoDTO.builder()
-//                    .codigoAcesso("123456")
-//                    .clienteId(cliente.getId())
-//                    .estabelecimentoId(estabelecimento.getId())
-//                    .metodoPagamento(MetodoPagamento.CARTAO_DEBITO)  // Dados inválidos: método de pagamento em branco
-//                    .enderecoEntrega("Rua Nova, 456")
-//                    .pizzas(pizzas)
-//                    .build();
-//
-//            // Atualizar o pedido com dados inválidos
-//            MvcResult result = mockMvc.perform(MockMvcRequestBuilders.put(URL_TEMPLATE + "/" + pedidoBase.getId())
-//                            .contentType(MediaType.APPLICATION_JSON_VALUE)
-//                            .param("clienteCodigoAcesso", cliente.getCodigoAcesso())
-//                            .content(objectMapper.writeValueAsString(pedidoAtualizadoDTO)))
-//                    .andExpect(status().isNotFound())
-//                    .andReturn();
-//
-//
-//
-//            // Verificar a mensagem de erro na resposta
-//            String responseContent = result.getResponse().getContentAsString();
-//            assertEquals(responseContent,"oi");
-//            assertTrue(responseContent.contains("O método de pagamento não pode estar em branco/Inválido"));
-//        }
-
-//        @Test
-//        @DisplayName("quando Atualizar Pedido com Pagamento Invalido então lança exceções correspondentes")
-//        void quandoAtualizarPedidoComPagamentoInvalido() throws Exception {
-//            // Arrange
-//            List<Pizza> pizzas = List.of(pizzaM);
-//
-//            // Criar um pedido inicial
-//            pedidoDTO = PedidoDTO.builder()
-//                    .codigoAcesso("123456")
-//                    .clienteId(cliente.getId())
-//                    .estabelecimentoId(estabelecimento.getId())
-//                    .metodoPagamento("invalido")
-//                    .enderecoEntrega("Rua Nova, 123")
-//                    .pizzas(pizzas)
-//                    .build();
-//
-//            String resultadoStr = mockMvc.perform(MockMvcRequestBuilders.post(URL_TEMPLATE)
-//                            .contentType(MediaType.APPLICATION_JSON)
-//                            .param("clienteCodigoAcesso", cliente.getCodigoAcesso())
-//                            .content(objectMapper.writeValueAsString(pedidoDTO)))
-//                    .andExpect(status().isCreated())
-//                    .andReturn().getResponse().getContentAsString();
-//
-//            Pedido pedidoBase = objectMapper.readValue(resultadoStr, Pedido.class);
-//
-//            // Configurar PedidoDTO com dados inválidos (método de pagamento em branco)
-//            PedidoDTO pedidoAtualizadoDTO = PedidoDTO.builder()
-//                    .codigoAcesso("123456")
-//                    .clienteId(cliente.getId())
-//                    .estabelecimentoId(estabelecimento.getId())
-//                    .metodoPagamento(MetodoPagamento.CARTAO_DEBITO)  // Dados inválidos: método de pagamento em branco
-//                    .enderecoEntrega("Rua Nova, 456")
-//                    .pizzas(pizzas)
-//                    .build();
-//
-//            // Atualizar o pedido com dados inválidos
-//            MvcResult result = mockMvc.perform(MockMvcRequestBuilders.put(URL_TEMPLATE + "/" + pedidoBase.getId())
-//                            .contentType(MediaType.APPLICATION_JSON_VALUE)
-//                            .param("clienteCodigoAcesso", cliente.getCodigoAcesso())
-//                            .content(objectMapper.writeValueAsString(pedidoAtualizadoDTO)))
-//                    .andExpect(status().isBadRequest())
-//                    .andReturn();
-//
-//            assertTrue(result.getResolvedException() instanceof MetodoPagamentoInvalidoException);
-//
-//            // Verificar a mensagem de erro na resposta
-//            String responseContent = result.getResponse().getContentAsString();
-//            assertTrue(responseContent.contains("Metodo de pagamento incorreto"));
-//        }
-//
 
     }
 
@@ -1425,7 +1259,7 @@ public class PedidoControllerTests {
     @DisplayName("Testes de Consulta de Pedidos")
     class ConsultaPedidosTests {
 
-        //Teste Funciona Quando Rodado Isolado
+        //Rodar Isolado
 
 //        @Test
 //        @DisplayName("Quando Cliente Consulta Pedido com Código Correto, Deve Retornar o Pedido Correspondente")

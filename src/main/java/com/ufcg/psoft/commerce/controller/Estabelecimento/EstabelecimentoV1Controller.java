@@ -3,7 +3,6 @@ package com.ufcg.psoft.commerce.controller.Estabelecimento;
 
 import com.ufcg.psoft.commerce.dto.Estabelecimento.EstabelecimentoPostPutRequestDTO;
 import com.ufcg.psoft.commerce.dto.PizzaDTO.SaborResponseDTO;
-import com.ufcg.psoft.commerce.enums.MetodoPagamento;
 import com.ufcg.psoft.commerce.enums.TipoDeSabor;
 import com.ufcg.psoft.commerce.exception.Entregador.EntregadorNaoEncontradoException;
 import com.ufcg.psoft.commerce.exception.Estabelecimento.CodigoAcessoEstabelecimentoException;
@@ -15,7 +14,6 @@ import com.ufcg.psoft.commerce.model.Entregador.Entregador;
 import com.ufcg.psoft.commerce.model.Estabelecimento.Estabelecimento;
 import com.ufcg.psoft.commerce.model.Pedido.Pedido;
 import com.ufcg.psoft.commerce.service.Estabelecimento.EstabelecimentoV1Service;
-import jakarta.persistence.Id;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
@@ -24,7 +22,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Set;
 
 @RestController

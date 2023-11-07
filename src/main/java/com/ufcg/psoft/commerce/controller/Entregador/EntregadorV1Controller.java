@@ -4,8 +4,6 @@ import com.ufcg.psoft.commerce.dto.Entregador.EntregadorPostPutRequestDTO;
 import com.ufcg.psoft.commerce.exception.Entregador.CodigoAcessoEntregadorException;
 import com.ufcg.psoft.commerce.exception.Entregador.DadosDeDisponibiliadadeInvalidosException;
 import com.ufcg.psoft.commerce.model.Entregador.Entregador;
-import com.ufcg.psoft.commerce.dto.Entregador.EntregadorPostPutRequestDTO;
-import com.ufcg.psoft.commerce.service.Entregador.EntregadorService;
 import com.ufcg.psoft.commerce.service.Entregador.EntregadorV1Service;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -120,10 +118,7 @@ public class EntregadorV1Controller {
 
         }
 
-
-
         return response;
-
 
     }
 

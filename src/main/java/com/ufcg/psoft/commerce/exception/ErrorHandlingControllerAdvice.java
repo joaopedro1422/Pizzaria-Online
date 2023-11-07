@@ -1,7 +1,5 @@
 package com.ufcg.psoft.commerce.exception;
 
-import com.ufcg.psoft.commerce.exception.CommerceException;
-import com.ufcg.psoft.commerce.exception.CustomErrorType;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;

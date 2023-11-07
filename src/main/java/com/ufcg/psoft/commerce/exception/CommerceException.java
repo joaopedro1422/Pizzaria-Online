@@ -1,7 +1,5 @@
 package com.ufcg.psoft.commerce.exception;
 
-import java.util.ArrayList;
-
 public class CommerceException extends RuntimeException {
 
     public CommerceException() {

@@ -1,18 +1,12 @@
 package com.ufcg.psoft.commerce.service.Entregador;
 
 import com.ufcg.psoft.commerce.dto.Entregador.EntregadorPostPutRequestDTO;
-import com.ufcg.psoft.commerce.dto.Entregador.EntregadorPostPutRequestDTO;
-import com.ufcg.psoft.commerce.dto.Estabelecimento.EstabelecimentoPostPutRequestDTO;
-import com.ufcg.psoft.commerce.exception.Cliente.ClienteCodigoAcessoIncorretoException;
-import com.ufcg.psoft.commerce.exception.Cliente.ClienteNaoEncontradoException;
 import com.ufcg.psoft.commerce.exception.Entregador.CodigoAcessoEntregadorException;
 import com.ufcg.psoft.commerce.exception.Entregador.DadosDeDisponibiliadadeInvalidosException;
 import com.ufcg.psoft.commerce.exception.Entregador.EntregadorNaoEncontradoException;
 import com.ufcg.psoft.commerce.exception.Entregador.TipoDeVeiculoInvalidoException;
 import com.ufcg.psoft.commerce.exception.Estabelecimento.CodigoAcessoInvalidoException;
-import com.ufcg.psoft.commerce.model.Cliente.Cliente;
 import com.ufcg.psoft.commerce.model.Entregador.Entregador;
-import com.ufcg.psoft.commerce.model.Estabelecimento.Estabelecimento;
 import com.ufcg.psoft.commerce.repository.Entregador.EntregadorRepository;
 import com.ufcg.psoft.commerce.repository.Estabelecimento.EstabelecimentoRepository;
 import org.modelmapper.ModelMapper;

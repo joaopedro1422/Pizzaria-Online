@@ -38,9 +38,4 @@ public class Associacao {
     @Column(name = "desc_status")
     private Boolean status;
 
-    public Boolean isStatus(){
-
-        return status;
-
-    }
 }

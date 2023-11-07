@@ -305,7 +305,6 @@ public class SaborPizzaControllerTests {
             String responseJsonString = driver
                     .perform(put(URI_SABORES + "/999999")
                             .contentType(MediaType.APPLICATION_JSON)
-//							.param("idPizza", "999999")
                             .param("idEstabelecimento", estabelecimento.getId().toString())
                             .param("codigoAcessoEstabelecimento", estabelecimento.getCodigoAcesso())
                             .content(objectMapper.writeValueAsString(saborPostPutDTO)))
