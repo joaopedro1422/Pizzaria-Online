@@ -223,7 +223,7 @@ public class PedidoControllerTests {
                     .enderecoEntrega("Rua Nova, 123")
                     .pizzas(pizzas)
                     .build();
-            ;
+
 
             // Act
             String resultadoStr = mockMvc.perform(MockMvcRequestBuilders.post(URL_TEMPLATE)

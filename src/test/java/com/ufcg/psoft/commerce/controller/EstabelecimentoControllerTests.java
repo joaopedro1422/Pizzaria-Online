@@ -10,11 +10,11 @@ import com.ufcg.psoft.commerce.dto.PedidoDTO.PedidoDTO;
 import com.ufcg.psoft.commerce.dto.PizzaDTO.SaborPostPutDTO;
 import com.ufcg.psoft.commerce.dto.PizzaDTO.SaborResponseDTO;
 import com.ufcg.psoft.commerce.enums.MetodoPagamento;
-import com.ufcg.psoft.commerce.enums.StatusPedido;
+
 import com.ufcg.psoft.commerce.enums.TamanhoPizza;
 import com.ufcg.psoft.commerce.exception.CustomErrorType;
 import com.ufcg.psoft.commerce.model.Cliente.Cliente;
-import com.ufcg.psoft.commerce.model.Entregador.Entregador;
+
 import com.ufcg.psoft.commerce.model.Estabelecimento.Estabelecimento;
 import com.ufcg.psoft.commerce.model.Pedido.Pedido;
 import com.ufcg.psoft.commerce.model.SaborPizza.Pizza;
@@ -24,20 +24,18 @@ import com.ufcg.psoft.commerce.repository.Entregador.EntregadorRepository;
 import com.ufcg.psoft.commerce.repository.Estabelecimento.EstabelecimentoRepository;
 import com.ufcg.psoft.commerce.repository.Pedido.PedidoRepository;
 import com.ufcg.psoft.commerce.repository.Pizza.SaborRepository;
-import jakarta.transaction.Transactional;
+
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
+
+
 import java.util.ArrayList;
-import java.util.HashSet;
+
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;

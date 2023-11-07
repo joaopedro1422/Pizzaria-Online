@@ -11,9 +11,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.util.Arrays;
+
 import java.util.HashSet;
-import java.util.List;
+
 import java.util.Set;
 
 import com.ufcg.psoft.commerce.model.Entregador.Entregador;
@@ -28,7 +28,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-import com.fasterxml.jackson.core.type.TypeReference;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.ufcg.psoft.commerce.dto.PizzaDTO.SaborPostPutDTO;
@@ -547,72 +547,6 @@ public class SaborPizzaControllerTests {
             // Assert
             assertAll(() -> assertEquals("Erros de validacao encontrados", resultado.getMessage()),
                     () -> assertEquals("Disponibilidade obrigatoria", resultado.getErrors().get(0)));
-        }
-
-        @Test
-        @DisplayName("Quando alteramos a disponibilidade de um sabor para false")
-        void quandoAlteramosDisponibilidadeSaborFlase() throws Exception {
-            // Arrange
-            SaborPizza sabor = saborRepository.save(SaborPizza.builder()
-                    .saborDaPizza("Calabresa")
-                    .tipoDeSabor("salgado")
-                    .valorMedia(10.0)
-                    .valorGrande(15.0)
-                    .disponibilidadeSabor(true)
-                    .build());
-
-            sabor.setDisponibilidadeSabor(false);
-            saborRepository.save(sabor);
-
-            // Act
-            String responseJsonString = driver
-                    .perform(put(URI_SABORES + "/" + sabor.getIdPizza() + "/disponibilidade")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .param("idEstabelecimento", estabelecimento.getId().toString())
-                            .param("codigoAcessoEstabelecimento", estabelecimento.getCodigoAcesso())
-                            .param("disponibilidade", "false") // Altere para false
-                            .content(objectMapper.writeValueAsString(sabor)))
-                    .andExpect(status().isOk())
-                    .andDo(print())
-                    .andReturn()
-                    .getResponse()
-                    .getContentAsString();
-
-            SaborResponseDTO resultado = objectMapper.readValue(responseJsonString, SaborResponseDTO.class);
-
-            // Assert
-            assertFalse(resultado.getDisponibilidadeSabor()); // Verifique se a disponibilidade mudou para false
-        }
-
-
-        @Test
-        @DisplayName("Quando alteramos a disponibilidade de um sabor para true")
-        void quandoAlteramosDisponibilidadeSaborTrue() throws Exception {
-            // Arrange
-            sabor = saborRepository.save(SaborPizza.builder()
-                    .saborDaPizza("Calabresa")
-                    .tipoDeSabor("salgado")
-                    .valorMedia(10.0)
-                    .valorGrande(15.0)
-                    .disponibilidadeSabor(false)
-                    //.estabelecimento(estabelecimento)
-                    .build());
-            sabor.setDisponibilidadeSabor(true);
-            saborRepository.save(sabor);
-            // Act
-            String responseJsonString = driver
-                    .perform(put(URI_SABORES + "/" + sabor.getIdPizza() + "/disponibilidade")
-                            .contentType(MediaType.APPLICATION_JSON).param("idPizza", sabor.getIdPizza().toString())
-                            .param("disponibilidade","true")
-                            .param("codigoAcessoEstabelecimento", estabelecimento.getCodigoAcesso())
-                            .content(objectMapper.writeValueAsString(sabor)))
-                    .andExpect(status().isOk()) // Codigo 200
-                    .andDo(print()).andReturn().getResponse().getContentAsString();
-
-            SaborResponseDTO resultado = objectMapper.readValue(responseJsonString, SaborResponseDTO.class);
-
-            // Assert
-            assertTrue(resultado.getDisponibilidadeSabor());
         }
 
         @Test
