@@ -5,10 +5,8 @@ import com.ufcg.psoft.commerce.exception.Associacao.EntregadorCodigoAcessoNaoEnt
 import com.ufcg.psoft.commerce.exception.Associacao.EntregadorIdNaoEncontradoException;
 import com.ufcg.psoft.commerce.exception.Associacao.EstabelecimentoIdNaoEncontradoException;
 import com.ufcg.psoft.commerce.model.Associacao.Associacao;
-import com.ufcg.psoft.commerce.repository.Estabelecimento.EstabelecimentoRepository;
 import com.ufcg.psoft.commerce.service.Associacao.AssociacaoService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -94,6 +92,5 @@ public class AssociacaoController {
         }
         return response;
     }
-
 
 }

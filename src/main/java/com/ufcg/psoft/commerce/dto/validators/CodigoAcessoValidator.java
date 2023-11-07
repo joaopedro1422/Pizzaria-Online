@@ -10,13 +10,6 @@ public class CodigoAcessoValidator implements ConstraintValidator<CodigoAcessoCo
 
     }
 
-    /*
-    Verifica se o valor passado é uma String com seis números sequenciais.
-    ATENÇÃO: considera valores nulos como válidos, para os casos em que é
-    aceitável não passar código de acesso no corpo da requisição (exemplo:
-    atualização). Combine com a anotação @NotBlank se quiser alterar este
-    comportamento.
-     */
     @Override
     public boolean isValid(String codigoAcesso,
                            ConstraintValidatorContext cxt) {

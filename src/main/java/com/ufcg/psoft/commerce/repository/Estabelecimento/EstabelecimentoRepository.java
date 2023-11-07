@@ -1,6 +1,5 @@
 package com.ufcg.psoft.commerce.repository.Estabelecimento;
 
-import com.ufcg.psoft.commerce.model.Entregador.Entregador;
 import com.ufcg.psoft.commerce.model.Estabelecimento.Estabelecimento;
 import org.springframework.data.jpa.repository.JpaRepository;
 

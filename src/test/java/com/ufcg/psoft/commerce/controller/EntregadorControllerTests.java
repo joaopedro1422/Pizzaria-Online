@@ -820,7 +820,5 @@ public class EntregadorControllerTests {
             assertEquals("Dado de disponibilidade inválido", resultado.getMessage());
         }
 
-
-
     }
 }

@@ -5,7 +5,6 @@ import com.ufcg.psoft.commerce.enums.StatusPedido;
 import com.ufcg.psoft.commerce.exception.Cliente.ClienteCodigoAcessoIncorretoException;
 import com.ufcg.psoft.commerce.exception.Cliente.ClienteCodigoAcessoInvalidoException;
 import com.ufcg.psoft.commerce.exception.Cliente.ClienteNaoEncontradoException;
-import com.ufcg.psoft.commerce.exception.Estabelecimento.EstabelecimentoNaoEncontradoException;
 import com.ufcg.psoft.commerce.exception.Pedido.PedidoNaoEncontradoException;
 import com.ufcg.psoft.commerce.exception.Pizza.SaborPizzaClienteCadastrado;
 import com.ufcg.psoft.commerce.exception.Pizza.SaborPizzaEstaDisponivel;
@@ -24,8 +23,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-
-import static org.apache.commons.lang3.StringUtils.equalsIgnoreCase;
 
 @Service
 public class ClienteV1Service implements ClienteService {

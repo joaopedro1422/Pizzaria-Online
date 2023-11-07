@@ -5,10 +5,6 @@ import com.ufcg.psoft.commerce.dto.PizzaDTO.SaborResponseDTO;
 import com.ufcg.psoft.commerce.enums.MetodoPagamento;
 import com.ufcg.psoft.commerce.enums.StatusPedido;
 import com.ufcg.psoft.commerce.enums.TipoDeSabor;
-import com.ufcg.psoft.commerce.exception.Associacao.EntregadorCodigoAcessoNaoEntradoException;
-import com.ufcg.psoft.commerce.exception.Associacao.EntregadorIdNaoEncontradoException;
-import com.ufcg.psoft.commerce.exception.Associacao.EstabelecimentoIdNaoEncontradoException;
-import com.ufcg.psoft.commerce.exception.Cliente.ClienteCodigoAcessoInvalidoException;
 import com.ufcg.psoft.commerce.exception.Entregador.EntregadorNaoEncontradoException;
 import com.ufcg.psoft.commerce.exception.Estabelecimento.CodigoAcessoEstabelecimentoException;
 import com.ufcg.psoft.commerce.exception.Estabelecimento.CodigoAcessoInvalidoException;
@@ -18,7 +14,6 @@ import com.ufcg.psoft.commerce.exception.Pedido.PedidoCodigoAcessoIncorretoExcep
 import com.ufcg.psoft.commerce.exception.Pedido.PedidoNaoEncontradoException;
 import com.ufcg.psoft.commerce.exception.Pedido.StatusPedidoInvalidoException;
 import com.ufcg.psoft.commerce.exception.Pizza.TipoDeSaborNaoExisteException;
-import com.ufcg.psoft.commerce.model.Associacao.Associacao;
 import com.ufcg.psoft.commerce.model.Cliente.Cliente;
 import com.ufcg.psoft.commerce.model.Entregador.Entregador;
 import com.ufcg.psoft.commerce.model.Estabelecimento.Estabelecimento;
@@ -31,15 +26,11 @@ import com.ufcg.psoft.commerce.repository.Estabelecimento.EstabelecimentoReposit
 import com.ufcg.psoft.commerce.repository.Pedido.PedidoRepository;
 import com.ufcg.psoft.commerce.service.Associacao.AssociacaoService;
 import com.ufcg.psoft.commerce.service.Cliente.ClienteService;
-import com.ufcg.psoft.commerce.service.Cliente.ClienteV1Service;
-import com.ufcg.psoft.commerce.util.GerarCodigoAcessoEstabelecimento;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
-import java.time.Duration;
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;

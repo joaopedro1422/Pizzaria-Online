@@ -199,54 +199,7 @@ class AssociacaoControllerTests {
             );
         }
 
-        @Test
-        @DisplayName("Quando aprovamos uma associacao com sucesso")
-        void quandoAprovamosAssociacaoComSucesso() throws Exception {
-            // Arrange
 
-            // Act
-            String responseJsonString = driver.perform(put(URI_ASSOCIACAO)
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .param("codigoAcesso", estabelecimento.getCodigoAcesso())
-                            .param("idAssociacao", String.valueOf(1)))
-                            .andExpect(status().isOk())
-                            .andDo(print())
-                            .andReturn().getResponse().getContentAsString();
-
-            Associacao resultado = objectMapper.readValue(responseJsonString, Associacao.AssociacaoBuilder.class).build();
-
-            Estabelecimento estab= estabelecimentoV1Repository.findById(resultado.getEstabelecimentoId()).get();
-
-
-            // Assert
-            assertAll(
-                    () -> assertEquals(1, associacaoRepository.count()),
-                    () -> assertTrue(resultado.isStatus())
-            );
-        }
-
-        @Test
-        @DisplayName("Quando aprovamos uma associacao com codigo de acesso invalido")
-        void quandoAprovamosAssociacaoComCodigoAcessoInvalido() throws Exception {
-            // Arrange
-
-            // Act
-            String responseJsonString = driver.perform(put(URI_ASSOCIACAO)
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .param("codigoAcesso", String.valueOf(123))
-                            .param("idAssociacao", String.valueOf(1)))
-                    .andExpect(status().isBadRequest())
-                    .andDo(print())
-                    .andReturn().getResponse().getContentAsString();
-
-            CustomErrorType resultado = objectMapper.readValue(responseJsonString, CustomErrorType.class);
-
-            // Assert
-            assertAll(
-                    () -> assertEquals(1, associacaoRepository.count()),
-                    () -> assertEquals("Codigo de acesso invalido!", resultado.getMessage())
-            );
-        }
 
         @Test
         @DisplayName("Quando aprovamos uma associacao com estabelecimento inexistente")

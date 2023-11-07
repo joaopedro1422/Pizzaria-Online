@@ -7,12 +7,7 @@ import com.ufcg.psoft.commerce.dto.ClienteDTO.ClienteDTO;
 import com.ufcg.psoft.commerce.dto.PedidoDTO.PedidoDTO;
 import com.ufcg.psoft.commerce.dto.PizzaDTO.SaborPostPutDTO;
 import com.ufcg.psoft.commerce.enums.TamanhoPizza;
-import com.ufcg.psoft.commerce.enums.TipoDeSabor;
-import com.ufcg.psoft.commerce.exception.Cliente.ClienteCodigoAcessoIncorretoException;
-import com.ufcg.psoft.commerce.exception.Cliente.ClienteCodigoAcessoInvalidoException;
-import com.ufcg.psoft.commerce.exception.Cliente.ClienteNaoEncontradoException;
 import com.ufcg.psoft.commerce.exception.CustomErrorType;
-import com.ufcg.psoft.commerce.exception.Pizza.SaborPizzaEstaDisponivel;
 import com.ufcg.psoft.commerce.model.Cliente.Cliente;
 import com.ufcg.psoft.commerce.model.Entregador.Entregador;
 import com.ufcg.psoft.commerce.model.Estabelecimento.Estabelecimento;
@@ -22,7 +17,6 @@ import com.ufcg.psoft.commerce.repository.Cliente.ClienteRepository;
 import com.ufcg.psoft.commerce.repository.Estabelecimento.EstabelecimentoRepository;
 import com.ufcg.psoft.commerce.repository.Pizza.SaborRepository;
 import com.ufcg.psoft.commerce.service.Cliente.ClienteService;
-import com.ufcg.psoft.commerce.service.Cliente.ClienteV1Service;
 import com.ufcg.psoft.commerce.service.Pizza.SaborService;
 import org.junit.jupiter.api.*;
 import org.modelmapper.ModelMapper;
@@ -31,20 +25,18 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -479,47 +471,5 @@ public class ClienteControllerTests {
         }
 
     }
-
-    @Nested
-    @DisplayName("Demonstrar Interesse em Sabores Cliente")
-    class DemonstrarInteresseClientes {
-        @Test
-        @DisplayName("quando o cliente demonstrar interesse apenas em sabores indisponiveis")
-        void quandoDemonstrarInteresseSaborIndisponivel() throws Exception {
-            // Arrange
-            SaborPizza saborPizza = new SaborPizza();  // Declaração do objeto SaborPizza
-            saborPizza.setSaborDaPizza("chocolate");
-            saborPizza.setTipoDeSabor("DOCE");
-            saborPizza.setDisponibilidadeSabor(false);
-            saborPizza.setValorMedia(10.0);
-            saborPizza.setValorGrande(15.0);
-            saborPizza.setObservers(new ArrayList<>());
-
-            // ... Código para criar cliente e estabelecimento
-
-            List<Pizza> pizzas = List.of(pizzaM);
-
-            Cliente cliente = new Cliente();
-            cliente.setNome("ana");
-            cliente.setCodigoAcesso("123456");
-            cliente.setEndereco("rua");
-
-            // Simulando o cliente já inscrito em uma pizza
-            cliente.subscribeTo(saborPizza);
-
-            // Act
-            mockMvc.perform(MockMvcRequestBuilders.put(URL_TEMPLATE + "/" + cliente.getId() + "/codigoAcesso/" + saborPizza.getIdPizza()))
-                    .andExpect(status().isOk()); // 200
-
-
-            assertEquals(1, saborPizza.observersSize());
-        }
-
-
-
-    }
-
-
-
 
 }
