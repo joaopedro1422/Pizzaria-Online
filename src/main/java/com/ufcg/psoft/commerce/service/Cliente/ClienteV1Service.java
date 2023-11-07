@@ -5,7 +5,6 @@ import com.ufcg.psoft.commerce.enums.StatusPedido;
 import com.ufcg.psoft.commerce.exception.Cliente.ClienteCodigoAcessoIncorretoException;
 import com.ufcg.psoft.commerce.exception.Cliente.ClienteCodigoAcessoInvalidoException;
 import com.ufcg.psoft.commerce.exception.Cliente.ClienteNaoEncontradoException;
-import com.ufcg.psoft.commerce.exception.Estabelecimento.EstabelecimentoNaoEncontradoException;
 import com.ufcg.psoft.commerce.exception.Pedido.PedidoNaoEncontradoException;
 import com.ufcg.psoft.commerce.exception.Pizza.SaborPizzaClienteCadastrado;
 import com.ufcg.psoft.commerce.exception.Pizza.SaborPizzaEstaDisponivel;
@@ -20,18 +19,21 @@ import com.ufcg.psoft.commerce.service.Estabelecimento.EstabelecimentoV1Service;
 import com.ufcg.psoft.commerce.service.Pizza.SaborService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-
-import static org.apache.commons.lang3.StringUtils.equalsIgnoreCase;
 
 @Service
 public class ClienteV1Service implements ClienteService {
 
     @Autowired
     private  ClienteRepository clienteRepository;
+
+    @Autowired
+    private JavaMailSender javaMailSender;
 
     @Autowired
     private SaborService saborService;
@@ -174,6 +176,12 @@ public class ClienteV1Service implements ClienteService {
         //entregador fica disponivel novamente
         pedido.getEntregador().setDisponibilidade(true);
         Estabelecimento estabelecimento= estabelecimentoRepository.findById(pedido.getEstabelecimento()).get();
+        SimpleMailMessage message= new SimpleMailMessage();
+        message.setFrom("PITS-A");
+        message.setTo("jpcros40414@gmail.com");
+        message.setSubject("PEDIDO RECEBIDO!");
+        message.setText("MEU PEDIDO CHEGOU...");
+        javaMailSender.send(message);
         if(estabelecimento.getPedidosEspera().size()>0){
             estabelecimentoService.atribuirPedidoAEntregador(estabelecimento.getId(),estabelecimento.getCodigoAcesso(),estabelecimento.getPedidosEspera().get(0).getId());
         }

@@ -5,10 +5,6 @@ import com.ufcg.psoft.commerce.dto.PizzaDTO.SaborResponseDTO;
 import com.ufcg.psoft.commerce.enums.MetodoPagamento;
 import com.ufcg.psoft.commerce.enums.StatusPedido;
 import com.ufcg.psoft.commerce.enums.TipoDeSabor;
-import com.ufcg.psoft.commerce.exception.Associacao.EntregadorCodigoAcessoNaoEntradoException;
-import com.ufcg.psoft.commerce.exception.Associacao.EntregadorIdNaoEncontradoException;
-import com.ufcg.psoft.commerce.exception.Associacao.EstabelecimentoIdNaoEncontradoException;
-import com.ufcg.psoft.commerce.exception.Cliente.ClienteCodigoAcessoInvalidoException;
 import com.ufcg.psoft.commerce.exception.Entregador.EntregadorNaoEncontradoException;
 import com.ufcg.psoft.commerce.exception.Estabelecimento.CodigoAcessoEstabelecimentoException;
 import com.ufcg.psoft.commerce.exception.Estabelecimento.CodigoAcessoInvalidoException;
@@ -18,7 +14,6 @@ import com.ufcg.psoft.commerce.exception.Pedido.PedidoCodigoAcessoIncorretoExcep
 import com.ufcg.psoft.commerce.exception.Pedido.PedidoNaoEncontradoException;
 import com.ufcg.psoft.commerce.exception.Pedido.StatusPedidoInvalidoException;
 import com.ufcg.psoft.commerce.exception.Pizza.TipoDeSaborNaoExisteException;
-import com.ufcg.psoft.commerce.model.Associacao.Associacao;
 import com.ufcg.psoft.commerce.model.Cliente.Cliente;
 import com.ufcg.psoft.commerce.model.Entregador.Entregador;
 import com.ufcg.psoft.commerce.model.Estabelecimento.Estabelecimento;
@@ -31,15 +26,13 @@ import com.ufcg.psoft.commerce.repository.Estabelecimento.EstabelecimentoReposit
 import com.ufcg.psoft.commerce.repository.Pedido.PedidoRepository;
 import com.ufcg.psoft.commerce.service.Associacao.AssociacaoService;
 import com.ufcg.psoft.commerce.service.Cliente.ClienteService;
-import com.ufcg.psoft.commerce.service.Cliente.ClienteV1Service;
-import com.ufcg.psoft.commerce.util.GerarCodigoAcessoEstabelecimento;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
-import java.time.Duration;
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -56,6 +49,8 @@ public class EstabelecimentoV1Service {
     @Autowired
     private ClienteRepository clienteRepository;
 
+    @Autowired
+            private JavaMailSender javaMailSender;
     ClienteService clienteService;
     AssociacaoService associacaoService;
     @Autowired
@@ -302,9 +297,9 @@ public class EstabelecimentoV1Service {
                 estabelecimento.subscribeTo(pedidoAtual); //Notificação de quando o pedido pronto
             }
             pedidoAtual.setStatus(StatusPedido.PEDIDO_PRONTO);
-            pedidoAtual.notificaOsObservers(); //Notificação
+
             pedidoRepository.save(pedidoAtual);
-            // atribui um pedido a um entregador de forma automatica, conforme a US19
+
             pedidoAtual=atribuirPedidoAEntregador(estabelecimento.getId(),estabelecimento.getCodigoAcesso(),pedidoAtual.getId());
             return pedidoAtual;
         } else {
@@ -327,10 +322,21 @@ public class EstabelecimentoV1Service {
                 if(entregadores.isEmpty()){
                     estabelecimento.getPedidosEspera().add(pedidoAtual);
                     estabelecimentoRepository.save(estabelecimento);
-                    clientePedido.notificaSemEntregadores();
+                    SimpleMailMessage message= new SimpleMailMessage();
+                    message.setFrom("PITS-A");
+                    message.setTo("jpcros40414@gmail.com");
+                    message.setSubject("AGUARDE UM POUCO!");
+                    message.setText("NOSSOS ENTREGADORES ESTÃO OCUPADOS, ASSIM QUE POSSÍVEL ENVIAREMOS O SEU PEDIDO...");
+                    javaMailSender.send(message);
                 }
                 else{
                     Entregador entregadorDisponivelPedido = entregadores.get(0);
+                    SimpleMailMessage message= new SimpleMailMessage();
+                    message.setFrom("PITS-A");
+                    message.setTo("jpcros40414@gmail.com");
+                    message.setSubject("PEDIDO EM ROTA!");
+                    message.setText("OBA! SEU PEDIDO SAIU PARA ENTREGA...\n\nENTREGADOR: "+ entregadorDisponivelPedido.getNome()+"\nPLACA: "+ entregadorDisponivelPedido.getPlacaVeiculo()+"\nCOR: "+entregadorDisponivelPedido.getCorVeiculo()+"\nTIPO: "+entregadorDisponivelPedido.getTipoVeiculo());
+                    javaMailSender.send(message);
                     entregadorDisponivelPedido.setDisponibilidade(false);
                     pedidoAtual.setEntregador(entregadorDisponivelPedido);
                     entregadorRepository.save(entregadorDisponivelPedido);
