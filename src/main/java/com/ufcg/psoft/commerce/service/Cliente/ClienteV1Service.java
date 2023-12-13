@@ -120,6 +120,12 @@ public class ClienteV1Service implements ClienteService {
         return true;
     }
 
+    /**
+     * Metodo que inscreve o cliente como pretendente ao sabor de pizza indisponive. Quando tiver disponivel sera enviada uma notificação via Email ao cliente
+     * @param id - id do cliente
+     * @param codigoAcesso
+     * @param idPizza - id da pizza de interesse
+     */
     @Override
     public void demonstrarInteressePizza(Long id, String codigoAcesso, Long idPizza) {
         Cliente cliente = getClienteById(id);
@@ -164,6 +170,14 @@ public class ClienteV1Service implements ClienteService {
         return codigoAcesso.matches("[0-9]+") && codigoAcesso.length() == 6;
     }
 
+
+    /**
+     * Metodo que confirma a entrega do pedido ao cliente, e envia uma notificação por Email
+     * @param id
+     * @param codigoAcesso
+     * @param idPedido
+     * @return
+     */
     @Override
     public Pedido confirmarEntrega(Long id, String codigoAcesso,Long idPedido){
         Cliente cliente= clienteRepository.findById(id).get();
