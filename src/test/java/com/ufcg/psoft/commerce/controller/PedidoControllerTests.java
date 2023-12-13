@@ -1760,27 +1760,20 @@ public class PedidoControllerTests {
                     .status(com.ufcg.psoft.commerce.enums.StatusPedido.PEDIDO_RECEBIDO)
                     .build());
 
-
-            //entregador 1 se associa ao estabelecimento
-            String responseJsonString1 = mockMvc.perform(post(URI_ASSOCIACAO)
+            String metodo = String.valueOf(pedidoDTO.getMetodoPagamento());
+            // confirma o pagamento
+            String ResultadoStr = mockMvc.perform(MockMvcRequestBuilders.put(URL_TEMPLATE + "/" + pedido.getId() + "/confirmar-pagamento")
                             .contentType(MediaType.APPLICATION_JSON)
-                            .param("entregadorId", entregador.getId().toString())
-                            .param("codigoAcesso", entregador.getCodigoAcesso())
-                            .param("estabelecimentoId", estabelecimento.getId().toString()))
-                    .andExpect(status().isCreated())
-                    .andDo(print())
-                    .andReturn().getResponse().getContentAsString();
-
-            Associacao resultadoAssociaçao = objectMapper.readValue(responseJsonString1, Associacao.AssociacaoBuilder.class).build();
-
-            //Entregador 1 é aprovado
-            String responseJsonString2 = mockMvc.perform(put(URI_ASSOCIACAO)
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .param("codigoAcesso", estabelecimento.getCodigoAcesso())
-                            .param("idAssociacao", String.valueOf(resultadoAssociaçao.getId())))
+                            .param("metodoPagamento", metodo)
+                            .param("clienteCodigoAcesso", cliente.getCodigoAcesso())
+                            .content(objectMapper.writeValueAsString(pedidoDTO)))
                     .andExpect(status().isOk())
                     .andDo(print())
                     .andReturn().getResponse().getContentAsString();
+
+
+            estabelecimento.getEntregadores().add(entregador);
+            estabelecimentoRepository.save(estabelecimento);
 
             //Entregador 1 muda sua disposiçao para 'ativo'
             String responseJsonString6 = mockMvc.perform(put(URI_ENTREGADORES + "/DisponibilidadeEntregador/")
@@ -1855,6 +1848,17 @@ public class PedidoControllerTests {
             estabelecimento.getEntregadores().add(entregador);
             estabelecimento.getEntregadores().add(entregadorDois);
             estabelecimentoRepository.save(estabelecimento);
+
+            String metodo = String.valueOf(pedidoDTO.getMetodoPagamento());
+            // confirma o pagamento
+            String ResultadoStr12 = mockMvc.perform(MockMvcRequestBuilders.put(URL_TEMPLATE + "/" + pedido.getId() + "/confirmar-pagamento")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .param("metodoPagamento", metodo)
+                            .param("clienteCodigoAcesso", cliente.getCodigoAcesso())
+                            .content(objectMapper.writeValueAsString(pedidoDTO)))
+                    .andExpect(status().isOk())
+                    .andDo(print())
+                    .andReturn().getResponse().getContentAsString();
 
 
             // Entregador dois muda sua disposiçao para 'ativo' (primeiro do que o entregador 1)

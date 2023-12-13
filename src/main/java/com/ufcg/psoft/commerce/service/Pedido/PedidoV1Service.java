@@ -20,6 +20,8 @@ import com.ufcg.psoft.commerce.repository.Pizza.PizzaRepository;
 import com.ufcg.psoft.commerce.repository.Pizza.SaborRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -34,6 +36,8 @@ public class PedidoV1Service implements PedidoService{
     @Autowired
     ClienteRepository clienteRepository;
 
+    @Autowired
+    private JavaMailSender javaMailSender;
     @Autowired
     EstabelecimentoRepository estabelecimentoRepository;
 
@@ -172,9 +176,15 @@ public class PedidoV1Service implements PedidoService{
         if (pedido == null) {
             throw new PedidoNaoEncontradoException();
         }
-
+        Cliente clientePedido= clienteRepository.findById(pedido.getCliente()).get();
         StatusPedido statusPedido = StatusPedido.PEDIDO_EM_PREPARO;
         pedido.setStatus(statusPedido);
+        SimpleMailMessage message= new SimpleMailMessage();
+        message.setFrom("PITS-A");
+        message.setTo("jpcros40414@gmail.com");
+        message.setSubject("Ola "+clientePedido.getNome()+"!" );
+        message.setText("SEU PAGAMENTO FOI APROVADO E O PEDIDO JA ESTA SENDO PREPARADO...\nUM PRAZER TE-LO CONOSCO!");
+        javaMailSender.send(message);
 
         MetodoPagamento metodoPagamento =metodoPagamentoStr;
         pedido.setMetodoPagamento(metodoPagamento);

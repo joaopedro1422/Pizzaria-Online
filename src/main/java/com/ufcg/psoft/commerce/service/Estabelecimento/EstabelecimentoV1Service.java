@@ -279,8 +279,15 @@ public class EstabelecimentoV1Service {
         estabelecimento.setDisponibilidadeSabor(idSabor, disponibilidade);
         SaborPizza sabor = estabelecimento.getSaborPizzaById(idSabor);
         estabelecimentoRepository.save(estabelecimento);
-        if (disponibilidade == true) {
-            sabor.notifyObservers();
+        if (disponibilidade) {
+            for(Cliente c: sabor.getObservers()){
+                SimpleMailMessage message= new SimpleMailMessage();
+                message.setFrom("PITS-A");
+                message.setTo("jpcros40414@gmail.com"); //c.getEmail
+                message.setSubject("TEMOS NOVIDADES...");
+                message.setText("A SUA PIZZA DE "+sabor.getSaborDaPizza()+" JA ESTÁ DISPONIVEL EM NOSSO CATÁLOGO... NAO PERCA TEMPO");
+                javaMailSender.send(message);
+            }
         }
         return estabelecimento.getSaborPizzaById(idSabor);
     }

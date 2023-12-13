@@ -48,7 +48,7 @@ public class Cliente {
     }
 
     public void subscribeTo(SaborPizza subject) {
-        if(!isSubscribed(subject) && subject.getDisponibilidadeSabor()==false){
+        if(!isSubscribed(subject) && !subject.getDisponibilidadeSabor()){
             subject.register(this);
             this.subject = subject;
 

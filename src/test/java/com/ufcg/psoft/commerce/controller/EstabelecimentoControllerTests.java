@@ -1109,6 +1109,7 @@ public class EstabelecimentoControllerTests {
 
             clienteUm.subscribeTo(sabor1);
             clienteDois.subscribeTo(sabor1);
+            saborRepository.save(sabor1);
 
 
             String responseJsonString = driver.perform(put(URI_ESTABELECIMENTOS + "/" + estabelecimento.getId()  + "/disponibilidade")
@@ -1123,7 +1124,7 @@ public class EstabelecimentoControllerTests {
 
             SaborResponseDTO resultado= objectMapper.readValue(responseJsonString, SaborResponseDTO.class);
 
-            sabor1.notifyObservers();
+
             assertEquals(2,sabor1.observersSize());
 
 
