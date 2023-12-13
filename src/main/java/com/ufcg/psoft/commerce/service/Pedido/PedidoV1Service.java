@@ -168,6 +168,16 @@ public class PedidoV1Service implements PedidoService{
         return pedidoRepository.findAll();
     }
 
+
+    /**
+     * Metodo que confirma o pagamento do cliente e inicia o preparo do pedido e envia a notificação via Email
+     * @param id - id pedido
+     * @param metodoPagamentoStr- metodo de pagamento do pedido
+     * @param codigoAcesso
+     * @return - retorna o pedido como uma entidade
+     * @throws PedidoNaoEncontradoException
+     * @throws PedidoCodigoAcessoIncorretoException
+     */
     @Override
     public Pedido confirmarPagamento(Long id, MetodoPagamento metodoPagamentoStr, String codigoAcesso)
             throws PedidoNaoEncontradoException, PedidoCodigoAcessoIncorretoException {
