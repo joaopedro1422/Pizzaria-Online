@@ -66,13 +66,22 @@ public class EstabelecimentoV1Service {
         return new ModelMapper();
 
     }
-
+/**
+     * Metodo que converte um objeto DTO para uma entidade
+     * @param estabelecimentoPostPutRequestDTO o estabelecimento que sera transformado
+     * @return - retorna o estabelicimento como entidade
+     */
     private Estabelecimento converteTDOParaEntidade(EstabelecimentoPostPutRequestDTO estabelecimentoPostPutRequestDTO) {
 
         return mapeadorEstabelecimento().map(estabelecimentoPostPutRequestDTO, Estabelecimento.class);
 
     }
 
+    /**
+     * metodo que adiciona um novo estabelecimento ao sistema
+     * @param estabelecimentoPostPutRequestDTO - estabbelecimento que sera adicionado
+     * @return - retorna o estabelecimento como uma entidade
+     */
     public Estabelecimento add(EstabelecimentoPostPutRequestDTO estabelecimentoPostPutRequestDTO) {
         Estabelecimento estabelecimento = converteTDOParaEntidade(estabelecimentoPostPutRequestDTO);
 
@@ -93,6 +102,11 @@ public class EstabelecimentoV1Service {
 
     }
 
+    /**
+     * metodo que obtem um estabelecimento específico a partir do ID
+     * @param id - Id do estabelecimento a ser pesquisado
+     * @return - retorna o estabelecimento obtido
+     */
     public Estabelecimento getOne(long id) {
 
         Estabelecimento estabelecimento = null;
@@ -109,6 +123,11 @@ public class EstabelecimentoV1Service {
 
     }
 
+
+    /**
+     * metodo que retorna todos os estabelecimentos registrados
+     * @return
+     */
     public List<Estabelecimento> getAll() {
 
         return estabelecimentoRepository.findAll();
@@ -135,6 +154,11 @@ public class EstabelecimentoV1Service {
 
     }
 
+
+    /**
+     * Metodo que deleta um estabelecimento a partir do seu id
+     * @param id
+     */
     public void delete(long id) {
         if (estabelecimentoRepository.existsById(id)) {
 
@@ -190,6 +214,13 @@ public class EstabelecimentoV1Service {
 
     }
 
+    /**
+     * metodo que obtem os sabores do estabelecimento
+     * @param id- id do estabelecimento
+     * @param postPutRequestDTO
+     * @return - retorna um HashSet com os sabores
+     * @throws EstabelecimentoNaoEncontradoException
+     */
     public Set<SaborResponseDTO> recuperarSabores(long id, EstabelecimentoPostPutRequestDTO postPutRequestDTO) throws EstabelecimentoNaoEncontradoException {
 
         Set<SaborResponseDTO> resultado = new HashSet<>();
@@ -204,6 +235,14 @@ public class EstabelecimentoV1Service {
     }
 
 
+    /**
+     * metodo que recupera os sabores a partir de um tipo passado como parâmentro
+     * @param id- id do estabelecimento
+     * @param estabelecimentoPostPutRequestDTO
+     * @param tipo - tipo do sabor (doce ou salgado)
+     * @return
+     * @throws EstabelecimentoNaoEncontradoException
+     */
     public Set<SaborResponseDTO> recuperarSaboresPorTipo(long id, EstabelecimentoPostPutRequestDTO estabelecimentoPostPutRequestDTO, TipoDeSabor tipo) throws EstabelecimentoNaoEncontradoException {
 
         Set<SaborResponseDTO> resultado = new HashSet<SaborResponseDTO>();
@@ -241,7 +280,12 @@ public class EstabelecimentoV1Service {
         return cardapioDisponibilidade.collect(Collectors.toSet());
     }
 
-
+    /**
+     * Metodo que retorna o cardapio completo
+     * @param id - id do estabelecimento
+     * @param codigoAcesso
+     * @return - retorna um HashSet com os sabores
+     */
     public Set<SaborPizza> getCardapioCompleto(Long id, String codigoAcesso) {
         Estabelecimento e = estabelecimentoRepository.findById(id).orElseThrow(EstabelecimentoNaoEncontradoException::new);
         if (codigoAcesso.equals(e.getCodigoAcesso())) throw new CodigoAcessoInvalidoException();
@@ -315,6 +359,14 @@ public class EstabelecimentoV1Service {
 
     }
 
+    /**
+     * Metodo que confirma que o pedido está pronto e automaticamente atribui-o a um entregador disponivel e envia a notificação por Email
+     * @param id
+     * @param codigoAcesso
+     * @param idPedido
+     * @return
+     */
+
     public Pedido atribuirPedidoAEntregador(Long id, String codigoAcesso, Long idPedido) {
         //pegando os ids
         Estabelecimento estabelecimento = estabelecimentoRepository.findById(id).get();
@@ -359,7 +411,11 @@ public class EstabelecimentoV1Service {
 
     }
 
-    // metodo com uma lista de entregadores adiconados e ordenados por tempo disponivel
+    /**
+     * metodo que retorna uma lista ordenada de acordo com o tempo de espera dos entregadores
+     * @param entregadores
+     * @return
+     */
     public List<Entregador> ordenarEntregadoresPorTempoDisponivel(List<Entregador> entregadores) {
         List<Entregador> entregadoresPorTempo = entregadores;
 
