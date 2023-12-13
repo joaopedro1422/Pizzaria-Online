@@ -1,4 +1,4 @@
-# 🍕 Pits A
+# 🍕 Pizzaria Online
 
 Recentemente, diversas empresas do ramo alimentício têm se desvinculado dos grandes aplicativos de delivery. As causas
 dessa tendência são diversas e vão desde a transformação no modo de operação de cada estabelecimento, até as taxas
