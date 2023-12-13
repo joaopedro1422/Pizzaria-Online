@@ -1,13 +1,29 @@
 # 🍕 Pizzaria Online
 
-Recentemente, diversas empresas do ramo alimentício têm se desvinculado dos grandes aplicativos de delivery. As causas
-dessa tendência são diversas e vão desde a transformação no modo de operação de cada estabelecimento, até as taxas
-abusivas das grandes plataformas.
+Um sistema de Delivery de pizzas que utiliza as Frameworks *SPRING BOOT* e *JPA* em java, que possui as mais diversas funcionalidades que um delivery online pode ter.
 
-Porém, em 2023, simplesmente não é viável voltar ao modo de trabalho “pré-Ifood”... Foi por isso que a pizzaria Pits A
-decidiu desenvolver seu próprio aplicativo de delivery. E adivinha só… vocês foram escolhidos para ajudar!
+Nele é possível como cliente:
+  * SE CADASTRAR NO SISTEMA
+  * VIZUALIZAR CARDAPIO DO ESTABELECIMENTO
+  * DEMONSTRAR INTERESSE EM SABORES DE PIZZA QUE ESTEJAM INDISPONIVEIS (quando se tornarem disponiveis, uma notificação via Email é enviada ao cliente).
+  * REALIZAR UM PEDIDO.
+  * CONFIRMAR O PAGAMENTO DE UM PEDIDO
+  * CANCELAR UM PEDIDO.
+  * CONFIRMAR A ENTREGA DO PEDIDO.
 
-### 🔗 Endereços Úteis
+Como entregador:
+  * SE CADASTRAR NO SISTEMA COMO ENTREGADOR
+  * SE ASSOCIAR A UM ESTABELECIMENTO
+  * RECEBER PEDIDOS PARA ENTREGAR
+  * DEFINIR SE ESTÁ ATIVO OU EM DESCANSO
 
-- [Swagger](http://localhost:8080/swagger-ui/index.html)
-- [H2 Console](http://localhost:8080/h2-console)
+Como Estabelecimento: 
+  * CADASTRAR SABORES DE PIZZA
+  * EXIBIR CARDAPIO
+  * APROVAR/RECUSAR ENTREGADORES
+  * REALIZAR PEDIDOS
+  * CONFIRMAR QUE O PEDIDO ESTÁ EM PREPARO (via Email)
+  * CONFIRMAR QUE O PEDIDO ESTÁ PRONTO (via Email)
+  * NOTIFICAr QUE O PEDIDO SAIU PARA ENTREGA (via Email)
+  * 
+
